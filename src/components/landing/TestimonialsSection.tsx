@@ -65,7 +65,7 @@ export default function TestimonialsSection() {
         </h2>
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {testimonials.map((testimonial) => (
-            <Card key={testimonial.name} className="glassmorphic-card p-6 flex flex-col justify-between hover:shadow-2xl transition-shadow duration-300">
+            <Card key={testimonial.name} className="glassmorphic-card p-6 flex flex-col justify-between hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-in-out">
               <div>
                 <div className="flex items-center gap-4 mb-4">
                   <Avatar>

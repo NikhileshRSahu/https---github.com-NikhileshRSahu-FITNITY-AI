@@ -11,7 +11,7 @@ interface StepCardProps {
 
 function StepCard({ icon: IconComponent, stepNumber, title, description }: StepCardProps) {
   return (
-    <div className="flex flex-col items-center text-center p-4 hover:shadow-xl transition-shadow duration-300 rounded-lg">
+    <div className="flex flex-col items-center text-center p-4 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-in-out rounded-lg">
       <div className="relative mb-4">
         <div className="p-4 bg-accent/20 rounded-full ring-4 ring-accent/30">
           <IconComponent className="h-12 w-12 text-accent" />

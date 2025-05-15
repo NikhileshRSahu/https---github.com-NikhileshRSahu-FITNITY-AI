@@ -212,7 +212,7 @@ export default function AiCoachPage() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg">
+                <Button type="submit" size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg transition-transform duration-300 hover:scale-105">
                   Start Chatting
                 </Button>
               </form>
@@ -268,7 +268,7 @@ export default function AiCoachPage() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" disabled={isLoading} size="icon" className="bg-accent hover:bg-accent/90 text-accent-foreground flex-shrink-0">
+                <Button type="submit" disabled={isLoading} size="icon" className="bg-accent hover:bg-accent/90 text-accent-foreground flex-shrink-0 transition-colors duration-200 ease-in-out">
                   {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                 </Button>
               </form>

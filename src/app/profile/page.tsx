@@ -69,13 +69,13 @@ export default function ProfilePage() {
       <div className="max-w-3xl mx-auto space-y-10">
         {/* Profile Header */}
         <div className="flex flex-col items-center text-center space-y-4 mb-12">
-            <Avatar className="h-24 w-24 ring-4 ring-accent/50 shadow-lg">
+            <Avatar className="h-24 w-24 ring-4 ring-accent/50 shadow-lg hover:opacity-80 transition-opacity duration-200">
                 <AvatarImage src="https://placehold.co/100x100.png" alt="Aarav Patel" data-ai-hint="user portrait" />
                 <AvatarFallback>AP</AvatarFallback>
             </Avatar>
             <h1 className="text-4xl font-bold text-foreground">Aarav Patel</h1>
             <p className="text-lg text-foreground/80">aarav.patel@example.com</p>
-            <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground">
+            <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground transition-transform duration-300 hover:scale-105">
                 <Edit3 className="mr-2 h-4 w-4" /> Edit Profile
             </Button>
         </div>
@@ -121,7 +121,7 @@ export default function ProfilePage() {
               <Label htmlFor="email" className="text-sm font-medium">Email Address</Label>
               <Input id="email" type="email" defaultValue="aarav.patel@example.com" readOnly className="mt-1 bg-background/50 text-card-foreground" />
             </div>
-            <Button variant="outline" className="w-full sm:w-auto hover:bg-accent/10 hover:text-accent-foreground">Change Password</Button>
+            <Button variant="outline" className="w-full sm:w-auto hover:bg-accent/10 hover:text-accent-foreground transition-transform duration-300 hover:scale-105">Change Password</Button>
           </CardContent>
         </Card>
 
@@ -207,15 +207,15 @@ export default function ProfilePage() {
             <CardDescription>Manage your data and review our policies.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Button asChild variant="link" className="p-0 text-accent hover:underline h-auto">
+            <Button asChild variant="link" className="p-0 text-accent hover:underline h-auto transition-opacity hover:opacity-80">
               <Link href="/privacy-policy">View Privacy Policy</Link>
             </Button>
             <br />
-             <Button asChild variant="link" className="p-0 text-accent hover:underline h-auto">
+             <Button asChild variant="link" className="p-0 text-accent hover:underline h-auto transition-opacity hover:opacity-80">
               <Link href="/terms-of-service">View Terms of Service</Link>
             </Button>
              <br />
-            <Button variant="outline" className="text-destructive hover:text-destructive-foreground hover:bg-destructive/90 border-destructive hover:border-destructive/90 w-full sm:w-auto mt-2">
+            <Button variant="outline" className="text-destructive hover:text-destructive-foreground hover:bg-destructive/90 border-destructive hover:border-destructive/90 w-full sm:w-auto mt-2 transition-transform duration-300 hover:scale-105">
               Download My Data
             </Button>
           </CardContent>
@@ -224,7 +224,7 @@ export default function ProfilePage() {
         {/* Logout Button */}
          <Card className="glassmorphic-card">
             <CardContent className="pt-6">
-                 <Button variant="destructive" className="w-full text-lg py-6">
+                 <Button variant="destructive" className="w-full text-lg py-6 transition-transform duration-300 hover:scale-105">
                     <LogOut className="mr-2 h-5 w-5" /> Logout
                 </Button>
             </CardContent>
@@ -234,5 +234,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-
-    

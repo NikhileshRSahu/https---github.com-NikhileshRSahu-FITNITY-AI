@@ -43,7 +43,7 @@ export default function MainFooter() {
             <ul className="space-y-2">
               {footerLinks.map(link => (
                 <li key={link.label}>
-                  <Link href={link.href} className="hover:text-accent transition-colors">
+                  <Link href={link.href} className="hover:text-accent transition-colors duration-200 ease-in-out">
                     {link.label}
                   </Link>
                 </li>
@@ -56,7 +56,7 @@ export default function MainFooter() {
             <ul className="space-y-2">
               {legalLinks.map(link => (
                 <li key={link.label}>
-                  <Link href={link.href} className="hover:text-accent transition-colors">
+                  <Link href={link.href} className="hover:text-accent transition-colors duration-200 ease-in-out">
                     {link.label}
                   </Link>
                 </li>
@@ -68,7 +68,7 @@ export default function MainFooter() {
             <h4 className="font-semibold text-foreground mb-4">Follow Us</h4>
             <div className="flex space-x-4">
               {socialLinks.map(social => (
-                <Link key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={social.label} className="hover:text-accent transition-colors">
+                <Link key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={social.label} className="hover:text-accent transition-colors duration-200 ease-in-out">
                   <social.icon className="h-6 w-6" />
                 </Link>
               ))}
@@ -83,5 +83,3 @@ export default function MainFooter() {
     </footer>
   );
 }
-
-    

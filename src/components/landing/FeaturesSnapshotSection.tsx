@@ -10,7 +10,7 @@ interface FeatureCardProps {
 
 function FeatureCard({ icon: IconComponent, title, description }: FeatureCardProps) {
   return (
-    <Card className="glassmorphic-card hover:shadow-2xl transition-shadow duration-300">
+    <Card className="glassmorphic-card hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-in-out">
       <CardHeader className="flex flex-row items-center gap-4 pb-2">
         <IconComponent className="h-10 w-10 text-accent" />
         <CardTitle className="text-xl font-semibold">{title}</CardTitle> 

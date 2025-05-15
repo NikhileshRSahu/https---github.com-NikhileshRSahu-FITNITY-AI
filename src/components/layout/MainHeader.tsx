@@ -12,35 +12,35 @@ export default function MainHeader() {
           <span className="text-2xl font-bold">Fitnity AI</span>
         </Link>
         <nav className="flex items-center gap-0.5 md:gap-1">
-          <Button asChild variant="ghost" className="hover:bg-accent/20 hover:text-accent px-2 md:px-3 py-2 rounded-lg text-sm md:text-base">
+          <Button asChild variant="ghost" className="hover:bg-accent/20 hover:text-accent px-2 md:px-3 py-2 rounded-lg text-sm md:text-base transition-colors duration-200 ease-in-out">
             <Link href="/dashboard">
               <LayoutDashboard className="mr-0 md:mr-2 h-5 w-5" />
               <span className="hidden md:inline">Dashboard</span>
               <span className="md:hidden">Dash</span>
             </Link>
           </Button>
-          <Button asChild variant="ghost" className="hover:bg-accent/20 hover:text-accent px-2 md:px-3 py-2 rounded-lg text-sm md:text-base">
+          <Button asChild variant="ghost" className="hover:bg-accent/20 hover:text-accent px-2 md:px-3 py-2 rounded-lg text-sm md:text-base transition-colors duration-200 ease-in-out">
             <Link href="/workout-plan">
               <BarChart3 className="mr-0 md:mr-2 h-5 w-5" />
               <span className="hidden md:inline">Workout Plan</span>
               <span className="md:hidden">Plan</span>
             </Link>
           </Button>
-           <Button asChild variant="ghost" className="hover:bg-accent/20 hover:text-accent px-2 md:px-3 py-2 rounded-lg text-sm md:text-base">
+           <Button asChild variant="ghost" className="hover:bg-accent/20 hover:text-accent px-2 md:px-3 py-2 rounded-lg text-sm md:text-base transition-colors duration-200 ease-in-out">
             <Link href="/form-analysis">
               <Camera className="mr-0 md:mr-2 h-5 w-5" />
               <span className="hidden md:inline">Form Analysis</span>
               <span className="md:hidden">Form</span>
             </Link>
           </Button>
-          <Button asChild variant="ghost" className="hover:bg-accent/20 hover:text-accent px-2 md:px-3 py-2 rounded-lg text-sm md:text-base">
+          <Button asChild variant="ghost" className="hover:bg-accent/20 hover:text-accent px-2 md:px-3 py-2 rounded-lg text-sm md:text-base transition-colors duration-200 ease-in-out">
             <Link href="/ai-coach">
               <BotMessageSquare className="mr-0 md:mr-2 h-5 w-5" />
               <span className="hidden md:inline">AI Coach</span>
               <span className="md:hidden">Coach</span>
             </Link>
           </Button>
-          <Button asChild variant="ghost" className="hover:bg-accent/20 hover:text-accent px-2 md:px-3 py-2 rounded-lg text-sm md:text-base">
+          <Button asChild variant="ghost" className="hover:bg-accent/20 hover:text-accent px-2 md:px-3 py-2 rounded-lg text-sm md:text-base transition-colors duration-200 ease-in-out">
             <Link href="/profile"> 
               <UserCircle className="mr-0 md:mr-2 h-5 w-5" /> 
               <span className="hidden md:inline">Profile</span> 
@@ -55,4 +55,3 @@ export default function MainHeader() {
     </header>
   );
 }
-

@@ -58,7 +58,7 @@ export default function PricingPlansSection() {
         </h2>
         <div className="grid gap-8 md:grid-cols-2 max-w-4xl mx-auto">
           {plans.map((plan) => (
-            <Card key={plan.name} className={`glassmorphic-card flex flex-col ${plan.isPopular ? 'border-accent ring-2 ring-accent shadow-2xl' : ''} hover:shadow-2xl transition-shadow duration-300`}>
+            <Card key={plan.name} className={`glassmorphic-card flex flex-col ${plan.isPopular ? 'border-accent ring-2 ring-accent shadow-2xl' : ''} hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-in-out`}>
               <CardHeader className="pb-4">
                 {plan.isPopular && (
                   <div className="text-xs font-semibold uppercase tracking-wide text-accent bg-accent/10 py-1 px-3 rounded-full self-start mb-2">
