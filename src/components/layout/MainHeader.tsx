@@ -34,7 +34,7 @@ export default function MainHeader() {
             </Link>
           </Button>
           <Button asChild variant="default" className="bg-accent hover:bg-accent/90 text-accent-foreground px-3 md:px-6 py-2 md:py-3 rounded-lg shadow-md transition-transform duration-300 hover:scale-105 text-sm md:text-base">
-            <Link href="#pricing">Get Started</Link>
+            <Link href="/#pricing">Get Started</Link>
           </Button>
         </nav>
       </div>

@@ -73,7 +73,7 @@ export default function AiCoachPage() {
       {
         id: 'initial-greet',
         sender: 'ai',
-        text: `Hello! I'm your Fitnity AI Coach, excited to help you with your goal: "${data.fitnessGoal}". We'll be communicating in ${data.language}. How can I assist you today?`,
+        text: `Hello! I'm your Fitnity AI Coach. I'm excited to help you with your fitness goal: "${data.fitnessGoal}". We'll be communicating in ${data.language}. How can I assist you today?`,
         timestamp: new Date(),
       }
     ]);
@@ -245,7 +245,7 @@ export default function AiCoachPage() {
                           autoComplete="off"
                         />
                       </FormControl>
-                       <FormMessage className="absolute bottom-full mb-1 text-xs" />
+                       <FormMessage className="text-xs pt-1" />
                     </FormItem>
                   )}
                 />
