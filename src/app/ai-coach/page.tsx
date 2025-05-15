@@ -1,0 +1,253 @@
+
+'use client';
+
+import { useState, useEffect, useRef } from 'react';
+import { useForm, useFieldArray } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { aiCoach, type AiCoachInput } from '@/ai/flows/provide-ai-coach';
+import { Loader2, Send, User, Bot } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import ChatMessage from '@/components/ai-coach/ChatMessage';
+
+const aiCoachSetupSchema = z.object({
+  language: z.enum(['English', 'Hindi'], {
+    required_error: 'Please select a language.',
+  }),
+  fitnessGoal: z.string().min(5, { message: 'Please describe your fitness goal (min. 5 characters).' }),
+});
+
+const chatMessageSchema = z.object({
+  userMessage: z.string().min(1, { message: 'Message cannot be empty.' }),
+});
+
+type AiCoachSetupValues = z.infer<typeof aiCoachSetupSchema>;
+type ChatMessageValues = z.infer<typeof chatMessageSchema>;
+
+interface Message {
+  id: string;
+  sender: 'user' | 'ai';
+  text: string;
+  timestamp: Date;
+}
+
+export default function AiCoachPage() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isCoachReady, setIsCoachReady] = useState(false);
+  const [coachSettings, setCoachSettings] = useState<AiCoachSetupValues | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const { toast } = useToast();
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  const setupForm = useForm<AiCoachSetupValues>({
+    resolver: zodResolver(aiCoachSetupSchema),
+    defaultValues: {
+      language: 'English',
+      fitnessGoal: '',
+    },
+  });
+
+  const chatForm = useForm<ChatMessageValues>({
+    resolver: zodResolver(chatMessageSchema),
+    defaultValues: {
+      userMessage: '',
+    },
+  });
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  async function onSetupSubmit(data: AiCoachSetupValues) {
+    setCoachSettings(data);
+    setIsCoachReady(true);
+    setMessages([
+      {
+        id: 'initial-greet',
+        sender: 'ai',
+        text: `Hi there! I'm your AI Coach, ready to help you with your goal: "${data.fitnessGoal}". How can I assist you today in ${data.language}?`,
+        timestamp: new Date(),
+      }
+    ]);
+    toast({
+      title: 'AI Coach Ready!',
+      description: 'Your AI coach is set up and ready to chat.',
+    });
+  }
+
+  async function onChatSubmit(data: ChatMessageValues) {
+    if (!coachSettings) {
+      toast({
+        variant: 'destructive',
+        title: 'Coach Not Ready',
+        description: 'Please complete the setup form first.',
+      });
+      return;
+    }
+
+    const newUserMessage: Message = {
+      id: `user-${Date.now()}`,
+      sender: 'user',
+      text: data.userMessage,
+      timestamp: new Date(),
+    };
+    setMessages(prev => [...prev, newUserMessage]);
+    setIsLoading(true);
+    chatForm.reset();
+
+    try {
+      const input: AiCoachInput = {
+        language: coachSettings.language,
+        fitnessGoal: coachSettings.fitnessGoal,
+        workoutHistory: 'User is currently interacting with the AI coach. Progress tracking not yet fully integrated.', // Placeholder
+        userMessage: data.userMessage,
+      };
+      const result = await aiCoach(input);
+      const aiResponse: Message = {
+        id: `ai-${Date.now()}`,
+        sender: 'ai',
+        text: result.coachResponse,
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, aiResponse]);
+    } catch (error) {
+      console.error('Error with AI Coach:', error);
+      let errorMessage = 'Failed to get response from AI Coach. Please try again.';
+       if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      const errorResponse: Message = {
+        id: `ai-error-${Date.now()}`,
+        sender: 'ai',
+        text: `Sorry, I encountered an error: ${errorMessage}`,
+        timestamp: new Date(),
+      }
+      setMessages(prev => [...prev, errorResponse]);
+      toast({
+        variant: 'destructive',
+        title: 'AI Coach Error',
+        description: errorMessage,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  return (
+    <div className="container mx-auto px-4 md:px-6 py-12 md:py-20">
+      {!isCoachReady ? (
+        <Card className="max-w-lg mx-auto glassmorphic-card">
+          <CardHeader>
+            <CardTitle className="text-3xl font-bold text-primary-foreground">Setup AI Coach</CardTitle>
+            <CardDescription className="text-primary-foreground/80">
+              Tell us a bit about your goals to personalize your AI Coach experience.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...setupForm}>
+              <form onSubmit={setupForm.handleSubmit(onSetupSubmit)} className="space-y-6">
+                <FormField
+                  control={setupForm.control}
+                  name="fitnessGoal"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-primary-foreground">Primary Fitness Goal</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="e.g., Improve stamina, build upper body strength"
+                          className="bg-white/20 text-primary-foreground placeholder:text-primary-foreground/60 border-white/30 focus:ring-accent focus:border-accent"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={setupForm.control}
+                  name="language"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-primary-foreground">Preferred Language</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="bg-white/20 text-primary-foreground border-white/30 focus:ring-accent focus:border-accent">
+                            <SelectValue placeholder="Select language" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="English">English</SelectItem>
+                          <SelectItem value="Hindi">Hindi</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg">
+                  Start Chatting
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card className="max-w-2xl mx-auto glassmorphic-card flex flex-col h-[70vh] md:h-[80vh]">
+          <CardHeader className="border-b border-white/20">
+            <CardTitle className="text-2xl font-bold text-primary-foreground flex items-center">
+              <Bot className="mr-2 h-6 w-6 text-accent" /> AI Fitness Coach
+            </CardTitle>
+            <CardDescription className="text-primary-foreground/80">
+              Your goal: {coachSettings?.fitnessGoal} | Language: {coachSettings?.language}
+            </CardDescription>
+          </CardHeader>
+          <CardContent ref={chatContainerRef} className="flex-grow overflow-y-auto p-4 space-y-4">
+            {messages.map((msg) => (
+              <ChatMessage key={msg.id} message={msg} />
+            ))}
+            {isLoading && (
+              <div className="flex justify-start items-center space-x-2">
+                  <Bot className="h-8 w-8 text-accent p-1 rounded-full bg-primary-foreground/20"/>
+                  <Loader2 className="h-5 w-5 text-primary-foreground animate-spin" />
+              </div>
+            )}
+          </CardContent>
+          <div className="p-4 border-t border-white/20">
+            <Form {...chatForm}>
+              <form onSubmit={chatForm.handleSubmit(onChatSubmit)} className="flex items-center gap-2">
+                <FormField
+                  control={chatForm.control}
+                  name="userMessage"
+                  render={({ field }) => (
+                    <FormItem className="flex-grow">
+                      <FormControl>
+                        <Input
+                          placeholder="Ask your AI coach anything..."
+                          className="bg-white/20 text-primary-foreground placeholder:text-primary-foreground/60 border-white/30 focus:ring-accent focus:border-accent"
+                          {...field}
+                          autoComplete="off"
+                        />
+                      </FormControl>
+                       <FormMessage className="absolute bottom-full mb-1 text-xs" />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" disabled={isLoading} size="icon" className="bg-accent hover:bg-accent/90 text-accent-foreground flex-shrink-0">
+                  {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                </Button>
+              </form>
+            </Form>
+          </div>
+        </Card>
+      )}
+    </div>
+  );
+}
