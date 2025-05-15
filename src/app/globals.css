@@ -151,13 +151,17 @@ body {
 .glassmorphic-card input[type="text"].bg-white\/20, 
 .glassmorphic-card input[type="email"].bg-white\/20, 
 .glassmorphic-card textarea.bg-white\/20,
-.glassmorphic-card .SelectTrigger.bg-white\/20 {
+.glassmorphic-card .SelectTrigger.bg-white\/20,
+.glassmorphic-card input[type="text"].bg-background\/50,
+.glassmorphic-card input[type="email"].bg-background\/50 {
   @apply bg-background/20 border-border text-card-foreground placeholder:text-card-foreground/60;
 }
 .dark .glassmorphic-card input[type="text"].bg-white\/20,
 .dark .glassmorphic-card input[type="email"].bg-white\/20, 
 .dark .glassmorphic-card textarea.bg-white\/20,
-.dark .glassmorphic-card .SelectTrigger.bg-white\/20 {
+.dark .glassmorphic-card .SelectTrigger.bg-white\/20,
+.dark .glassmorphic-card input[type="text"].bg-background\/50,
+.dark .glassmorphic-card input[type="email"].bg-background\/50 {
    @apply bg-background/20 border-border text-card-foreground placeholder:text-card-foreground/60;
 }
 
@@ -186,29 +190,30 @@ header.glassmorphic-card .text-2xl.font-bold { /* For the Fitnity AI logo text *
 
 
 /* Footer specific theming */
-footer.bg-background\/80 { /* This class is now applied directly in MainFooter.tsx */
+footer.bg-background\/80 { 
   /* Background is already theme-aware from the component */
 }
-footer .text-foreground, /* For general text in footer */
-footer .text-foreground\/80 { /* For lighter general text in footer */
+footer .text-foreground, 
+footer .text-foreground\/80 {
   color: hsl(var(--foreground)); 
 }
-footer .hover\:text-accent:hover { /* For links on hover */
+footer .hover\:text-accent:hover { 
   color: hsl(var(--accent));
 }
-footer .text-2xl.font-bold.text-foreground { /* For Footer logo, now directly using text-foreground */
+footer .text-2xl.font-bold.text-foreground { 
    /* No specific rule needed if it's already text-foreground from component */
 }
 
 
-/* Ensure form labels inside glassmorphic cards use card-foreground */
+/* Ensure form labels and general labels inside glassmorphic cards use card-foreground */
 .glassmorphic-card .FormLabel,
-.glassmorphic-card label { /* Added general label for non-FormLabel cases like in settings */
+.glassmorphic-card label { 
   color: hsl(var(--card-foreground));
 }
 .dark .glassmorphic-card .FormLabel,
 .dark .glassmorphic-card label {
   color: hsl(var(--card-foreground)); 
 }
+    
 
     

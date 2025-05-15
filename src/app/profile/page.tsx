@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Moon, Sun, Settings as SettingsIcon, UserCircle, Bell, Globe, ShieldCheck, LogOut, Zap, Dumbbell, Edit3 } from 'lucide-react'
+import { Moon, Sun, Settings as SettingsIcon, Bell, Globe, ShieldCheck, LogOut, Zap, Edit3 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -34,7 +34,7 @@ export default function ProfilePage() {
             </div>
 
             {/* Settings Cards Skeleton */}
-            {[...Array(3)].map((_, i) => (
+            {[...Array(4)].map((_, i) => ( // Increased to 4 to account for fitness snapshot
               <Card key={i} className="glassmorphic-card">
                 <CardHeader>
                   <Skeleton className="h-7 w-1/3 mb-1" />
@@ -75,7 +75,7 @@ export default function ProfilePage() {
             </Avatar>
             <h1 className="text-4xl font-bold text-foreground">Aarav Patel</h1>
             <p className="text-lg text-foreground/80">aarav.patel@example.com</p>
-            <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent/10">
+            <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground">
                 <Edit3 className="mr-2 h-4 w-4" /> Edit Profile
             </Button>
         </div>
@@ -90,16 +90,16 @@ export default function ProfilePage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between p-3 rounded-lg bg-background/10">
-                <span className="font-medium">Primary Fitness Goal:</span>
-                <span className="text-foreground/80">Build upper body strength</span>
+                <span className="font-medium text-card-foreground">Primary Fitness Goal:</span>
+                <span className="text-card-foreground/80">Build upper body strength</span>
             </div>
              <div className="flex items-center justify-between p-3 rounded-lg bg-background/10">
-                <span className="font-medium">Workout Style:</span>
-                <span className="text-foreground/80">Home workouts, 3x week</span>
+                <span className="font-medium text-card-foreground">Workout Style:</span>
+                <span className="text-card-foreground/80">Home workouts, 3x week</span>
             </div>
              <div className="flex items-center justify-between p-3 rounded-lg bg-background/10">
-                <span className="font-medium">Current Level:</span>
-                <span className="text-foreground/80">Intermediate</span>
+                <span className="font-medium text-card-foreground">Current Level:</span>
+                <span className="text-card-foreground/80">Intermediate</span>
             </div>
           </CardContent>
         </Card>
@@ -115,13 +115,13 @@ export default function ProfilePage() {
           <CardContent className="space-y-4">
             <div>
               <Label htmlFor="fullName" className="text-sm font-medium">Full Name</Label>
-              <Input id="fullName" type="text" value="Aarav Patel" readOnly className="mt-1 bg-background/50" />
+              <Input id="fullName" type="text" defaultValue="Aarav Patel" readOnly className="mt-1 bg-background/50 text-card-foreground" />
             </div>
             <div>
               <Label htmlFor="email" className="text-sm font-medium">Email Address</Label>
-              <Input id="email" type="email" value="aarav.patel@example.com" readOnly className="mt-1 bg-background/50" />
+              <Input id="email" type="email" defaultValue="aarav.patel@example.com" readOnly className="mt-1 bg-background/50 text-card-foreground" />
             </div>
-            <Button variant="outline" className="w-full sm:w-auto">Change Password</Button>
+            <Button variant="outline" className="w-full sm:w-auto hover:bg-accent/10 hover:text-accent-foreground">Change Password</Button>
           </CardContent>
         </Card>
 
@@ -186,12 +186,13 @@ export default function ProfilePage() {
           </CardHeader>
           <CardContent>
              <Select defaultValue="English">
-                <SelectTrigger className="w-full bg-background/20 border-border focus:ring-accent focus:border-accent">
+                <SelectTrigger className="w-full bg-background/20 border-border focus:ring-accent focus:border-accent text-card-foreground">
                   <SelectValue placeholder="Select language" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="English">English</SelectItem>
                   <SelectItem value="Hindi">हिंदी (Hindi)</SelectItem>
+                  {/* Add more languages as needed */}
                 </SelectContent>
               </Select>
           </CardContent>
@@ -206,15 +207,15 @@ export default function ProfilePage() {
             <CardDescription>Manage your data and review our policies.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Button asChild variant="link" className="p-0 text-accent hover:underline">
+            <Button asChild variant="link" className="p-0 text-accent hover:underline h-auto">
               <Link href="/privacy-policy">View Privacy Policy</Link>
             </Button>
             <br />
-             <Button asChild variant="link" className="p-0 text-accent hover:underline">
+             <Button asChild variant="link" className="p-0 text-accent hover:underline h-auto">
               <Link href="/terms-of-service">View Terms of Service</Link>
             </Button>
              <br />
-            <Button variant="outline" className="text-destructive hover:text-destructive-foreground hover:bg-destructive/90 border-destructive hover:border-destructive/90 w-full sm:w-auto">
+            <Button variant="outline" className="text-destructive hover:text-destructive-foreground hover:bg-destructive/90 border-destructive hover:border-destructive/90 w-full sm:w-auto mt-2">
               Download My Data
             </Button>
           </CardContent>
@@ -233,3 +234,5 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+    
