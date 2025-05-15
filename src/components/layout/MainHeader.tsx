@@ -1,7 +1,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Zap, BarChart3, BotMessageSquare } from 'lucide-react'; // Using Zap as a placeholder logo icon
+import { Zap, BarChart3, BotMessageSquare, Camera } from 'lucide-react';
 
 export default function MainHeader() {
   return (
@@ -17,6 +17,13 @@ export default function MainHeader() {
               <BarChart3 className="mr-0 md:mr-2 h-5 w-5" />
               <span className="hidden md:inline">Workout Plan</span>
               <span className="md:hidden">Plan</span>
+            </Link>
+          </Button>
+           <Button asChild variant="ghost" className="text-primary-foreground hover:bg-accent/20 hover:text-accent px-2 md:px-3 py-2 rounded-lg text-sm md:text-base">
+            <Link href="/form-analysis">
+              <Camera className="mr-0 md:mr-2 h-5 w-5" />
+              <span className="hidden md:inline">Form Analysis</span>
+              <span className="md:hidden">Form</span>
             </Link>
           </Button>
           <Button asChild variant="ghost" className="text-primary-foreground hover:bg-accent/20 hover:text-accent px-2 md:px-3 py-2 rounded-lg text-sm md:text-base">
