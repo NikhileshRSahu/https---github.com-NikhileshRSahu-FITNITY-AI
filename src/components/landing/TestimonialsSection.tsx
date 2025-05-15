@@ -1,3 +1,4 @@
+
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Star } from 'lucide-react';
@@ -9,32 +10,36 @@ interface Testimonial {
   avatarFallback: string;
   quote: string;
   rating: number;
+  avatarHint: string;
 }
 
 const testimonials: Testimonial[] = [
   {
-    name: 'Sarah L.',
-    role: 'Fitness Enthusiast',
+    name: 'Alex R.',
+    role: 'Marathon Runner',
     avatarSrc: 'https://placehold.co/100x100.png',
-    avatarFallback: 'SL',
-    quote: "Fitnity's AI form correction is a game-changer! I feel more confident and see better results.",
+    avatarFallback: 'AR',
+    quote: "The personalized endurance plans from Fitnity AI took my marathon training to a new level. The AI Coach helped me push through tough workouts!",
     rating: 5,
+    avatarHint: 'runner portrait',
   },
   {
-    name: 'Mike P.',
-    role: 'Busy Professional',
+    name: 'Brenda C.',
+    role: 'New Mom',
     avatarSrc: 'https://placehold.co/100x100.png',
-    avatarFallback: 'MP',
-    quote: "The adaptive workouts fit my hectic schedule perfectly. The AI coach keeps me motivated.",
+    avatarFallback: 'BC',
+    quote: "Getting back into fitness post-partum felt daunting. Fitnity's gentle progression and real-time form checks for at-home workouts made it safe and effective.",
     rating: 5,
+    avatarHint: 'woman smiling',
   },
   {
-    name: 'Jessica K.',
-    role: 'Beginner Yogi',
+    name: 'Carlos G.',
+    role: 'Strength Trainee',
     avatarSrc: 'https://placehold.co/100x100.png',
-    avatarFallback: 'JK',
-    quote: "I love how the AI adjusts to my level. It's like having a personal trainer available 24/7.",
+    avatarFallback: 'CG',
+    quote: "I was stuck in a plateau for months. The AI's strength-focused routines and form analysis helped me break through and finally see gains again. Highly recommend!",
     rating: 4,
+    avatarHint: 'man athletic',
   },
 ];
 
@@ -64,7 +69,7 @@ export default function TestimonialsSection() {
               <div>
                 <div className="flex items-center gap-4 mb-4">
                   <Avatar>
-                    <AvatarImage src={testimonial.avatarSrc} alt={testimonial.name} data-ai-hint="person" />
+                    <AvatarImage src={testimonial.avatarSrc} alt={testimonial.name} data-ai-hint={testimonial.avatarHint} />
                     <AvatarFallback>{testimonial.avatarFallback}</AvatarFallback>
                   </Avatar>
                   <div>

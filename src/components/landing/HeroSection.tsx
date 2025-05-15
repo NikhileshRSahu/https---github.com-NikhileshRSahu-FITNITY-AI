@@ -1,3 +1,4 @@
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -29,7 +30,7 @@ export default function HeroSection() {
               alt="AI Workout Form Analysis"
               width={600}
               height={400}
-              className="rounded-xl shadow-2xl object-cover data-ai-hint: fitness animation"
+              className="rounded-xl shadow-2xl object-cover"
               data-ai-hint="fitness animation"
             />
           </div>
