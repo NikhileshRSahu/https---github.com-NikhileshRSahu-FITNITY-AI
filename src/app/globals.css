@@ -56,33 +56,33 @@ body {
   }
 
   .dark {
-    --background: 210 20% 11%;
-    --foreground: 210 20% 98%;
+    --background: 222 83% 4%; /* Darker, more vibrant blue/black */
+    --foreground: 210 20% 96%; /* Lighter foreground for contrast */
 
-    --card: 210 20% 14%; 
-    --card-foreground: 210 20% 98%;
+    --card: 220 40% 7%; /* Slightly more saturated dark card */
+    --card-foreground: 210 20% 96%;
 
-    --popover: 210 20% 11%;
-    --popover-foreground: 210 20% 98%;
+    --popover: 222 83% 4%;
+    --popover-foreground: 210 20% 96%;
 
-    --primary: 180 100% 35%; 
+    --primary: 180 95% 38%; /* Teal, slightly brighter for dark mode */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 18%; 
-    --secondary-foreground: 210 20% 98%; 
+    --secondary: 220 15% 20%; /* Darker gray for secondary elements */
+    --secondary-foreground: 210 20% 96%; 
 
-    --muted: 210 20% 20%;
-    --muted-foreground: 210 20% 65%;
+    --muted: 220 15% 12%; /* Even darker muted for less emphasis */
+    --muted-foreground: 210 20% 70%; /* Muted foreground, still readable */
 
-    --accent: 180 100% 60%; 
-    --accent-foreground: 180 100% 5%;
+    --accent: 180 100% 55%; /* Bright Cyan, slightly brighter for dark mode */
+    --accent-foreground: 180 100% 5%; /* Darker text on accent for contrast */
 
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 70% 50%; /* Destructive color, adjusted for dark theme */
     --destructive-foreground: 0 0% 98%;
 
-    --border: 210 20% 25%;
-    --input: 210 20% 18%;
-    --ring: 180 90% 55%;
+    --border: 220 20% 25%; /* Subtle border for dark elements */
+    --input: 220 20% 18%; /* Dark input fields */
+    --ring: 180 90% 55%; /* Ring color for focus states */
 
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
@@ -107,6 +107,7 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+    font-size: 100%; /* Resetting to ensure rem units are based on browser default */
   }
   /* Ensure prose text also inherits themed foreground color */
   .prose {
@@ -125,7 +126,6 @@ body {
      background-color: hsl(var(--muted-foreground));
   }
 
-  /* Specific fix for prose-invert on dark theme if needed, though text-foreground should handle most */
   .dark .prose-invert {
     color: hsl(var(--foreground));
   }
@@ -140,37 +140,36 @@ body {
 
 /* Glassmorphic card utility */
 .glassmorphic-card {
-  @apply bg-card/10 backdrop-blur-lg shadow-xl border border-card-foreground/20 text-card-foreground;
+  @apply bg-card/10 backdrop-blur-lg shadow-xl border border-card-foreground/5 text-card-foreground;
 }
 .dark .glassmorphic-card {
-  @apply bg-card/10 backdrop-blur-lg shadow-xl border border-card-foreground/10 text-card-foreground;
+  @apply bg-card/20 backdrop-blur-md shadow-2xl border border-accent/10 text-card-foreground;
 }
 
 
-/* Styling for inputs and selects within glassmorphic cards to maintain contrast and theme adherence */
+/* Styling for inputs and selects within glassmorphic cards */
 .glassmorphic-card input[type="text"], 
 .glassmorphic-card input[type="email"], 
 .glassmorphic-card textarea,
-.glassmorphic-card .SelectTrigger { /* Targets ShadCN SelectTrigger by its default class */
-  @apply bg-background/20 border-border text-card-foreground placeholder:text-card-foreground/60 focus:ring-accent focus:border-accent;
+.glassmorphic-card .SelectTrigger { 
+  @apply bg-background/30 border-border/50 text-card-foreground placeholder:text-card-foreground/60 focus:ring-accent focus:border-accent;
 }
 .dark .glassmorphic-card input[type="text"],
 .dark .glassmorphic-card input[type="email"], 
 .dark .glassmorphic-card textarea,
 .dark .glassmorphic-card .SelectTrigger {
-   @apply bg-background/20 border-border text-card-foreground placeholder:text-card-foreground/60 focus:ring-accent focus:border-accent;
+   @apply bg-background/30 border-border/50 text-card-foreground placeholder:text-card-foreground/60 focus:ring-accent focus:border-accent;
 }
 
+
 /* General text color corrections based on context */
-/* For text that might be explicitly text-primary-foreground (white) inside a light-themed glassmorphic card */
 .glassmorphic-card .text-primary-foreground,
 .glassmorphic-card .text-primary-foreground\/80,
 .glassmorphic-card .text-primary-foreground\/90,
 .glassmorphic-card .text-primary-foreground\/70,
 .glassmorphic-card .text-primary-foreground\/60 {
-  color: hsl(var(--card-foreground)); /* Default to card-foreground in light mode */
+  color: hsl(var(--card-foreground)); 
 }
-/* If primary-foreground (white) is specifically desired on a dark card (dark theme), it's fine as card-foreground is light */
 .dark .glassmorphic-card .text-primary-foreground { color: hsl(var(--primary-foreground)); }
 .dark .glassmorphic-card .text-primary-foreground\/80 { color: hsla(var(--primary-foreground), 0.8); }
 .dark .glassmorphic-card .text-primary-foreground\/90 { color: hsla(var(--primary-foreground), 0.9); }
@@ -178,15 +177,11 @@ body {
 .dark .glassmorphic-card .text-primary-foreground\/60 { color: hsla(var(--primary-foreground), 0.6); }
 
 
-/* Header: The header itself is a glassmorphic card. Its base text color will be card-foreground.
-   Specific elements within it (like the logo text or button text) should use card-foreground or standard button variant colors.
-*/
-header.glassmorphic-card .text-2xl.font-bold { /* For the Fitnity AI logo text */
+header.glassmorphic-card .text-2xl.font-bold {
   color: hsl(var(--card-foreground));
 }
 
 
-/* Footer specific theming */
 footer.bg-background\/80 { 
   /* Background is already theme-aware from the component */
 }
@@ -197,12 +192,7 @@ footer .text-foreground\/80 {
 footer .hover\:text-accent:hover { 
   color: hsl(var(--accent));
 }
-footer .text-2xl.font-bold.text-foreground { 
-   /* No specific rule needed if it's already text-foreground from component */
-}
 
-
-/* Ensure form labels and general labels inside glassmorphic cards use card-foreground */
 .glassmorphic-card .FormLabel,
 .glassmorphic-card label { 
   color: hsl(var(--card-foreground));
@@ -211,6 +201,52 @@ footer .text-2xl.font-bold.text-foreground {
 .dark .glassmorphic-card label {
   color: hsl(var(--card-foreground)); 
 }
-    
 
-    
+/* Logo Pulse Animation */
+@keyframes logoPulse {
+  0%, 100% {
+    opacity: 1;
+    filter: drop-shadow(0 0 2px hsl(var(--accent) / 0.7));
+  }
+  50% {
+    opacity: 0.85;
+    filter: drop-shadow(0 0 5px hsl(var(--accent)));
+  }
+}
+.logo-pulse {
+  animation: logoPulse 2.5s infinite ease-in-out;
+}
+
+/* Glowing Orb for AI Coach */
+@keyframes orbGlow {
+  0%, 100% {
+    box-shadow: 0 0 3px 1px hsl(var(--accent) / 0.6), 0 0 5px 2px hsl(var(--accent) / 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 5px 2px hsl(var(--accent) / 0.8), 0 0 10px 4px hsl(var(--accent) / 0.5);
+    transform: scale(1.1);
+  }
+}
+.glowing-orb {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: hsl(var(--accent));
+  animation: orbGlow 2s infinite ease-in-out;
+  vertical-align: middle;
+}
+
+/* CTA Button Glow Pulse */
+@keyframes ctaGlowPulse {
+  0%, 100% {
+    box-shadow: 0 0 8px 2px hsl(var(--accent) / 0.5);
+  }
+  50% {
+    box-shadow: 0 0 16px 5px hsl(var(--accent) / 0.7);
+  }
+}
+.cta-glow-pulse:not(:hover) { /* Apply pulse when not hovered, hover has its own stronger shadow */
+  animation: ctaGlowPulse 2.5s infinite ease-in-out;
+}
