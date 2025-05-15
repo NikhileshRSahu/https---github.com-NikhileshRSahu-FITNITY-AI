@@ -44,16 +44,16 @@ const plans: Plan[] = [
       'Priority support',
     ],
     ctaText: 'Start Free Trial',
-    ctaLink: '/workout-plan', // Or a specific trial signup page if available
+    ctaLink: '/workout-plan', 
     isPopular: true,
   },
 ];
 
 export default function PricingPlansSection() {
   return (
-    <section id="pricing" className="py-16 md:py-24 bg-white/5">
+    <section id="pricing" className="py-16 md:py-24 bg-background/5"> {/* Changed bg-white/5 */}
       <div className="container mx-auto px-4 md:px-6">
-        <h2 className="text-3xl font-bold tracking-tight text-center sm:text-4xl md:text-5xl text-primary-foreground mb-12">
+        <h2 className="text-3xl font-bold tracking-tight text-center sm:text-4xl md:text-5xl text-foreground mb-12">
           Choose Your Fitnity Plan
         </h2>
         <div className="grid gap-8 md:grid-cols-2 max-w-4xl mx-auto">
@@ -65,19 +65,19 @@ export default function PricingPlansSection() {
                     Most Popular
                   </div>
                 )}
-                <CardTitle className="text-2xl font-semibold text-primary-foreground">{plan.name}</CardTitle>
+                <CardTitle className="text-2xl font-semibold">{plan.name}</CardTitle> {/* Uses card-foreground */}
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-extrabold text-primary-foreground">{plan.price}</span>
-                  <span className="text-sm font-medium text-primary-foreground/70">{plan.priceFrequency}</span>
+                  <span className="text-4xl font-extrabold">{plan.price}</span> {/* Uses card-foreground */}
+                  <span className="text-sm font-medium text-card-foreground/70">{plan.priceFrequency}</span>
                 </div>
-                <CardDescription className="pt-2 text-primary-foreground/80">{plan.description}</CardDescription>
+                <CardDescription className="pt-2 text-card-foreground/80">{plan.description}</CardDescription>
               </CardHeader>
               <CardContent className="flex-grow">
                 <ul className="space-y-3">
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex items-start gap-3">
                       <CheckCircle2 className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
-                      <span className="text-primary-foreground/90">{feature}</span>
+                      <span className="text-card-foreground/90">{feature}</span>
                     </li>
                   ))}
                 </ul>

@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Target, Dumbbell, TrendingUp, Icon } from 'lucide-react';
 
@@ -19,8 +20,8 @@ function StepCard({ icon: IconComponent, stepNumber, title, description }: StepC
           {stepNumber}
         </div>
       </div>
-      <h3 className="text-xl font-semibold text-primary-foreground mb-2">{title}</h3>
-      <p className="text-primary-foreground/80">{description}</p>
+      <h3 className="text-xl font-semibold text-foreground mb-2">{title}</h3>
+      <p className="text-foreground/80">{description}</p>
     </div>
   );
 }
@@ -47,14 +48,14 @@ export default function HowItWorksSection() {
   return (
     <section id="how-it-works" className="py-16 md:py-24">
       <div className="container mx-auto px-4 md:px-6">
-        <h2 className="text-3xl font-bold tracking-tight text-center sm:text-4xl md:text-5xl text-primary-foreground mb-16">
+        <h2 className="text-3xl font-bold tracking-tight text-center sm:text-4xl md:text-5xl text-foreground mb-16">
           Getting Started is Easy
         </h2>
         <div className="grid gap-12 md:grid-cols-3 items-start relative">
           {/* Dashed line connector for desktop */}
           <div className="hidden md:block absolute top-1/2 left-0 right-0 h-0.5 -translate-y-1/2">
              <svg width="100%" height="2px" className="opacity-30">
-                <line x1="0" y1="1" x2="100%" y2="1" strokeDasharray="10,10" stroke="currentColor" strokeWidth="2"/>
+                <line x1="0" y1="1" x2="100%" y2="1" strokeDasharray="10,10" stroke="hsl(var(--foreground))" strokeWidth="2"/> {/* Changed stroke to themed foreground */}
             </svg>
           </div>
           {steps.map((step, index) => (

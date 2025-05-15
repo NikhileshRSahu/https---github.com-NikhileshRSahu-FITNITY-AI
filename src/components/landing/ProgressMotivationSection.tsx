@@ -4,17 +4,17 @@ import { LineChart, Award, Lightbulb } from 'lucide-react';
 
 export default function ProgressMotivationSection() {
   return (
-    <section id="progress" className="py-16 md:py-24 bg-white/5">
+    <section id="progress" className="py-16 md:py-24 bg-background/5"> {/* Changed bg-white/5 to bg-background/5 */}
       <div className="container mx-auto px-4 md:px-6">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl text-primary-foreground">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl text-foreground">
               Track. Improve. Achieve.
             </h2>
-            <p className="text-lg text-primary-foreground/80">
+            <p className="text-lg text-foreground/80">
               Our smart progress charts make it easy to see how far you've come. Earn badges, maintain streaks, and stay motivated with gamified features designed to keep you engaged and pushing your limits.
             </p>
-            <ul className="space-y-3 text-primary-foreground/80">
+            <ul className="space-y-3 text-foreground/80">
               <li className="flex items-center gap-3">
                 <LineChart className="h-6 w-6 text-accent flex-shrink-0" />
                 <span>Interactive performance dashboards</span>

@@ -1,9 +1,10 @@
 
+
 export default function TermsOfServicePage() {
   return (
-    <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 text-primary-foreground">
-      <h1 className="text-3xl md:text-4xl font-bold mb-8">Terms of Service</h1>
-      <div className="prose prose-invert max-w-none space-y-6">
+    <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 text-foreground">
+      <h1 className="text-3xl md:text-4xl font-bold mb-8 text-foreground">Terms of Service</h1>
+      <div className="prose dark:prose-invert max-w-none space-y-6"> {/* Ensure prose also adapts */}
         <p>Last updated: July 24, 2024</p>
 
         <h2 className="text-2xl font-semibold">1. Agreement to Terms</h2>

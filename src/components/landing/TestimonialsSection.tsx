@@ -15,7 +15,7 @@ interface Testimonial {
 
 const testimonials: Testimonial[] = [
   {
-    name: 'Rohan S.',
+    name: 'Rohan Sharma',
     role: 'Marathon Runner',
     avatarSrc: 'https://placehold.co/100x100.png',
     avatarFallback: 'RS',
@@ -24,7 +24,7 @@ const testimonials: Testimonial[] = [
     avatarHint: 'runner portrait',
   },
   {
-    name: 'Priya K.',
+    name: 'Priya Kaur',
     role: 'New Mom',
     avatarSrc: 'https://placehold.co/100x100.png',
     avatarFallback: 'PK',
@@ -33,12 +33,12 @@ const testimonials: Testimonial[] = [
     avatarHint: 'woman smiling',
   },
   {
-    name: 'Arjun M.',
+    name: 'Arjun Mehra',
     role: 'Strength Trainee',
     avatarSrc: 'https://placehold.co/100x100.png',
     avatarFallback: 'AM',
     quote: "I was stuck in a plateau for months. The AI's strength-focused routines and form analysis helped me break through and finally see gains again. Highly recommend!",
-    rating: 4, // Kept one 4-star for realism
+    rating: 4, 
     avatarHint: 'man athletic',
   },
 ];
@@ -49,7 +49,7 @@ function RatingStars({ rating }: { rating: number }) {
       {[...Array(5)].map((_, i) => (
         <Star
           key={i}
-          className={`h-5 w-5 ${i < rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-400'}`}
+          className={`h-5 w-5 ${i < rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-400'}`} // text-gray-400 is fine for un-filled stars
         />
       ))}
     </div>
@@ -60,7 +60,7 @@ export default function TestimonialsSection() {
   return (
     <section id="testimonials" className="py-16 md:py-24">
       <div className="container mx-auto px-4 md:px-6">
-        <h2 className="text-3xl font-bold tracking-tight text-center sm:text-4xl md:text-5xl text-primary-foreground mb-12">
+        <h2 className="text-3xl font-bold tracking-tight text-center sm:text-4xl md:text-5xl text-foreground mb-12">
           Loved by Users Like You
         </h2>
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -73,11 +73,11 @@ export default function TestimonialsSection() {
                     <AvatarFallback>{testimonial.avatarFallback}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <h3 className="font-semibold text-lg text-primary-foreground">{testimonial.name}</h3>
-                    <p className="text-sm text-primary-foreground/70">{testimonial.role}</p>
+                    <h3 className="font-semibold text-lg">{testimonial.name}</h3> {/* Uses card-foreground */}
+                    <p className="text-sm text-card-foreground/70">{testimonial.role}</p>
                   </div>
                 </div>
-                <blockquote className="text-primary-foreground/80 italic mb-4">
+                <blockquote className="text-card-foreground/80 italic mb-4">
                   "{testimonial.quote}"
                 </blockquote>
               </div>

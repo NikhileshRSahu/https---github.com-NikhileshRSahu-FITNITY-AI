@@ -9,10 +9,10 @@ export default function HeroSection() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="grid gap-8 lg:grid-cols-2 lg:gap-16 items-center">
           <div className="space-y-6 text-center lg:text-left">
-            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl text-primary-foreground leading-tight">
+            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl text-foreground leading-tight">
               Your Ultimate AI Fitness Coach — Anytime, Anywhere
             </h1>
-            <p className="mx-auto max-w-2xl text-lg text-primary-foreground/80 md:text-xl lg:mx-0">
+            <p className="mx-auto max-w-2xl text-lg text-foreground/80 md:text-xl lg:mx-0">
               Real-time form correction, personalized AI workouts, and smart health tracking — all in one app.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
@@ -39,3 +39,4 @@ export default function HeroSection() {
     </section>
   );
 }
+

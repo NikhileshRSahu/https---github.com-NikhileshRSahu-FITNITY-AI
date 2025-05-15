@@ -9,11 +9,11 @@ body {
 
 @layer base {
   :root {
-    --background: 210 20% 98%; /* Light cool gray for component backgrounds if not on gradient */
-    --foreground: 210 20% 11%; /* Dark blueish gray for text */
+    --background: 210 20% 98%; 
+    --foreground: 210 20% 11%; 
 
-    --card: 0 0% 100%; /* White base for cards, opacity/blur applied in component */
-    --card-foreground: 210 20% 11%; /* Dark text for cards */
+    --card: 0 0% 100%; 
+    --card-foreground: 210 20% 11%; 
 
     --popover: 0 0% 100%;
     --popover-foreground: 210 20% 11%;
@@ -22,24 +22,23 @@ body {
     --primary-foreground: 0 0% 100%; /* White */
 
     --secondary: 0 0% 94.1%; /* Light Gray (#F0F0F0) */
-    --secondary-foreground: 210 20% 11%; /* Dark text on secondary */
+    --secondary-foreground: 210 20% 11%; 
 
-    --muted: 210 17% 90%; /* Muted gray */
-    --muted-foreground: 210 17% 45%; /* Text on muted backgrounds */
+    --muted: 210 17% 90%; 
+    --muted-foreground: 210 17% 45%; 
 
     --accent: 180 100% 50%; /* Bright Cyan (#00FFFF) */
-    --accent-foreground: 180 100% 10%; /* Dark Teal/Black for text on accent */
+    --accent-foreground: 180 100% 10%; 
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 210 17% 88%; /* Default border color */
-    --input: 210 17% 93%; /* Input background */
-    --ring: 180 90% 45%; /* Ring color for focus - vibrant teal/cyan */
+    --border: 210 17% 88%; 
+    --input: 210 17% 93%; 
+    --ring: 180 90% 45%; 
 
     --radius: 0.5rem;
 
-    /* Sidebar variables - can remain as default or be themed if sidebar is used later */
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
@@ -60,22 +59,22 @@ body {
     --background: 210 20% 11%;
     --foreground: 210 20% 98%;
 
-    --card: 210 20% 14%; /* Darker card background for dark mode glassmorphism */
+    --card: 210 20% 14%; 
     --card-foreground: 210 20% 98%;
 
     --popover: 210 20% 11%;
     --popover-foreground: 210 20% 98%;
 
-    --primary: 180 100% 35%; /* Brighter Teal for dark mode */
+    --primary: 180 100% 35%; 
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 18%; /* Neutral Dark Gray (counterpart to #F0F0F0) */
-    --secondary-foreground: 210 20% 98%; /* Light text on dark secondary */
+    --secondary: 0 0% 18%; 
+    --secondary-foreground: 210 20% 98%; 
 
     --muted: 210 20% 20%;
     --muted-foreground: 210 20% 65%;
 
-    --accent: 180 100% 60%; /* Brighter Cyan for dark mode */
+    --accent: 180 100% 60%; 
     --accent-foreground: 180 100% 5%;
 
     --destructive: 0 62.8% 30.6%;
@@ -85,7 +84,6 @@ body {
     --input: 210 20% 18%;
     --ring: 180 90% 55%;
 
-    /* Sidebar variables for dark mode */
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -110,174 +108,116 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+  /* Ensure prose text also inherits themed foreground color */
+  .prose {
+    color: hsl(var(--foreground));
+  }
+  .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+    color: hsl(var(--foreground));
+  }
+  .prose strong, .prose a, .prose code, .prose blockquote {
+    color: hsl(var(--foreground));
+  }
+  .prose ul > li::before { /* Adapt list bullet color for dark mode */
+    background-color: hsl(var(--muted-foreground));
+  }
+  .dark .prose ul > li::before {
+     background-color: hsl(var(--muted-foreground));
+  }
+
+  /* Specific fix for prose-invert on dark theme if needed, though text-foreground should handle most */
+  .dark .prose-invert {
+    color: hsl(var(--foreground));
+  }
+   .dark .prose-invert h1, .dark .prose-invert h2, .dark .prose-invert h3, .dark .prose-invert h4, .dark .prose-invert h5, .dark .prose-invert h6 {
+    color: hsl(var(--foreground));
+  }
+  .dark .prose-invert p, .dark .prose-invert li, .dark .prose-invert ul, .dark .prose-invert strong, .dark .prose-invert a, .dark .prose-invert code, .dark .prose-invert blockquote {
+    color: hsl(var(--foreground));
+  }
+
 }
 
 /* Glassmorphic card utility */
 .glassmorphic-card {
-  @apply bg-card/10 backdrop-blur-lg shadow-xl border border-card-foreground/20;
+  @apply bg-card/10 backdrop-blur-lg shadow-xl border border-card-foreground/20 text-card-foreground;
 }
 .dark .glassmorphic-card {
-  @apply bg-card/10 backdrop-blur-lg shadow-xl border border-card-foreground/10;
+  @apply bg-card/10 backdrop-blur-lg shadow-xl border border-card-foreground/10 text-card-foreground;
 }
 
-/* Custom gradient for body - REMOVED, now handled by theme */
-/* .gradient-body-bg {
-  @apply bg-gradient-to-br from-purple-700 via-pink-600 to-blue-600;
-} */
 
-/* Update card and input styling to use theme variables more effectively */
-.glassmorphic-card {
-  /* Ensure text within cards primarily uses card-foreground or theme-appropriate colors */
-  @apply text-card-foreground;
+/* Styling for inputs and selects within glassmorphic cards to maintain contrast and theme adherence */
+.glassmorphic-card .bg-white\/20, 
+.glassmorphic-card input[type="text"].bg-white\/20, 
+.glassmorphic-card input[type="email"].bg-white\/20, 
+.glassmorphic-card textarea.bg-white\/20,
+.glassmorphic-card .SelectTrigger.bg-white\/20 {
+  @apply bg-background/20 border-border text-card-foreground placeholder:text-card-foreground/60;
 }
-.glassmorphic-card .text-primary-foreground {
-  /* This class was used extensively. We need to make it theme-aware.
-     If a card is on a dark background (dark theme), primary-foreground (white) is fine.
-     If a card is on a light background (light theme), card-foreground (dark text) is better.
-     Using a specific class for card text might be better or adjusting this dynamically.
-     For now, let's make sure card elements primarily use their own foreground.
-  */
-   color: hsl(var(--card-foreground));
-}
-.dark .glassmorphic-card .text-primary-foreground {
-   color: hsl(var(--primary-foreground)); /* In dark mode, primary-foreground (white) is fine on dark cards */
+.dark .glassmorphic-card .bg-white\/20,
+.dark .glassmorphic-card input[type="text"].bg-white\/20, 
+.dark .glassmorphic-card input[type="email"].bg-white\/20, 
+.dark .glassmorphic-card textarea.bg-white\/20,
+.dark .glassmorphic-card .SelectTrigger.bg-white\/20 {
+   @apply bg-background/20 border-border text-card-foreground placeholder:text-card-foreground/60;
 }
 
-.glassmorphic-card .text-primary-foreground\/80 {
-  color: hsla(var(--card-foreground), 0.8);
-}
-.dark .glassmorphic-card .text-primary-foreground\/80 {
-  color: hsla(var(--primary-foreground), 0.8);
-}
-
-.glassmorphic-card .text-primary-foreground\/90 {
-  color: hsla(var(--card-foreground), 0.9);
-}
-.dark .glassmorphic-card .text-primary-foreground\/90 {
-  color: hsla(var(--primary-foreground), 0.9);
-}
-
+/* General text color corrections based on context */
+.glassmorphic-card .text-primary-foreground,
+.glassmorphic-card .text-primary-foreground\/80,
+.glassmorphic-card .text-primary-foreground\/90,
+.glassmorphic-card .text-primary-foreground\/70,
 .glassmorphic-card .text-primary-foreground\/60 {
-  color: hsla(var(--card-foreground), 0.6);
+  color: hsl(var(--card-foreground)); /* Default to card-foreground */
 }
-.dark .glassmorphic-card .text-primary-foreground\/60 {
-  color: hsla(var(--primary-foreground), 0.6);
-}
+/* If primary-foreground (white) is specifically desired on a dark card (dark theme), it's fine */
+.dark .glassmorphic-card .text-primary-foreground { color: hsl(var(--primary-foreground)); }
+.dark .glassmorphic-card .text-primary-foreground\/80 { color: hsla(var(--primary-foreground), 0.8); }
+.dark .glassmorphic-card .text-primary-foreground\/90 { color: hsla(var(--primary-foreground), 0.9); }
+.dark .glassmorphic-card .text-primary-foreground\/70 { color: hsla(var(--primary-foreground), 0.7); }
+.dark .glassmorphic-card .text-primary-foreground\/60 { color: hsla(var(--primary-foreground), 0.6); }
 
 
-/* Ensure inputs inside glassmorphic cards use theme variables correctly */
-.glassmorphic-card .bg-white\/20 {
-  @apply bg-background/20 border-border; /* Use theme background with opacity */
-}
-.dark .glassmorphic-card .bg-white\/20 {
-   @apply bg-background/20 border-border;
-}
-
-.glassmorphic-card .placeholder\:text-primary-foreground\/60::placeholder {
-  color: hsla(var(--card-foreground), 0.6);
-}
-.dark .glassmorphic-card .placeholder\:text-primary-foreground\/60::placeholder {
-   color: hsla(var(--primary-foreground), 0.6);
-}
-
-.glassmorphic-card .border-white\/30 {
-  @apply border-border; /* Use theme border */
-}
-.dark .glassmorphic-card .border-white\/30 {
-  @apply border-border;
-}
-
-/* Text directly on body uses theme foreground */
-.container.mx-auto.px-4.md\:px-6.py-12.md\:py-20.text-primary-foreground {
-  @apply text-foreground;
-}
-.dark .container.mx-auto.px-4.md\:px-6.py-12.md\:py-20.text-primary-foreground {
-  @apply text-foreground;
-}
-
-/* Footer text */
-.bg-black\/30.text-primary-foreground\/80 {
-  @apply bg-background/30 text-foreground/80;
-}
-.dark .bg-black\/30.text-primary-foreground\/80 {
-  @apply bg-background/30 text-foreground/80;
-}
-.text-primary-foreground.mb-4 {
-  @apply text-foreground;
-}
-.dark .text-primary-foreground.mb-4 {
-  @apply text-foreground;
-}
-.text-2xl.font-bold.text-primary-foreground {
-   color: hsl(var(--foreground));
-}
-.dark .text-2xl.font-bold.text-primary-foreground {
-   color: hsl(var(--foreground));
-}
-
-/* Header text */
-.text-2xl.font-bold.text-primary-foreground,
-.text-primary-foreground.hover\:bg-accent\/20:hover,
-.text-primary-foreground.hover\:text-accent:hover {
-   color: hsl(var(--foreground)); /* Default state for header text */
-}
-.dark .text-2xl.font-bold.text-primary-foreground,
-.dark .text-primary-foreground.hover\:bg-accent\/20:hover,
-.dark .text-primary-foreground.hover\:text-accent:hover {
-   color: hsl(var(--foreground)); /* Default state for header text in dark mode */
-}
-
-/* Ensure main header link text color adapts to theme */
+/* Header text color should be --foreground */
 header .flex.items-center.gap-2 .text-2xl.font-bold {
   color: hsl(var(--foreground));
 }
-header nav .text-primary-foreground {
-   color: hsl(var(--foreground)) !important; /* Override more specific selectors if needed */
+header nav .text-primary-foreground { /* For nav button text */
+   color: hsl(var(--foreground)) !important; 
 }
 header nav .hover\:text-accent:hover {
    color: hsl(var(--accent)) !important;
 }
-header nav .hover\:bg-accent\/20:hover {
-   background-color: hsla(var(--accent), 0.2) !important;
+
+
+/* Footer specific theming, text on bg-black/30 should be light */
+footer.bg-black\/30 {
+  @apply bg-background/80; /* Make footer background also theme aware but darker */
+}
+.dark footer.bg-black\/30 {
+  @apply bg-background/80;
+}
+footer .text-primary-foreground, footer .text-primary-foreground\/80 {
+  color: hsl(var(--foreground)); /* Footer text should be light on its dark background */
+}
+.dark footer .text-primary-foreground, .dark footer .text-primary-foreground\/80 {
+   color: hsl(var(--foreground));
+}
+footer .hover\:text-accent:hover {
+  color: hsl(var(--accent));
+}
+footer .text-2xl.font-bold.text-primary-foreground { /* Footer logo */
+   color: hsl(var(--foreground));
+}
+.dark footer .text-2xl.font-bold.text-primary-foreground {
+   color: hsl(var(--foreground));
 }
 
-/* Titles and descriptions within cards */
-.glassmorphic-card .text-3xl.font-bold.text-primary-foreground,
-.glassmorphic-card .text-2xl.font-bold.text-primary-foreground,
-.glassmorphic-card .text-xl.font-semibold.text-primary-foreground,
-.glassmorphic-card .text-lg.text-primary-foreground,
-.glassmorphic-card .font-semibold.text-lg.text-primary-foreground,
-.glassmorphic-card .text-primary-foreground\/80,
-.glassmorphic-card .text-primary-foreground\/90,
-.glassmorphic-card .text-primary-foreground\/70,
-.glassmorphic-card .text-primary-foreground {
+/* Ensure form labels inside glassmorphic cards use card-foreground */
+.glassmorphic-card .FormLabel {
   color: hsl(var(--card-foreground));
 }
-
-.dark .glassmorphic-card .text-3xl.font-bold.text-primary-foreground,
-.dark .glassmorphic-card .text-2xl.font-bold.text-primary-foreground,
-.dark .glassmorphic-card .text-xl.font-semibold.text-primary-foreground,
-.dark .glassmorphic-card .text-lg.text-primary-foreground,
-.dark .glassmorphic-card .font-semibold.text-lg.text-primary-foreground,
-.dark .glassmorphic-card .text-primary-foreground\/80,
-.dark .glassmorphic-card .text-primary-foreground\/90,
-.dark .glassmorphic-card .text-primary-foreground\/70,
-.dark .glassmorphic-card .text-primary-foreground {
-  color: hsl(var(--card-foreground)); /* Card foreground is already light in dark mode */
-}
-
-
-/* Form Label specific adjustments if they are inside glassmorphic cards */
-.glassmorphic-card .text-primary-foreground.FormLabel { /* Assuming FormLabel is a class or you target by context */
-  color: hsl(var(--card-foreground));
-}
-.dark .glassmorphic-card .text-primary-foreground.FormLabel {
-  color: hsl(var(--card-foreground));
-}
-/* Prose invert specific styles for legal pages */
-.prose-invert h1, .prose-invert h2, .prose-invert p, .prose-invert li, .prose-invert ul {
-  color: hsl(var(--foreground)); /* Ensure prose on themed background uses theme foreground */
-}
-.dark .prose-invert h1, .dark .prose-invert h2, .dark .prose-invert p, .dark .prose-invert li, .dark .prose-invert ul {
-  color: hsl(var(--foreground));
+.dark .glassmorphic-card .FormLabel {
+  color: hsl(var(--card-foreground)); 
 }

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -38,10 +39,10 @@ export default function NewsletterSignupSection() {
     <section id="newsletter" className="py-16 md:py-24">
       <div className="container mx-auto px-4 md:px-6">
         <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl text-primary-foreground mb-6">
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl text-foreground mb-6">
             Join the Fitnity Community
           </h2>
-          <p className="text-lg text-primary-foreground/80 mb-8">
+          <p className="text-lg text-foreground/80 mb-8">
             Stay updated with the latest news, features, and fitness tips from Fitnity AI.
           </p>
           <Form {...form}>
@@ -56,10 +57,10 @@ export default function NewsletterSignupSection() {
                         type="email"
                         placeholder="Enter your email"
                         {...field}
-                        className="h-14 text-lg bg-white/20 text-primary-foreground placeholder:text-primary-foreground/60 border-white/30 focus:ring-accent focus:border-accent"
+                        className="h-14 text-lg bg-background/20 text-foreground placeholder:text-foreground/60 border-border focus:ring-accent focus:border-accent" // Themed input
                       />
                     </FormControl>
-                    <FormMessage className="text-left text-red-400" />
+                    <FormMessage className="text-left text-destructive" /> {/* Use destructive for error messages */}
                   </FormItem>
                 )}
               />
