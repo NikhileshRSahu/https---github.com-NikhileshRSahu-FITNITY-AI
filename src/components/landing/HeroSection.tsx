@@ -17,7 +17,7 @@ export default function HeroSection() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground px-8 py-6 rounded-lg shadow-lg transition-transform duration-300 hover:scale-105 text-lg">
-                <Link href="#pricing">Get Started Free</Link>
+                <Link href="/workout-plan">Get Started Free</Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="border-accent text-accent hover:bg-accent/10 px-8 py-6 rounded-lg shadow-md transition-transform duration-300 hover:scale-105 text-lg">
                 <Link href="#how-it-works">See How It Works</Link>

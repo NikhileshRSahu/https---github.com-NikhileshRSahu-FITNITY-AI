@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,6 +11,7 @@ interface Plan {
   description: string;
   features: string[];
   ctaText: string;
+  ctaLink: string;
   isPopular?: boolean;
 }
 
@@ -26,6 +28,7 @@ const plans: Plan[] = [
       'Email support',
     ],
     ctaText: 'Start for Free',
+    ctaLink: '/workout-plan',
   },
   {
     name: 'Premium AI Coaching',
@@ -41,6 +44,7 @@ const plans: Plan[] = [
       'Priority support',
     ],
     ctaText: 'Start Free Trial',
+    ctaLink: '/workout-plan', // Or a specific trial signup page if available
     isPopular: true,
   },
 ];
@@ -80,7 +84,7 @@ export default function PricingPlansSection() {
               </CardContent>
               <CardFooter>
                 <Button asChild size="lg" className={`w-full ${plan.isPopular ? 'bg-accent hover:bg-accent/90 text-accent-foreground' : 'bg-primary hover:bg-primary/90 text-primary-foreground'} px-8 py-6 rounded-lg shadow-md transition-transform duration-300 hover:scale-105 text-lg`}>
-                  <Link href="#">{plan.ctaText}</Link>
+                  <Link href={plan.ctaLink}>{plan.ctaText}</Link>
                 </Button>
               </CardFooter>
             </Card>

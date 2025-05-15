@@ -1,4 +1,6 @@
+
 import Image from 'next/image';
+import { LineChart, Award, Lightbulb } from 'lucide-react';
 
 export default function ProgressMotivationSection() {
   return (
@@ -12,17 +14,17 @@ export default function ProgressMotivationSection() {
             <p className="text-lg text-primary-foreground/80">
               Our smart progress charts make it easy to see how far you've come. Earn badges, maintain streaks, and stay motivated with gamified features designed to keep you engaged and pushing your limits.
             </p>
-            <ul className="space-y-2 text-primary-foreground/80">
-              <li className="flex items-center gap-2">
-                <CheckIcon className="h-5 w-5 text-accent" />
+            <ul className="space-y-3 text-primary-foreground/80">
+              <li className="flex items-center gap-3">
+                <LineChart className="h-6 w-6 text-accent flex-shrink-0" />
                 <span>Interactive performance dashboards</span>
               </li>
-              <li className="flex items-center gap-2">
-                <CheckIcon className="h-5 w-5 text-accent" />
+              <li className="flex items-center gap-3">
+                <Award className="h-6 w-6 text-accent flex-shrink-0" />
                 <span>Gamification with badges and streaks</span>
               </li>
-              <li className="flex items-center gap-2">
-                <CheckIcon className="h-5 w-5 text-accent" />
+              <li className="flex items-center gap-3">
+                <Lightbulb className="h-6 w-6 text-accent flex-shrink-0" />
                 <span>Personalized motivation and AI insights</span>
               </li>
             </ul>
@@ -40,24 +42,5 @@ export default function ProgressMotivationSection() {
         </div>
       </div>
     </section>
-  );
-}
-
-function CheckIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
   );
 }
