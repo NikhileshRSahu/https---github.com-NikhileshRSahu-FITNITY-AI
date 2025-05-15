@@ -148,15 +148,13 @@ body {
 
 
 /* Styling for inputs and selects within glassmorphic cards to maintain contrast and theme adherence */
-.glassmorphic-card .bg-white\/20, 
 .glassmorphic-card input[type="text"].bg-white\/20, 
 .glassmorphic-card input[type="email"].bg-white\/20, 
 .glassmorphic-card textarea.bg-white\/20,
 .glassmorphic-card .SelectTrigger.bg-white\/20 {
   @apply bg-background/20 border-border text-card-foreground placeholder:text-card-foreground/60;
 }
-.dark .glassmorphic-card .bg-white\/20,
-.dark .glassmorphic-card input[type="text"].bg-white\/20, 
+.dark .glassmorphic-card input[type="text"].bg-white\/20,
 .dark .glassmorphic-card input[type="email"].bg-white\/20, 
 .dark .glassmorphic-card textarea.bg-white\/20,
 .dark .glassmorphic-card .SelectTrigger.bg-white\/20 {
@@ -169,9 +167,9 @@ body {
 .glassmorphic-card .text-primary-foreground\/90,
 .glassmorphic-card .text-primary-foreground\/70,
 .glassmorphic-card .text-primary-foreground\/60 {
-  color: hsl(var(--card-foreground)); /* Default to card-foreground */
+  color: hsl(var(--card-foreground)); /* Default to card-foreground in light mode */
 }
-/* If primary-foreground (white) is specifically desired on a dark card (dark theme), it's fine */
+/* If primary-foreground (white) is specifically desired on a dark card (dark theme), it's fine as card-foreground is light */
 .dark .glassmorphic-card .text-primary-foreground { color: hsl(var(--primary-foreground)); }
 .dark .glassmorphic-card .text-primary-foreground\/80 { color: hsla(var(--primary-foreground), 0.8); }
 .dark .glassmorphic-card .text-primary-foreground\/90 { color: hsla(var(--primary-foreground), 0.9); }
@@ -179,45 +177,38 @@ body {
 .dark .glassmorphic-card .text-primary-foreground\/60 { color: hsla(var(--primary-foreground), 0.6); }
 
 
-/* Header text color should be --foreground */
-header .flex.items-center.gap-2 .text-2xl.font-bold {
-  color: hsl(var(--foreground));
-}
-header nav .text-primary-foreground { /* For nav button text */
-   color: hsl(var(--foreground)) !important; 
-}
-header nav .hover\:text-accent:hover {
-   color: hsl(var(--accent)) !important;
-}
-
-
-/* Footer specific theming, text on bg-black/30 should be light */
-footer.bg-black\/30 {
-  @apply bg-background/80; /* Make footer background also theme aware but darker */
-}
-.dark footer.bg-black\/30 {
-  @apply bg-background/80;
-}
-footer .text-primary-foreground, footer .text-primary-foreground\/80 {
-  color: hsl(var(--foreground)); /* Footer text should be light on its dark background */
-}
-.dark footer .text-primary-foreground, .dark footer .text-primary-foreground\/80 {
-   color: hsl(var(--foreground));
-}
-footer .hover\:text-accent:hover {
-  color: hsl(var(--accent));
-}
-footer .text-2xl.font-bold.text-primary-foreground { /* Footer logo */
-   color: hsl(var(--foreground));
-}
-.dark footer .text-2xl.font-bold.text-primary-foreground {
-   color: hsl(var(--foreground));
-}
-
-/* Ensure form labels inside glassmorphic cards use card-foreground */
-.glassmorphic-card .FormLabel {
+/* Header: The header itself is a glassmorphic card. Its base text color will be card-foreground.
+   Specific elements within it (like the logo text or button text) should use card-foreground or standard button variant colors.
+*/
+header.glassmorphic-card .text-2xl.font-bold { /* For the Fitnity AI logo text */
   color: hsl(var(--card-foreground));
 }
-.dark .glassmorphic-card .FormLabel {
+
+
+/* Footer specific theming */
+footer.bg-background\/80 { /* This class is now applied directly in MainFooter.tsx */
+  /* Background is already theme-aware from the component */
+}
+footer .text-foreground, /* For general text in footer */
+footer .text-foreground\/80 { /* For lighter general text in footer */
+  color: hsl(var(--foreground)); 
+}
+footer .hover\:text-accent:hover { /* For links on hover */
+  color: hsl(var(--accent));
+}
+footer .text-2xl.font-bold.text-foreground { /* For Footer logo, now directly using text-foreground */
+   /* No specific rule needed if it's already text-foreground from component */
+}
+
+
+/* Ensure form labels inside glassmorphic cards use card-foreground */
+.glassmorphic-card .FormLabel,
+.glassmorphic-card label { /* Added general label for non-FormLabel cases like in settings */
+  color: hsl(var(--card-foreground));
+}
+.dark .glassmorphic-card .FormLabel,
+.dark .glassmorphic-card label {
   color: hsl(var(--card-foreground)); 
 }
+
+    

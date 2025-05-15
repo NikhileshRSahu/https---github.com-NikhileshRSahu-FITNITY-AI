@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Moon, Sun, Settings as SettingsIcon, UserCircle, Bell, Globe, ShieldCheck, LogOut } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { Skeleton } from '@/components/ui/skeleton'
 
 export default function SettingsPage() {
   const { theme, setTheme, resolvedTheme } = useTheme()
@@ -24,23 +25,34 @@ export default function SettingsPage() {
     return (
         <div className="container mx-auto px-4 md:px-6 py-12 md:py-20">
           <div className="max-w-3xl mx-auto space-y-8">
-            <Card className="glassmorphic-card animate-pulse">
-              <CardHeader>
-                <div className="h-8 bg-muted rounded w-3/4"></div>
-                <div className="h-4 bg-muted rounded w-1/2 mt-2"></div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="h-10 bg-muted/50 rounded w-full"></div>
-                <div className="h-10 bg-muted/50 rounded w-full"></div>
-              </CardContent>
-            </Card>
-             <Card className="glassmorphic-card animate-pulse">
-              <CardHeader>
-                <div className="h-8 bg-muted rounded w-3/4"></div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                 <div className="h-10 bg-muted/50 rounded w-full"></div>
-              </CardContent>
+            <div className="text-center mb-12">
+                <Skeleton className="mx-auto h-16 w-16 rounded-full mb-4" />
+                <Skeleton className="h-10 w-1/2 mx-auto mb-2" />
+                <Skeleton className="h-6 w-3/4 mx-auto" />
+            </div>
+
+            {[...Array(3)].map((_, i) => (
+              <Card key={i} className="glassmorphic-card">
+                <CardHeader>
+                  <Skeleton className="h-7 w-1/3 mb-1" />
+                  <Skeleton className="h-4 w-2/3" />
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-1">
+                    <Skeleton className="h-4 w-1/4" />
+                    <Skeleton className="h-10 w-full" />
+                  </div>
+                  <div className="space-y-1">
+                    <Skeleton className="h-4 w-1/4" />
+                    <Skeleton className="h-10 w-full" />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+             <Card className="glassmorphic-card">
+                <CardContent className="pt-6">
+                    <Skeleton className="h-12 w-full" />
+                </CardContent>
             </Card>
           </div>
         </div>
@@ -175,3 +187,5 @@ export default function SettingsPage() {
     </div>
   );
 }
+
+    
