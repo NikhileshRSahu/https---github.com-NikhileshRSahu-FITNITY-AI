@@ -1,7 +1,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Zap, BarChart3, BotMessageSquare, Camera, Settings } from 'lucide-react'; // Added Settings
+import { Zap, BarChart3, BotMessageSquare, Camera, UserCircle } from 'lucide-react'; // Changed Settings to UserCircle
 
 export default function MainHeader() {
   return (
@@ -34,10 +34,10 @@ export default function MainHeader() {
             </Link>
           </Button>
           <Button asChild variant="ghost" className="hover:bg-accent/20 hover:text-accent px-2 md:px-3 py-2 rounded-lg text-sm md:text-base">
-            <Link href="/settings">
-              <Settings className="mr-0 md:mr-2 h-5 w-5" />
-              <span className="hidden md:inline">Settings</span>
-              <span className="md:hidden">Settings</span>
+            <Link href="/profile"> {/* Changed href to /profile */}
+              <UserCircle className="mr-0 md:mr-2 h-5 w-5" /> {/* Changed icon */}
+              <span className="hidden md:inline">Profile</span> {/* Changed text */}
+              <span className="md:hidden">Profile</span> {/* Changed text */}
             </Link>
           </Button>
           <Button asChild variant="default" className="bg-accent hover:bg-accent/90 text-accent-foreground ml-2 px-3 md:px-6 py-2 md:py-3 rounded-lg shadow-md transition-transform duration-300 hover:scale-105 text-sm md:text-base">
