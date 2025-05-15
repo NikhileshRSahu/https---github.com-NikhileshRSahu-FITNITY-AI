@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,7 @@ const aiCoachSetupSchema = z.object({
     required_error: 'Please select a language.',
   }),
   fitnessGoal: z.string().min(5, { message: 'Please describe your fitness goal (min. 5 characters).' }),
+  workoutHistorySummary: z.string().optional().describe('A brief summary of recent workouts or current physical status.'),
 });
 
 const chatMessageSchema = z.object({
@@ -50,6 +51,7 @@ export default function AiCoachPage() {
     defaultValues: {
       language: 'English',
       fitnessGoal: '',
+      workoutHistorySummary: '',
     },
   });
 
@@ -107,7 +109,7 @@ export default function AiCoachPage() {
       const input: AiCoachInput = {
         language: coachSettings.language,
         fitnessGoal: coachSettings.fitnessGoal,
-        workoutHistory: 'User is currently interacting with the AI coach. Progress tracking not yet fully integrated.', // Placeholder
+        workoutHistory: coachSettings.workoutHistorySummary || 'No specific recent activity shared by the user.',
         userMessage: data.userMessage,
       };
       const result = await aiCoach(input);
@@ -166,6 +168,25 @@ export default function AiCoachPage() {
                           {...field}
                         />
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={setupForm.control}
+                  name="workoutHistorySummary"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Recent Activity / Current Status (Optional)</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="e.g., Went for a 30 min run yesterday, feeling a bit tired."
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Providing a brief update helps the AI give more relevant advice.
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
