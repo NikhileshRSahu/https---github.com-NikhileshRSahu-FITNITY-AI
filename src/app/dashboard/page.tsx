@@ -78,7 +78,7 @@ export default function DashboardPage() {
                     <div className="flex justify-center items-center space-x-4 mt-4">
                       {payload?.map((entry, index) => (
                         <div key={`item-${index}`} className="flex items-center space-x-1.5 text-sm text-card-foreground/80">
-                          <span style={{ backgroundColor: entry.color }} className="h-2.5 w-2.5 rounded-full inline-block ring-1 ring-offset-1 ring-offset-background ring-current_color_or_transparent"></span>
+                          <span style={{ backgroundColor: entry.color }} className="h-2.5 w-2.5 rounded-full inline-block ring-1 ring-offset-1 ring-offset-background ring-border/50"></span>
                           <span>{entry.value}</span>
                         </div>
                       ))}
@@ -186,3 +186,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    
