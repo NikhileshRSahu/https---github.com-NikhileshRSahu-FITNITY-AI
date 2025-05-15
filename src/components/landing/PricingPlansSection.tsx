@@ -51,7 +51,7 @@ const plans: Plan[] = [
 
 export default function PricingPlansSection() {
   return (
-    <section id="pricing" className="py-16 md:py-24 bg-background/5"> {/* Changed bg-white/5 */}
+    <section id="pricing" className="py-16 md:py-24 bg-background/5">
       <div className="container mx-auto px-4 md:px-6">
         <h2 className="text-3xl font-bold tracking-tight text-center sm:text-4xl md:text-5xl text-foreground mb-12">
           Choose Your Fitnity Plan
@@ -65,9 +65,9 @@ export default function PricingPlansSection() {
                     Most Popular
                   </div>
                 )}
-                <CardTitle className="text-2xl font-semibold">{plan.name}</CardTitle> {/* Uses card-foreground */}
+                <CardTitle className="text-2xl font-semibold">{plan.name}</CardTitle>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-extrabold">{plan.price}</span> {/* Uses card-foreground */}
+                  <span className="text-4xl font-extrabold">{plan.price}</span>
                   <span className="text-sm font-medium text-card-foreground/70">{plan.priceFrequency}</span>
                 </div>
                 <CardDescription className="pt-2 text-card-foreground/80">{plan.description}</CardDescription>

@@ -11,7 +11,7 @@ interface StepCardProps {
 
 function StepCard({ icon: IconComponent, stepNumber, title, description }: StepCardProps) {
   return (
-    <div className="flex flex-col items-center text-center">
+    <div className="flex flex-col items-center text-center p-4 hover:shadow-xl transition-shadow duration-300 rounded-lg">
       <div className="relative mb-4">
         <div className="p-4 bg-accent/20 rounded-full ring-4 ring-accent/30">
           <IconComponent className="h-12 w-12 text-accent" />
@@ -53,13 +53,13 @@ export default function HowItWorksSection() {
         </h2>
         <div className="grid gap-12 md:grid-cols-3 items-start relative">
           {/* Dashed line connector for desktop */}
-          <div className="hidden md:block absolute top-1/2 left-0 right-0 h-0.5 -translate-y-1/2">
+          <div className="hidden md:block absolute top-[calc(2.5rem+1rem)] left-0 right-0 h-0.5 -translate-y-1/2"> {/* Adjusted top positioning */}
              <svg width="100%" height="2px" className="opacity-30">
-                <line x1="0" y1="1" x2="100%" y2="1" strokeDasharray="10,10" stroke="hsl(var(--foreground))" strokeWidth="2"/> {/* Changed stroke to themed foreground */}
+                <line x1="0" y1="1" x2="100%" y2="1" strokeDasharray="10,10" stroke="hsl(var(--foreground))" strokeWidth="2"/>
             </svg>
           </div>
           {steps.map((step, index) => (
-            <div key={step.title} className="relative z-10"> {/* Ensure cards are above the line */}
+            <div key={step.title} className="relative z-10">
                  <StepCard {...step} stepNumber={index + 1} />
             </div>
           ))}

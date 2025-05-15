@@ -3,8 +3,8 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
-import { LineChart, CartesianGrid, XAxis, YAxis, Line, ResponsiveContainer, Legend, BarChart, Bar } from 'recharts';
-import { Award, Flame, HeartPulse, LineChart as LineChartIcon, Scaling, Star, TrendingUp, Users, Droplets } from 'lucide-react';
+import { LineChart, CartesianGrid, XAxis, YAxis, Line, ResponsiveContainer, Legend } from 'recharts';
+import { Award, Flame, HeartPulse, TrendingUp, Scaling, Star, Droplets } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
 const workoutData = [
@@ -28,25 +28,25 @@ const chartConfig: ChartConfig = {
 };
 
 const bodyMeasurementData = {
-  weight: { value: '72.5', unit: 'kg', trend: 'down' },
-  bodyFat: { value: '18', unit: '%', trend: 'down' },
-  muscleMass: { value: '35', unit: 'kg', trend: 'up' },
+  weight: { value: '72.1', unit: 'kg', trend: 'down' }, // Slightly varied
+  bodyFat: { value: '17.8', unit: '%', trend: 'down' }, // Slightly varied
+  muscleMass: { value: '35.2', unit: 'kg', trend: 'up' }, // Slightly varied
 };
 
 const streaksAndBadges = {
-  currentStreak: 12, // days
-  totalBadges: 5,
+  currentStreak: 14, // Varied
+  totalBadges: 6,    // Varied
   recentBadges: [
-    { name: '7-Day Streak', icon: Flame, date: 'July 20' },
-    { name: 'Morning Mover', icon: Star, date: 'July 18' },
-    { name: 'Workout Warrior', icon: Award, date: 'July 15' },
+    { name: 'Consistent Challenger', icon: Flame, date: 'July 23' },
+    { name: 'Morning Mover Pro', icon: Star, date: 'July 21' },
+    { name: 'Workout Warrior Elite', icon: Award, date: 'July 19' },
   ],
 };
 
 const healthSnapshotData = {
-  sleep: { value: '7h 30m', avgLastWeek: '7h 15m' },
-  waterIntake: { current: 2.5, goal: 3, unit: 'L' },
-  steps: { current: 8500, goal: 10000 },
+  sleep: { value: '7h 45m', avgLastWeek: '7h 20m' }, // Varied
+  waterIntake: { current: 2.8, goal: 3, unit: 'L' }, // Varied
+  steps: { current: 9200, goal: 10000 }, // Varied
 };
 
 export default function DashboardPage() {
@@ -56,7 +56,7 @@ export default function DashboardPage() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Workout Consistency Card */}
-        <Card className="glassmorphic-card lg:col-span-2">
+        <Card className="glassmorphic-card lg:col-span-2 hover:shadow-2xl transition-shadow duration-300">
           <CardHeader>
             <CardTitle className="flex items-center text-xl">
               <TrendingUp className="mr-3 h-6 w-6 text-accent" /> Workout Consistency
@@ -75,10 +75,10 @@ export default function DashboardPage() {
                     content={<ChartTooltipContent indicator="line" labelClassName="text-sm" className="glassmorphic-card !border-border/50" />}
                   />
                    <Legend content={({ payload }) => (
-                    <div className="flex justify-center space-x-4 mt-4">
+                    <div className="flex justify-center items-center space-x-4 mt-4">
                       {payload?.map((entry, index) => (
-                        <div key={`item-${index}`} className="flex items-center space-x-1 text-sm text-card-foreground/80">
-                          <span style={{ backgroundColor: entry.color, width: '10px', height: '10px', display: 'inline-block', borderRadius: '2px' }}></span>
+                        <div key={`item-${index}`} className="flex items-center space-x-1.5 text-sm text-card-foreground/80">
+                          <span style={{ backgroundColor: entry.color }} className="h-2.5 w-2.5 rounded-full inline-block ring-1 ring-offset-1 ring-offset-background ring-current_color_or_transparent"></span>
                           <span>{entry.value}</span>
                         </div>
                       ))}
@@ -93,7 +93,7 @@ export default function DashboardPage() {
         </Card>
 
         {/* Body Measurements Card */}
-        <Card className="glassmorphic-card">
+        <Card className="glassmorphic-card hover:shadow-2xl transition-shadow duration-300">
           <CardHeader>
             <CardTitle className="flex items-center text-xl">
               <Scaling className="mr-3 h-6 w-6 text-accent" /> Body Measurements
@@ -117,7 +117,7 @@ export default function DashboardPage() {
         </Card>
 
         {/* Streaks & Achievements Card */}
-        <Card className="glassmorphic-card">
+        <Card className="glassmorphic-card hover:shadow-2xl transition-shadow duration-300">
           <CardHeader>
             <CardTitle className="flex items-center text-xl">
               <Award className="mr-3 h-6 w-6 text-accent" /> Streaks & Achievements
@@ -137,7 +137,7 @@ export default function DashboardPage() {
               <h4 className="font-medium text-card-foreground/90 mb-2">Recent Badges:</h4>
               <ul className="space-y-2">
                 {streaksAndBadges.recentBadges.map((badge, idx) => (
-                  <li key={idx} className="flex items-center gap-3 p-2 rounded-md bg-background/5">
+                  <li key={idx} className="flex items-center gap-3 p-2 rounded-md bg-background/5 hover:bg-background/10 transition-colors">
                     <badge.icon className="h-6 w-6 text-accent" />
                     <div>
                       <p className="font-medium text-sm text-card-foreground">{badge.name}</p>
@@ -151,33 +151,33 @@ export default function DashboardPage() {
         </Card>
 
         {/* Health Snapshot Card */}
-        <Card className="glassmorphic-card lg:col-span-2">
+        <Card className="glassmorphic-card lg:col-span-2 hover:shadow-2xl transition-shadow duration-300">
           <CardHeader>
             <CardTitle className="flex items-center text-xl">
               <HeartPulse className="mr-3 h-6 w-6 text-accent" /> Daily Health Snapshot
             </CardTitle>
             <CardDescription>Your recent sleep, hydration and activity.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="p-3 rounded-lg bg-background/10 text-center">
+                <div className="p-4 rounded-lg bg-background/10 text-center">
                     <p className="text-sm font-medium text-card-foreground/80 mb-1">Avg. Sleep (Last Wk)</p>
                     <p className="text-2xl font-semibold text-accent">{healthSnapshotData.sleep.avgLastWeek}</p>
                 </div>
-                <div className="p-3 rounded-lg bg-background/10 text-center">
+                <div className="p-4 rounded-lg bg-background/10 text-center">
                     <p className="text-sm font-medium text-card-foreground/80 mb-1">Today's Water Intake</p>
                     <p className="text-2xl font-semibold text-accent">{healthSnapshotData.waterIntake.current}{healthSnapshotData.waterIntake.unit} <span className="text-base text-card-foreground/70">/ {healthSnapshotData.waterIntake.goal}{healthSnapshotData.waterIntake.unit}</span></p>
                     <Progress value={(healthSnapshotData.waterIntake.current / healthSnapshotData.waterIntake.goal) * 100} className="h-2 mt-2 bg-accent/20 [&>div]:bg-accent" />
                 </div>
-                 <div className="p-3 rounded-lg bg-background/10 text-center">
+                 <div className="p-4 rounded-lg bg-background/10 text-center">
                     <p className="text-sm font-medium text-card-foreground/80 mb-1">Today's Steps</p>
                     <p className="text-2xl font-semibold text-accent">{healthSnapshotData.steps.current.toLocaleString()} <span className="text-base text-card-foreground/70">/ {healthSnapshotData.steps.goal.toLocaleString()}</span></p>
                      <Progress value={(healthSnapshotData.steps.current / healthSnapshotData.steps.goal) * 100} className="h-2 mt-2 bg-accent/20 [&>div]:bg-accent" />
                 </div>
             </div>
-            <div className="mt-6 p-4 rounded-lg bg-background/10">
+            <div className="mt-2 p-4 rounded-lg bg-background/10">
                 <h4 className="font-medium text-card-foreground mb-2 flex items-center"><Droplets className="mr-2 h-5 w-5 text-accent/80"/> Hydration Tip:</h4>
-                <p className="text-sm text-card-foreground/80 italic">Carry a water bottle with you and sip throughout the day. Aim for consistent intake rather than large amounts at once.</p>
+                <p className="text-sm text-card-foreground/80 italic">Carry a reusable water bottle with you and sip throughout the day. Aim for consistent intake rather than large amounts at once for optimal hydration.</p>
             </div>
           </CardContent>
         </Card>

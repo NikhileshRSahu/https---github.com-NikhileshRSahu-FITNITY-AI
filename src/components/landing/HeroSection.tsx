@@ -27,11 +27,12 @@ export default function HeroSection() {
           <div className="flex justify-center">
             <Image
               src="https://placehold.co/600x400.png"
-              alt="AI Workout Form Analysis"
+              alt="Athlete performing exercise with AI form analysis overlay"
               width={600}
               height={400}
               className="rounded-xl shadow-2xl object-cover"
               data-ai-hint="fitness animation"
+              priority
             />
           </div>
         </div>
@@ -39,4 +40,3 @@ export default function HeroSection() {
     </section>
   );
 }
-

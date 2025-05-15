@@ -57,10 +57,10 @@ export default function NewsletterSignupSection() {
                         type="email"
                         placeholder="Enter your email"
                         {...field}
-                        className="h-14 text-lg bg-background/20 text-foreground placeholder:text-foreground/60 border-border focus:ring-accent focus:border-accent" // Themed input
+                        className="h-14 text-lg bg-background/20 text-foreground placeholder:text-foreground/60 border-border focus:ring-accent focus:border-accent"
                       />
                     </FormControl>
-                    <FormMessage className="text-left text-destructive" /> {/* Use destructive for error messages */}
+                    <FormMessage className="text-left text-destructive" />
                   </FormItem>
                 )}
               />
