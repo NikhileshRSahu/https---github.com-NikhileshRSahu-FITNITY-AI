@@ -64,7 +64,7 @@ export default function AiCoachPage() {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, isLoading]); // Added isLoading to dependencies to scroll when typing indicator appears
 
   async function onSetupSubmit(data: AiCoachSetupValues) {
     setCoachSettings(data);
@@ -214,9 +214,18 @@ export default function AiCoachPage() {
               <ChatMessage key={msg.id} message={msg} />
             ))}
             {isLoading && (
-              <div className="flex justify-start items-center space-x-2">
-                  <Bot className="h-8 w-8 text-accent p-1 rounded-full bg-primary-foreground/20"/>
-                  <Loader2 className="h-5 w-5 text-primary-foreground animate-spin" />
+              <div className="flex items-end gap-2 justify-start">
+                <div className="flex-shrink-0 p-1.5 rounded-full bg-accent/80 text-accent-foreground">
+                  <Bot className="h-5 w-5" />
+                </div>
+                <div
+                  className="max-w-[70%] p-3 rounded-xl shadow bg-primary-foreground/20 text-primary-foreground rounded-bl-none"
+                >
+                  <div className="flex items-center space-x-2">
+                    <Loader2 className="h-4 w-4 text-primary-foreground animate-spin" />
+                    <span className="text-sm italic">AI is typing...</span>
+                  </div>
+                </div>
               </div>
             )}
           </CardContent>
