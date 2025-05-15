@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -17,16 +18,16 @@ body {
     --popover: 0 0% 100%;
     --popover-foreground: 210 20% 11%;
 
-    --primary: 180 100% 25%; /* Teal */
+    --primary: 180 100% 25%; /* Teal (#008080) */
     --primary-foreground: 0 0% 100%; /* White */
 
-    --secondary: 210 17% 93%; /* Light Gray */
+    --secondary: 0 0% 94%; /* Light Gray (#F0F0F0) */
     --secondary-foreground: 210 20% 11%; /* Dark text on secondary */
 
     --muted: 210 17% 90%; /* Muted gray */
     --muted-foreground: 210 17% 45%; /* Text on muted backgrounds */
 
-    --accent: 180 100% 50%; /* Bright Cyan */
+    --accent: 180 100% 50%; /* Bright Cyan (#00FFFF) */
     --accent-foreground: 180 100% 10%; /* Dark Teal/Black for text on accent */
 
     --destructive: 0 84.2% 60.2%;
@@ -68,8 +69,8 @@ body {
     --primary: 180 100% 35%; /* Brighter Teal for dark mode */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 20% 18%; /* Darker gray for dark mode secondary */
-    --secondary-foreground: 210 20% 98%;
+    --secondary: 0 0% 18%; /* Neutral Dark Gray (counterpart to #F0F0F0) */
+    --secondary-foreground: 210 20% 98%; /* Light text on dark secondary */
 
     --muted: 210 20% 20%;
     --muted-foreground: 210 20% 65%;
