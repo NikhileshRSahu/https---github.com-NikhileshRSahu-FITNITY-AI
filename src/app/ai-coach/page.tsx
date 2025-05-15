@@ -64,7 +64,7 @@ export default function AiCoachPage() {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
-  }, [messages, isLoading]); // Added isLoading to dependencies to scroll when typing indicator appears
+  }, [messages, isLoading]);
 
   async function onSetupSubmit(data: AiCoachSetupValues) {
     setCoachSettings(data);
@@ -73,7 +73,7 @@ export default function AiCoachPage() {
       {
         id: 'initial-greet',
         sender: 'ai',
-        text: `Hi there! I'm your AI Coach, ready to help you with your goal: "${data.fitnessGoal}". How can I assist you today in ${data.language}?`,
+        text: `Hello! I'm your Fitnity AI Coach, excited to help you with your goal: "${data.fitnessGoal}". We'll be communicating in ${data.language}. How can I assist you today?`,
         timestamp: new Date(),
       }
     ]);

@@ -15,30 +15,30 @@ interface Testimonial {
 
 const testimonials: Testimonial[] = [
   {
-    name: 'Alex R.',
+    name: 'Rohan S.',
     role: 'Marathon Runner',
     avatarSrc: 'https://placehold.co/100x100.png',
-    avatarFallback: 'AR',
+    avatarFallback: 'RS',
     quote: "The personalized endurance plans from Fitnity AI took my marathon training to a new level. The AI Coach helped me push through tough workouts!",
     rating: 5,
     avatarHint: 'runner portrait',
   },
   {
-    name: 'Brenda C.',
+    name: 'Priya K.',
     role: 'New Mom',
     avatarSrc: 'https://placehold.co/100x100.png',
-    avatarFallback: 'BC',
+    avatarFallback: 'PK',
     quote: "Getting back into fitness post-partum felt daunting. Fitnity's gentle progression and real-time form checks for at-home workouts made it safe and effective.",
     rating: 5,
     avatarHint: 'woman smiling',
   },
   {
-    name: 'Carlos G.',
+    name: 'Arjun M.',
     role: 'Strength Trainee',
     avatarSrc: 'https://placehold.co/100x100.png',
-    avatarFallback: 'CG',
+    avatarFallback: 'AM',
     quote: "I was stuck in a plateau for months. The AI's strength-focused routines and form analysis helped me break through and finally see gains again. Highly recommend!",
-    rating: 4,
+    rating: 4, // Kept one 4-star for realism
     avatarHint: 'man athletic',
   },
 ];
