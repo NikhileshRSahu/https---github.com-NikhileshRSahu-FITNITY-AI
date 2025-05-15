@@ -28,14 +28,14 @@ const chartConfig: ChartConfig = {
 };
 
 const bodyMeasurementData = {
-  weight: { value: '72.1', unit: 'kg', trend: 'down' }, // Slightly varied
-  bodyFat: { value: '17.8', unit: '%', trend: 'down' }, // Slightly varied
-  muscleMass: { value: '35.2', unit: 'kg', trend: 'up' }, // Slightly varied
+  weight: { value: '72.1', unit: 'kg', trend: 'down' },
+  bodyFat: { value: '17.8', unit: '%', trend: 'down' },
+  muscleMass: { value: '35.2', unit: 'kg', trend: 'up' },
 };
 
 const streaksAndBadges = {
-  currentStreak: 14, // Varied
-  totalBadges: 6,    // Varied
+  currentStreak: 14,
+  totalBadges: 6,
   recentBadges: [
     { name: 'Consistent Challenger', icon: Flame, date: 'July 23' },
     { name: 'Morning Mover Pro', icon: Star, date: 'July 21' },
@@ -44,9 +44,9 @@ const streaksAndBadges = {
 };
 
 const healthSnapshotData = {
-  sleep: { value: '7h 45m', avgLastWeek: '7h 20m' }, // Varied
-  waterIntake: { current: 2.8, goal: 3, unit: 'L' }, // Varied
-  steps: { current: 9200, goal: 10000 }, // Varied
+  sleep: { value: '7h 45m', avgLastWeek: '7h 20m' },
+  waterIntake: { current: 2.8, goal: 3, unit: 'L' },
+  steps: { current: 9200, goal: 10000 },
 };
 
 export default function DashboardPage() {

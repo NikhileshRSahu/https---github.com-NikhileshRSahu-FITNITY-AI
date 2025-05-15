@@ -268,7 +268,7 @@ export default function AiCoachPage() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" disabled={isLoading} size="icon" className="bg-accent hover:bg-accent/90 text-accent-foreground flex-shrink-0 transition-colors duration-200 ease-in-out">
+                <Button type="submit" disabled={isLoading} size="icon" className="bg-accent hover:bg-accent/90 text-accent-foreground flex-shrink-0 transition-colors duration-200 ease-in-out active:scale-95">
                   {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                 </Button>
               </form>
