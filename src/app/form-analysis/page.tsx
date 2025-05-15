@@ -43,7 +43,7 @@ export default function FormAnalysisPage() {
         toast({
           variant: 'destructive',
           title: 'Camera Not Supported',
-          description: 'Your browser does not support camera access. Please try a different browser.',
+          description: 'Your browser does not support camera access. Please try a different browser or device.',
         });
         setHasCameraPermission(false);
         return;
@@ -60,7 +60,7 @@ export default function FormAnalysisPage() {
         toast({
           variant: 'destructive',
           title: 'Camera Access Denied',
-          description: 'Please enable camera permissions in your browser settings to use this feature.',
+          description: 'Fitnity AI needs access to your camera for form analysis. Please enable camera permissions in your browser settings and refresh the page.',
         });
       }
     };
@@ -80,7 +80,7 @@ export default function FormAnalysisPage() {
       toast({
         variant: 'destructive',
         title: 'Camera Not Ready',
-        description: 'Camera is not accessible. Please ensure permissions are granted and the camera is working.',
+        description: 'Camera is not accessible. Please ensure permissions are granted and the camera is working properly.',
       });
       setAnalysisStatus('error');
       return;
@@ -90,7 +90,18 @@ export default function FormAnalysisPage() {
         toast({
             variant: 'destructive',
             title: 'Video Stream Not Ready',
-            description: 'The video stream is not ready yet. Please wait a moment and try again.',
+            description: 'The video stream is not fully loaded yet. Please wait a moment and try again.',
+        });
+        setAnalysisStatus('error');
+        return;
+    }
+
+    // Ensure video dimensions are available and valid
+    if (videoRef.current.videoWidth === 0 || videoRef.current.videoHeight === 0) {
+        toast({ 
+            variant: 'destructive', 
+            title: 'Video Error', 
+            description: 'Could not get video dimensions. The camera might still be initializing or there could be an issue with the video feed. Please wait a moment and try again.'
         });
         setAnalysisStatus('error');
         return;
@@ -101,13 +112,6 @@ export default function FormAnalysisPage() {
     setAnalysisResult(null);
 
     const canvas = document.createElement('canvas');
-    // Ensure video dimensions are available
-    if (videoRef.current.videoWidth === 0 || videoRef.current.videoHeight === 0) {
-        toast({ variant: 'destructive', title: 'Video Error', description: 'Could not get video dimensions. Please try again.'});
-        setIsLoading(false);
-        setAnalysisStatus('error');
-        return;
-    }
     canvas.width = videoRef.current.videoWidth;
     canvas.height = videoRef.current.videoHeight;
     const ctx = canvas.getContext('2d');
@@ -116,7 +120,7 @@ export default function FormAnalysisPage() {
       toast({
         variant: 'destructive',
         title: 'Processing Error',
-        description: 'Could not process video frame.',
+        description: 'Could not create a canvas context to process the video frame. Please try again or use a different browser.',
       });
       setIsLoading(false);
       setAnalysisStatus('error');
@@ -153,8 +157,15 @@ export default function FormAnalysisPage() {
       setAnalysisStatus('error');
     } finally {
       setIsLoading(false);
+      // Ensure status is reset to idle if it wasn't 'done' or already 'error'
       if (analysisStatus !== 'done' && analysisStatus !== 'error') {
-        setAnalysisStatus('idle');
+         // If loading was set to true, but status did not reach 'done' or 'error'
+         // it implies an early exit or an issue not caught by specific error handling.
+         // We should ensure isLoading is false and status is not stuck.
+         // However, if analysisStatus was already set to 'error' by a specific check, we keep it.
+        if (isLoading && analysisStatus !== 'error') {
+             setAnalysisStatus('idle');
+        }
       }
     }
   }
@@ -193,9 +204,9 @@ export default function FormAnalysisPage() {
           {hasCameraPermission === false && (
             <Alert variant="destructive">
               <AlertTriangle className="h-4 w-4" />
-              <AlertTitle>Camera Access Required</AlertTitle>
+              <AlertTitle>Camera Access Denied or Unavailable</AlertTitle>
               <AlertDescription>
-                Fitnity AI needs access to your camera for form analysis. Please enable camera permissions in your browser settings and refresh the page.
+                Fitnity AI needs access to your camera for form analysis. Please enable camera permissions in your browser settings and refresh the page. If the issue persists, your browser might not support camera access or a camera might not be available.
               </AlertDescription>
             </Alert>
           )}
@@ -203,9 +214,9 @@ export default function FormAnalysisPage() {
           {hasCameraPermission === null && (
              <Alert>
               <Loader2 className="h-4 w-4 animate-spin" />
-              <AlertTitle>Initializing Camera</AlertTitle>
+              <AlertTitle>Initializing Camera...</AlertTitle>
               <AlertDescription>
-                Please wait while we access your camera. You may need to grant permission in your browser. If it takes too long, ensure your camera is not in use by another application and refresh the page.
+                Please wait while we access your camera. You may need to grant permission in your browser. If this message persists, ensure your camera is connected and not in use by another application, then try refreshing the page.
               </AlertDescription>
             </Alert>
           )}
@@ -230,7 +241,7 @@ export default function FormAnalysisPage() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" disabled={isLoading || !hasCameraPermission} size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg">
+                <Button type="submit" disabled={isLoading || !hasCameraPermission || hasCameraPermission === null} size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg">
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {getButtonText()}
                 </Button>
@@ -263,3 +274,4 @@ export default function FormAnalysisPage() {
     </div>
   );
 }
+
