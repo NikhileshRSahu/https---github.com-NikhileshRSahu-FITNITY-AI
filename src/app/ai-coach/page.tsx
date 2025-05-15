@@ -146,8 +146,8 @@ export default function AiCoachPage() {
       {!isCoachReady ? (
         <Card className="max-w-lg mx-auto glassmorphic-card">
           <CardHeader>
-            <CardTitle className="text-3xl font-bold text-primary-foreground">Setup AI Coach</CardTitle>
-            <CardDescription className="text-primary-foreground/80">
+            <CardTitle className="text-3xl font-bold">Setup AI Coach</CardTitle>
+            <CardDescription>
               Tell us a bit about your goals to personalize your AI Coach experience.
             </CardDescription>
           </CardHeader>
@@ -159,11 +159,10 @@ export default function AiCoachPage() {
                   name="fitnessGoal"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-primary-foreground">Primary Fitness Goal</FormLabel>
+                      <FormLabel>Primary Fitness Goal</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="e.g., Improve stamina, build upper body strength"
-                          className="bg-white/20 text-primary-foreground placeholder:text-primary-foreground/60 border-white/30 focus:ring-accent focus:border-accent"
                           {...field}
                         />
                       </FormControl>
@@ -176,10 +175,10 @@ export default function AiCoachPage() {
                   name="language"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-primary-foreground">Preferred Language</FormLabel>
+                      <FormLabel>Preferred Language</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger className="bg-white/20 text-primary-foreground border-white/30 focus:ring-accent focus:border-accent">
+                          <SelectTrigger>
                             <SelectValue placeholder="Select language" />
                           </SelectTrigger>
                         </FormControl>
@@ -202,10 +201,10 @@ export default function AiCoachPage() {
       ) : (
         <Card className="max-w-2xl mx-auto glassmorphic-card flex flex-col h-[70vh] md:h-[80vh]">
           <CardHeader className="border-b border-white/20">
-            <CardTitle className="text-2xl font-bold text-primary-foreground flex items-center">
+            <CardTitle className="text-2xl font-bold flex items-center">
               <Bot className="mr-2 h-6 w-6 text-accent" /> AI Fitness Coach
             </CardTitle>
-            <CardDescription className="text-primary-foreground/80">
+            <CardDescription>
               Your goal: {coachSettings?.fitnessGoal} | Language: {coachSettings?.language}
             </CardDescription>
           </CardHeader>
@@ -219,10 +218,10 @@ export default function AiCoachPage() {
                   <Bot className="h-5 w-5" />
                 </div>
                 <div
-                  className="max-w-[70%] p-3 rounded-xl shadow bg-primary-foreground/20 text-primary-foreground rounded-bl-none"
+                  className="max-w-[70%] p-3 rounded-xl shadow bg-primary-foreground/20 text-card-foreground rounded-bl-none"
                 >
                   <div className="flex items-center space-x-2">
-                    <Loader2 className="h-4 w-4 text-primary-foreground animate-spin" />
+                    <Loader2 className="h-4 w-4 animate-spin" />
                     <span className="text-sm italic">AI is typing...</span>
                   </div>
                 </div>
@@ -240,7 +239,6 @@ export default function AiCoachPage() {
                       <FormControl>
                         <Input
                           placeholder="Ask your AI coach anything..."
-                          className="bg-white/20 text-primary-foreground placeholder:text-primary-foreground/60 border-white/30 focus:ring-accent focus:border-accent"
                           {...field}
                           autoComplete="off"
                         />

@@ -189,15 +189,15 @@ export default function FormAnalysisPage() {
     <div className="container mx-auto px-4 md:px-6 py-12 md:py-20">
       <Card className="max-w-2xl mx-auto glassmorphic-card">
         <CardHeader>
-          <CardTitle className="text-3xl font-bold text-primary-foreground flex items-center">
+          <CardTitle className="text-3xl font-bold flex items-center">
             <Camera className="mr-3 h-8 w-8 text-accent" /> Real-time Form Analysis
           </CardTitle>
-          <CardDescription className="text-primary-foreground/80">
+          <CardDescription>
             Let our AI check your exercise form. Enter the exercise name and click analyze. Ensure good lighting and that your full body is visible for best results.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="aspect-video bg-black/30 rounded-md overflow-hidden border border-white/20">
+          <div className="aspect-video bg-background/20 rounded-md overflow-hidden border border-white/20">
             <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
           </div>
 
@@ -229,11 +229,10 @@ export default function FormAnalysisPage() {
                   name="exerciseName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-primary-foreground">Exercise Name</FormLabel>
+                      <FormLabel>Exercise Name</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="e.g., Squat, Push-up, Lunge"
-                          className="bg-white/20 text-primary-foreground placeholder:text-primary-foreground/60 border-white/30 focus:ring-accent focus:border-accent"
                           {...field}
                         />
                       </FormControl>
@@ -254,12 +253,12 @@ export default function FormAnalysisPage() {
       {analysisResult && analysisStatus === 'done' && (
         <Card className="max-w-2xl mx-auto mt-12 glassmorphic-card">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold text-primary-foreground">Form Analysis Results</CardTitle>
+            <CardTitle className="text-2xl font-bold">Form Analysis Results</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <h4 className="font-semibold text-primary-foreground/90 mb-1">Feedback for {form.getValues('exerciseName')}:</h4>
-              <p className="text-primary-foreground/80 whitespace-pre-wrap p-3 bg-black/20 rounded-md">{analysisResult.feedback}</p>
+              <h4 className="font-semibold text-card-foreground/90 mb-1">Feedback for {form.getValues('exerciseName')}:</h4>
+              <p className="text-card-foreground/80 whitespace-pre-wrap p-3 bg-background/20 rounded-md">{analysisResult.feedback}</p>
             </div>
             {analysisResult.injuryPreventionAlert && (
               <Alert variant="destructive">
@@ -274,4 +273,3 @@ export default function FormAnalysisPage() {
     </div>
   );
 }
-

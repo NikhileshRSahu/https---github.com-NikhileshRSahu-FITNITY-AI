@@ -148,24 +148,21 @@ body {
 
 
 /* Styling for inputs and selects within glassmorphic cards to maintain contrast and theme adherence */
-.glassmorphic-card input[type="text"].bg-white\/20, 
-.glassmorphic-card input[type="email"].bg-white\/20, 
-.glassmorphic-card textarea.bg-white\/20,
-.glassmorphic-card .SelectTrigger.bg-white\/20,
-.glassmorphic-card input[type="text"].bg-background\/50,
-.glassmorphic-card input[type="email"].bg-background\/50 {
-  @apply bg-background/20 border-border text-card-foreground placeholder:text-card-foreground/60;
+.glassmorphic-card input[type="text"], 
+.glassmorphic-card input[type="email"], 
+.glassmorphic-card textarea,
+.glassmorphic-card .SelectTrigger { /* Targets ShadCN SelectTrigger by its default class */
+  @apply bg-background/20 border-border text-card-foreground placeholder:text-card-foreground/60 focus:ring-accent focus:border-accent;
 }
-.dark .glassmorphic-card input[type="text"].bg-white\/20,
-.dark .glassmorphic-card input[type="email"].bg-white\/20, 
-.dark .glassmorphic-card textarea.bg-white\/20,
-.dark .glassmorphic-card .SelectTrigger.bg-white\/20,
-.dark .glassmorphic-card input[type="text"].bg-background\/50,
-.dark .glassmorphic-card input[type="email"].bg-background\/50 {
-   @apply bg-background/20 border-border text-card-foreground placeholder:text-card-foreground/60;
+.dark .glassmorphic-card input[type="text"],
+.dark .glassmorphic-card input[type="email"], 
+.dark .glassmorphic-card textarea,
+.dark .glassmorphic-card .SelectTrigger {
+   @apply bg-background/20 border-border text-card-foreground placeholder:text-card-foreground/60 focus:ring-accent focus:border-accent;
 }
 
 /* General text color corrections based on context */
+/* For text that might be explicitly text-primary-foreground (white) inside a light-themed glassmorphic card */
 .glassmorphic-card .text-primary-foreground,
 .glassmorphic-card .text-primary-foreground\/80,
 .glassmorphic-card .text-primary-foreground\/90,

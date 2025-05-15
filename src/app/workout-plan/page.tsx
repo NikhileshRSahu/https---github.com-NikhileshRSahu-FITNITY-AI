@@ -72,8 +72,8 @@ export default function WorkoutPlanPage() {
     <div className="container mx-auto px-4 md:px-6 py-12 md:py-20">
       <Card className="max-w-2xl mx-auto glassmorphic-card">
         <CardHeader>
-          <CardTitle className="text-3xl font-bold text-primary-foreground">Generate Your Workout Plan</CardTitle>
-          <CardDescription className="text-primary-foreground/80">
+          <CardTitle className="text-3xl font-bold">Generate Your Workout Plan</CardTitle>
+          <CardDescription>
             Fill in your details below, and our AI will create a personalized workout plan for you.
           </CardDescription>
         </CardHeader>
@@ -85,11 +85,10 @@ export default function WorkoutPlanPage() {
                 name="fitnessGoals"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-primary-foreground">Fitness Goals</FormLabel>
+                    <FormLabel>Fitness Goals</FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="e.g., lose 10 pounds, build muscle in arms and chest, run a 5k"
-                        className="bg-white/20 text-primary-foreground placeholder:text-primary-foreground/60 border-white/30 focus:ring-accent focus:border-accent"
                         {...field}
                       />
                     </FormControl>
@@ -102,11 +101,10 @@ export default function WorkoutPlanPage() {
                 name="workoutPreferences"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-primary-foreground">Workout Preferences</FormLabel>
+                    <FormLabel>Workout Preferences</FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="e.g., 30-minute home workouts, no equipment, enjoy HIIT and yoga"
-                        className="bg-white/20 text-primary-foreground placeholder:text-primary-foreground/60 border-white/30 focus:ring-accent focus:border-accent"
                         {...field}
                       />
                     </FormControl>
@@ -119,10 +117,10 @@ export default function WorkoutPlanPage() {
                 name="currentFitnessLevel"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-primary-foreground">Current Fitness Level</FormLabel>
+                    <FormLabel>Current Fitness Level</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger className="bg-white/20 text-primary-foreground border-white/30 focus:ring-accent focus:border-accent">
+                        <SelectTrigger>
                           <SelectValue placeholder="Select your fitness level" />
                         </SelectTrigger>
                       </FormControl>
@@ -148,10 +146,10 @@ export default function WorkoutPlanPage() {
       {workoutPlanResult && (
         <Card className="max-w-2xl mx-auto mt-12 glassmorphic-card">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold text-primary-foreground">Your Personalized Workout Plan</CardTitle>
+            <CardTitle className="text-2xl font-bold">Your Personalized Workout Plan</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="prose prose-invert max-w-none text-primary-foreground/90 whitespace-pre-wrap p-4 bg-black/20 rounded-md">
+            <div className="prose max-w-none text-card-foreground/90 whitespace-pre-wrap p-4 bg-background/20 rounded-md">
               {workoutPlanResult}
             </div>
           </CardContent>
