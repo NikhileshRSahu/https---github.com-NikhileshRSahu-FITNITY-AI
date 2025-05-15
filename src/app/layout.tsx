@@ -5,6 +5,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import MainHeader from '@/components/layout/MainHeader';
 import MainFooter from '@/components/layout/MainFooter';
+import { ThemeProvider } from '@/components/theme-provider';
 
 const geistSans = GeistSans;
 const geistMono = GeistMono;
@@ -20,14 +21,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased gradient-body-bg min-h-screen flex flex-col`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
       >
-        <MainHeader />
-        <main className="flex-grow">{children}</main>
-        <MainFooter />
-        <Toaster />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <MainHeader />
+          <main className="flex-grow">{children}</main>
+          <MainFooter />
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );
