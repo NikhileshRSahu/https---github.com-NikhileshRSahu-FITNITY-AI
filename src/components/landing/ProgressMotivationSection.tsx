@@ -1,13 +1,12 @@
 
-import Image from 'next/image';
 import { LineChart, Award, Lightbulb } from 'lucide-react';
 
 export default function ProgressMotivationSection() {
   return (
-    <section id="progress" className="py-16 md:py-24 bg-background/5"> {/* Changed bg-white/5 to bg-background/5 */}
+    <section id="progress" className="py-16 md:py-24 bg-background/5">
       <div className="container mx-auto px-4 md:px-6">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-6">
+          <div className="space-y-6 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl text-foreground">
               Track. Improve. Achieve.
             </h2>
@@ -29,14 +28,15 @@ export default function ProgressMotivationSection() {
               </li>
             </ul>
           </div>
-          <div className="flex justify-center">
-            <Image
-              src="https://placehold.co/800x500.png"
-              alt="Dashboard Preview"
-              width={800}
-              height={500}
-              className="rounded-xl shadow-2xl object-cover"
-              data-ai-hint="dashboard fitness"
+          <div className="flex justify-center rounded-xl shadow-2xl overflow-hidden animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+            <video
+              src="/vedios/48420-453832153_medium.mp4" // Path to your second video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover aspect-[16/10] md:aspect-[800/500]" // Maintain aspect ratio
+              poster="https://placehold.co/800x500.png" // Fallback poster
             />
           </div>
         </div>
