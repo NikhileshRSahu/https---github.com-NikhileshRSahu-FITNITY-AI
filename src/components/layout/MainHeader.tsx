@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Zap, LogIn, UserPlus } from 'lucide-react'; // Added LogIn, UserPlus
+import { Zap, LogIn, UserPlus, UserCircle2 } from 'lucide-react'; // Added UserCircle2
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -39,20 +39,17 @@ export default function MainHeader() {
           <span className="text-2xl font-bold text-card-foreground">Fitnity AI</span>
         </Link>
         <nav className="flex items-center gap-2 md:gap-3">
-          {/* Profile link removed, would be conditional in a real app */}
-          {/*
           <Button asChild variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground hover:bg-transparent focus-visible:bg-accent/10")}>
             <Link href="/profile">
-              <UserCircle className={cn(navIconClasses, "group-hover:text-accent")} />
+              <UserCircle2 className={cn(navIconClasses, "group-hover:text-accent")} />
               <span className="hidden md:inline">Profile</span>
             </Link>
           </Button>
-          */}
 
           <Button asChild variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground hover:bg-transparent focus-visible:bg-accent/10")}>
             <Link href="/auth/sign-in">
               <LogIn className={cn(navIconClasses, "group-hover:text-accent")} />
-              <span className="hidden md:inline">Sign In</span>
+              <span className="hidden md:inline">Login</span>
             </Link>
           </Button>
 
@@ -64,7 +61,10 @@ export default function MainHeader() {
               "bg-gradient-to-r from-[hsl(var(--accent)_/_0.9)] via-[hsl(var(--primary)_/_0.9)] to-[hsl(var(--accent)_/_0.9)] hover:shadow-[0_0_15px_3px_hsl(var(--accent)_/_0.7)] hover:scale-105 cta-glow-pulse active:scale-95"
             )}
           >
-            <Link href="/auth/sign-up">Sign Up</Link>
+            <Link href="/auth/sign-up"> {/* "Get Started" links to the sign-up page */}
+              <UserPlus className={cn(navIconClasses, "mr-1 md:mr-1.5")} />
+              Get Started
+            </Link>
           </Button>
         </nav>
       </div>
