@@ -14,9 +14,9 @@ export default function HeroSection() {
           muted
           playsInline
           className="w-full h-full object-cover"
-          poster="https://placehold.co/1200x800.png?text=Loading+Video..."
+          poster="https://placehold.co/1200x800.png" // Simpler poster URL
         />
-        {/* Overlay for text readability - Increased opacity */}
+        {/* Overlay for text readability */}
         <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
       </div>
 
@@ -41,7 +41,7 @@ export default function HeroSection() {
               asChild
               variant="outline"
               size="lg"
-              className="border-accent text-accent hover:bg-accent/10 px-8 py-6 rounded-lg shadow-md transition-transform duration-300 hover:scale-105 text-lg hover:text-accent-foreground"
+              className="border-accent text-accent hover:bg-accent/10 px-8 py-6 rounded-lg shadow-md transition-transform duration-300 hover:scale-105 text-lg hover:text-accent-foreground active:scale-95"
             >
               <Link href="#how-it-works">See How It Works</Link>
             </Button>
