@@ -3,17 +3,19 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
-import { LineChart, CartesianGrid, XAxis, YAxis, Line, ResponsiveContainer, Legend } from 'recharts';
+import { LineChart, CartesianGrid, XAxis, YAxis, Line, ResponsiveContainer } from 'recharts';
 import { Award, Flame, HeartPulse, TrendingUp, Scaling, Star, Droplets, Trophy } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
 const workoutData = [
-  { week: 'Wk 1', workouts: 3, goal: 4 },
-  { week: 'Wk 2', workouts: 4, goal: 4 },
-  { week: 'Wk 3', workouts: 2, goal: 4 },
-  { week: 'Wk 4', workouts: 5, goal: 4 },
-  { week: 'Wk 5', workouts: 3, goal: 5 },
-  { week: 'Wk 6', workouts: 4, goal: 5 },
+  { week: 'Wk 1', workouts: 3 },
+  { week: 'Wk 2', workouts: 4 },
+  { week: 'Wk 3', workouts: 2 },
+  { week: 'Wk 4', workouts: 5 },
+  { week: 'Wk 5', workouts: 3 },
+  { week: 'Wk 6', workouts: 4 },
+  { week: 'Wk 7', workouts: 5 },
+  { week: 'Wk 8', workouts: 3 },
 ];
 
 const chartConfig: ChartConfig = {
@@ -21,10 +23,6 @@ const chartConfig: ChartConfig = {
     label: "Workouts Completed",
     color: "hsl(var(--accent))",
   },
-  goal: {
-    label: "Workout Goal",
-    color: "hsl(var(--muted-foreground))",
-  }
 };
 
 const bodyMeasurementData = {
@@ -35,7 +33,7 @@ const bodyMeasurementData = {
 
 const streaksAndBadges = {
   currentStreak: 14,
-  totalBadges: 7, // Increased due to new PRs card acting like achievements
+  totalBadges: 7,
   recentBadges: [
     { name: 'Consistent Challenger', icon: Flame, date: 'July 23' },
     { name: 'Morning Mover Pro', icon: Star, date: 'July 21' },
@@ -68,31 +66,44 @@ export default function DashboardPage() {
             <CardTitle className="flex items-center text-xl">
               <TrendingUp className="mr-3 h-6 w-6 text-accent" /> Workout Consistency
             </CardTitle>
-            <CardDescription>Your workouts per week over the last 6 weeks compared to your goal.</CardDescription>
+            <CardDescription>Your workouts completed per week over the last 8 weeks.</CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer config={chartConfig} className="h-[250px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={workoutData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted-foreground) / 0.3)" />
-                  <XAxis dataKey="week" tickLine={false} axisLine={false} stroke="hsl(var(--muted-foreground))" />
-                  <YAxis allowDecimals={false} tickLine={false} axisLine={false} stroke="hsl(var(--muted-foreground))" />
-                  <ChartTooltip
-                    cursor={false}
-                    content={<ChartTooltipContent indicator="line" labelClassName="text-sm" className="glassmorphic-card !border-border/50" />}
+                <LineChart data={workoutData} margin={{ top: 5, right: 20, left: -20, bottom: 5 }}>
+                  <CartesianGrid 
+                    vertical={false} 
+                    stroke="hsl(var(--muted-foreground) / 0.2)" 
+                    strokeDasharray="3 3"
                   />
-                   <Legend content={({ payload }) => (
-                    <div className="flex justify-center items-center space-x-4 mt-4">
-                      {payload?.map((entry, index) => (
-                        <div key={`item-${index}`} className="flex items-center space-x-1.5 text-sm text-card-foreground/80">
-                          <span style={{ backgroundColor: entry.color }} className="h-2.5 w-2.5 rounded-full inline-block ring-1 ring-offset-1 ring-offset-background ring-border/50"></span>
-                          <span>{entry.value}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )} />
-                  <Line type="monotone" dataKey="workouts" strokeWidth={2} stroke="hsl(var(--accent))" dot={{ r: 4, fill: "hsl(var(--accent))" }} activeDot={{ r: 6 }} />
-                  <Line type="monotone" dataKey="goal" strokeWidth={2} stroke="hsl(var(--muted-foreground))" strokeDasharray="5 5" dot={false} />
+                  <XAxis 
+                    dataKey="week" 
+                    tickLine={false} 
+                    axisLine={false} 
+                    stroke="hsl(var(--muted-foreground))" 
+                    dy={10}
+                  />
+                  <YAxis 
+                    tickLine={false} 
+                    axisLine={false} 
+                    stroke="hsl(var(--muted-foreground))" 
+                    allowDecimals={false}
+                    width={40}
+                    dx={-5}
+                  />
+                  <ChartTooltip
+                    cursor={{ stroke: "hsl(var(--muted-foreground) / 0.3)", strokeWidth: 1, strokeDasharray: "3 3" }}
+                    content={<ChartTooltipContent indicator="dot" labelClassName="text-sm" className="glassmorphic-card !border-border/50" />}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="workouts" 
+                    strokeWidth={3} 
+                    stroke="hsl(var(--accent))" 
+                    dot={false} 
+                    activeDot={{ r: 6, strokeWidth: 0, fill: "hsl(var(--accent))" }} 
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </ChartContainer>
@@ -215,5 +226,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    
