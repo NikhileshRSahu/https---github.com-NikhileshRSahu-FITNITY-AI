@@ -148,7 +148,9 @@ export default function AiCoachPage() {
       {!isCoachReady ? (
         <Card className="max-w-lg mx-auto glassmorphic-card">
           <CardHeader>
-            <CardTitle className="text-3xl font-bold">Setup AI Coach</CardTitle>
+            <CardTitle className="text-3xl font-bold flex items-center">
+              <Bot className="mr-3 h-8 w-8 text-accent" /> Setup AI Coach
+              </CardTitle>
             <CardDescription>
               Tell us a bit about your goals to personalize your AI Coach experience.
             </CardDescription>
@@ -212,7 +214,7 @@ export default function AiCoachPage() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg transition-transform duration-300 hover:scale-105">
+                <Button type="submit" size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg transition-transform duration-300 hover:scale-105 cta-glow-pulse">
                   Start Chatting
                 </Button>
               </form>

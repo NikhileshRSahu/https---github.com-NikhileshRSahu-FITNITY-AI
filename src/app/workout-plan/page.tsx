@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { generateWorkoutPlan, type GenerateWorkoutPlanInput } from '@/ai/flows/generate-workout-plan';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ClipboardList } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const workoutPlanFormSchema = z.object({
@@ -72,7 +72,9 @@ export default function WorkoutPlanPage() {
     <div className="container mx-auto px-4 md:px-6 py-12 md:py-20">
       <Card className="max-w-2xl mx-auto glassmorphic-card">
         <CardHeader>
-          <CardTitle className="text-3xl font-bold">Generate Your Workout Plan</CardTitle>
+          <CardTitle className="text-3xl font-bold flex items-center">
+            <ClipboardList className="mr-3 h-8 w-8 text-accent" /> Generate Your Workout Plan
+          </CardTitle>
           <CardDescription>
             Fill in your details below, and our AI will create a personalized workout plan for you.
           </CardDescription>
@@ -134,7 +136,7 @@ export default function WorkoutPlanPage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" disabled={isLoading} size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg transition-transform duration-300 hover:scale-105">
+              <Button type="submit" disabled={isLoading} size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg transition-transform duration-300 hover:scale-105 cta-glow-pulse">
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Generate Plan
               </Button>
@@ -149,7 +151,7 @@ export default function WorkoutPlanPage() {
             <CardTitle className="text-2xl font-bold">Your Personalized Workout Plan</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="prose max-w-none text-card-foreground/90 whitespace-pre-wrap p-4 bg-background/20 rounded-md">
+            <div className="prose dark:prose-invert max-w-none text-card-foreground/90 whitespace-pre-wrap p-4 bg-background/20 rounded-md">
               {workoutPlanResult}
             </div>
           </CardContent>

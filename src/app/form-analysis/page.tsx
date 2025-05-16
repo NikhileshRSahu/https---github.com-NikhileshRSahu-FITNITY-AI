@@ -11,7 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { provideFormAnalysis, type ProvideFormAnalysisInput, type ProvideFormAnalysisOutput } from '@/ai/flows/provide-form-analysis-flow';
-import { Loader2, Camera, AlertTriangle } from 'lucide-react';
+import { Loader2, Camera, AlertTriangle, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const formAnalysisSchema = z.object({
@@ -240,7 +240,7 @@ export default function FormAnalysisPage() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" disabled={isLoading || !hasCameraPermission || hasCameraPermission === null} size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg transition-transform duration-300 hover:scale-105">
+                <Button type="submit" disabled={isLoading || !hasCameraPermission || hasCameraPermission === null} size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg transition-transform duration-300 hover:scale-105 cta-glow-pulse">
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {getButtonText()}
                 </Button>
@@ -253,12 +253,16 @@ export default function FormAnalysisPage() {
       {analysisResult && analysisStatus === 'done' && (
         <Card className="max-w-2xl mx-auto mt-12 glassmorphic-card">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold">Form Analysis Results</CardTitle>
+            <CardTitle className="text-2xl font-bold flex items-center">
+              <FileText className="mr-3 h-7 w-7 text-accent" /> Form Analysis Results
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
               <h4 className="font-semibold text-card-foreground/90 mb-1">Feedback for {form.getValues('exerciseName')}:</h4>
-              <p className="text-card-foreground/80 whitespace-pre-wrap p-3 bg-background/20 rounded-md">{analysisResult.feedback}</p>
+              <div className="prose dark:prose-invert max-w-none text-card-foreground/80 whitespace-pre-wrap p-3 bg-background/20 rounded-md">
+                {analysisResult.feedback}
+              </div>
             </div>
             {analysisResult.injuryPreventionAlert && (
               <Alert variant="destructive">
