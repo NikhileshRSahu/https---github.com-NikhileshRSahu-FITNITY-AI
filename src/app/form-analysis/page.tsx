@@ -174,9 +174,13 @@ export default function FormAnalysisPage() {
       });
     } finally {
       setIsSubmitting(false);
-      // If status is still capturing or analyzing after submit, reset to idle on error, otherwise keep 'done' or 'error'
+       // Ensure status is correctly set based on outcome
       if (analysisStatus !== 'done' && analysisStatus !== 'error') {
-        setAnalysisStatus('idle');
+        // If an error occurred before 'done' or explicit 'error'
+        setAnalysisStatus(error ? 'error' : 'idle');
+      } else if (analysisStatus === 'done' && error) {
+        // If it was 'done' but an error was also set (e.g. in the else block)
+        setAnalysisStatus('error');
       }
     }
   }
@@ -298,6 +302,15 @@ export default function FormAnalysisPage() {
                   </Alert>
                 )}
               </>
+            )}
+            {!isLoading && !isSubmitting && !error && analysisStatus === 'done' && !analysisResult?.feedback && (
+                 <Alert className="bg-background/30 border-border/50 text-card-foreground">
+                    <AlertTriangle className="h-5 w-5 text-accent" />
+                    <AlertTitle>No Feedback Available</AlertTitle>
+                    <AlertDescription>
+                    The AI could not provide feedback for this exercise. Please try again.
+                    </AlertDescription>
+                </Alert>
             )}
           </CardContent>
         </Card>

@@ -119,7 +119,7 @@ export default function DashboardPage() {
                     "capitalize text-xs px-3 py-1 h-auto",
                     selectedTimeRange === range
                       ? "bg-accent hover:bg-accent/90 text-accent-foreground"
-                      : "border-accent text-accent hover:bg-accent/10 hover:text-accent"
+                      : "border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground"
                   )}
                 >
                   {range === 'allTime' ? 'All Time' : range}

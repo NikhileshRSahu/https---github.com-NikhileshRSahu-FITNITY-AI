@@ -15,6 +15,8 @@ import { aiCoach, type AiCoachInput } from '@/ai/flows/provide-ai-coach';
 import { Loader2, Send, User, Bot } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import ChatMessage from '@/components/ai-coach/ChatMessage';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+
 
 const aiCoachSetupSchema = z.object({
   language: z.enum(['English', 'Hindi'], {
@@ -36,6 +38,7 @@ interface Message {
   sender: 'user' | 'ai';
   text: string;
   timestamp: Date;
+  isError?: boolean;
 }
 
 export default function AiCoachPage() {
@@ -76,11 +79,16 @@ export default function AiCoachPage() {
 
     setCoachSettings(data);
     setIsCoachReady(true);
+    
+    const historySummaryText = data.workoutHistorySummary 
+        ? `You mentioned: "${data.workoutHistorySummary}". ` 
+        : "You haven't shared any specific recent activity. ";
+
     setMessages([
       {
         id: 'initial-greet',
         sender: 'ai',
-        text: `Hello! I'm your Fitnity AI Coach, ready to assist in ${data.language}. I see your goal is "${data.fitnessGoal}". ${data.workoutHistorySummary ? `You mentioned: "${data.workoutHistorySummary}". ` : ''}How can I help you kickstart your journey today?`,
+        text: `Hello! I'm your Fitnity AI Coach, ready to assist in ${data.language}. I see your goal is "${data.fitnessGoal}". ${historySummaryText}How can I help you kickstart your journey today?`,
         timestamp: new Date(),
       }
     ]);
@@ -137,12 +145,13 @@ export default function AiCoachPage() {
         sender: 'ai',
         text: errorMessage,
         timestamp: new Date(),
+        isError: true,
       }
       setMessages(prev => [...prev, errorResponse]);
-      toast({ // Still show a toast for system-level errors
+      toast({ 
         variant: 'destructive',
         title: 'AI Coach Error',
-        description: 'There was a problem communicating with the AI coach.',
+        description: 'There was a problem communicating with the AI coach. The error has been noted in the chat.',
       });
     } finally {
       setIsChatLoading(false);

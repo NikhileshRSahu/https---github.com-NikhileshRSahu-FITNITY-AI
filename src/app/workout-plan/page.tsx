@@ -185,6 +185,15 @@ export default function WorkoutPlanPage() {
                 {workoutPlanResult}
               </div>
             )}
+             {!isLoading && !error && !workoutPlanResult && (
+              <Alert className="bg-background/30 border-border/50 text-card-foreground">
+                <AlertTriangle className="h-5 w-5 text-accent" />
+                <AlertTitle>No Plan Available</AlertTitle>
+                <AlertDescription>
+                  The AI did not return a workout plan. Please try again with different inputs.
+                </AlertDescription>
+              </Alert>
+            )}
           </CardContent>
         </Card>
       )}
