@@ -11,8 +11,9 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { generateNutritionPlan, type GenerateNutritionPlanInput } from '@/ai/flows/generate-nutrition-plan';
-import { Loader2, Apple as NutritionIcon } from 'lucide-react';
+import { Loader2, Apple as NutritionIcon, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const nutritionPlanFormSchema = z.object({
@@ -30,6 +31,7 @@ type NutritionPlanFormValues = z.infer<typeof nutritionPlanFormSchema>;
 export default function NutritionPlanPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [nutritionPlanResult, setNutritionPlanResult] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   const form = useForm<NutritionPlanFormValues>({
@@ -45,6 +47,7 @@ export default function NutritionPlanPage() {
   async function onSubmit(data: NutritionPlanFormValues) {
     setIsLoading(true);
     setNutritionPlanResult(null);
+    setError(null);
     try {
       const input: GenerateNutritionPlanInput = {
         dietaryPreferences: data.dietaryPreferences,
@@ -54,17 +57,27 @@ export default function NutritionPlanPage() {
         dailyActivityLevel: data.dailyActivityLevel,
       };
       const result = await generateNutritionPlan(input);
-      setNutritionPlanResult(result.nutritionPlan);
-      toast({
-        title: 'Nutrition Plan Generated!',
-        description: 'Your personalized nutrition plan is ready.',
-      });
-    } catch (error) {
-      console.error('Error generating nutrition plan:', error);
-      let errorMessage = 'Failed to generate nutrition plan. Please try again.';
-      if (error instanceof Error) {
-        errorMessage = error.message;
+       if (result && result.nutritionPlan) {
+        setNutritionPlanResult(result.nutritionPlan);
+        toast({
+          title: 'Nutrition Plan Generated!',
+          description: 'Your personalized nutrition plan is ready.',
+        });
+      } else {
+        setError('The AI did not return a nutrition plan. Please try again with different inputs.');
+        toast({
+          variant: 'destructive',
+          title: 'No Plan Generated',
+          description: 'The AI could not generate a plan based on your input. Please try adjusting your preferences.',
+        });
       }
+    } catch (err) {
+      console.error('Error generating nutrition plan:', err);
+      let errorMessage = 'Failed to generate nutrition plan. Please check your inputs or try again later.';
+      if (err instanceof Error && err.message) {
+        errorMessage = err.message;
+      }
+      setError(errorMessage);
       toast({
         variant: 'destructive',
         title: 'Error Generating Plan',
@@ -88,13 +101,13 @@ export default function NutritionPlanPage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8"> {/* Increased spacing */}
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
                 control={form.control}
                 name="dietaryPreferences"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-lg">Dietary Preferences</FormLabel> {/* More prominent label */}
+                    <FormLabel className="text-lg">Dietary Preferences</FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="e.g., Vegetarian, prefer eggs, occasionally eat fish. Enjoy Indian and Thai food."
@@ -111,7 +124,7 @@ export default function NutritionPlanPage() {
                 name="healthGoals"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-lg">Health & Fitness Goals</FormLabel> {/* More prominent label */}
+                    <FormLabel className="text-lg">Health & Fitness Goals</FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="e.g., Lose 5kg in 2 months, gain lean muscle, improve energy for running."
@@ -128,7 +141,7 @@ export default function NutritionPlanPage() {
                 name="dailyActivityLevel"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-lg">Daily Activity Level</FormLabel> {/* More prominent label */}
+                    <FormLabel className="text-lg">Daily Activity Level</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -152,7 +165,7 @@ export default function NutritionPlanPage() {
                 name="allergies"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-lg">Allergies or Intolerances (Optional)</FormLabel> {/* More prominent label */}
+                    <FormLabel className="text-lg">Allergies or Intolerances (Optional)</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="e.g., Gluten, lactose, peanuts"
@@ -168,7 +181,7 @@ export default function NutritionPlanPage() {
                 name="cuisinePreferences"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-lg">Cuisine Preferences (Optional)</FormLabel> {/* More prominent label */}
+                    <FormLabel className="text-lg">Cuisine Preferences (Optional)</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="e.g., Indian, Mediterranean, Mexican"
@@ -193,15 +206,26 @@ export default function NutritionPlanPage() {
         </CardContent>
       </Card>
 
-      {nutritionPlanResult && (
-        <Card className="max-w-2xl mx-auto mt-12 glassmorphic-card result-card-animate"> {/* Added animation class */}
+      {(nutritionPlanResult || error) && (
+        <Card className="max-w-2xl mx-auto mt-12 glassmorphic-card result-card-animate">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold">Your Personalized Nutrition Plan</CardTitle>
+            <CardTitle className="text-2xl font-bold">
+                {error ? 'Error Generating Plan' : 'Your Personalized Nutrition Plan'}
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="prose dark:prose-invert max-w-none text-card-foreground/90 whitespace-pre-wrap p-4 bg-background/20 rounded-md">
-              {nutritionPlanResult}
-            </div>
+            {error && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertTriangle className="h-5 w-5" />
+                <AlertTitle>Oops! Something went wrong.</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            {nutritionPlanResult && !error && (
+              <div className="prose dark:prose-invert max-w-none text-card-foreground/90 whitespace-pre-wrap p-4 bg-background/20 rounded-md">
+                {nutritionPlanResult}
+              </div>
+            )}
           </CardContent>
         </Card>
       )}

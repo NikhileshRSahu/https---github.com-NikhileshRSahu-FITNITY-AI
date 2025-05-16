@@ -10,8 +10,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { generateWorkoutPlan, type GenerateWorkoutPlanInput } from '@/ai/flows/generate-workout-plan';
-import { Loader2, ClipboardList } from 'lucide-react';
+import { Loader2, ClipboardList, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const workoutPlanFormSchema = z.object({
@@ -27,6 +28,7 @@ type WorkoutPlanFormValues = z.infer<typeof workoutPlanFormSchema>;
 export default function WorkoutPlanPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [workoutPlanResult, setWorkoutPlanResult] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   const form = useForm<WorkoutPlanFormValues>({
@@ -40,6 +42,7 @@ export default function WorkoutPlanPage() {
   async function onSubmit(data: WorkoutPlanFormValues) {
     setIsLoading(true);
     setWorkoutPlanResult(null);
+    setError(null);
     try {
       const input: GenerateWorkoutPlanInput = {
         fitnessGoals: data.fitnessGoals,
@@ -47,17 +50,27 @@ export default function WorkoutPlanPage() {
         currentFitnessLevel: data.currentFitnessLevel,
       };
       const result = await generateWorkoutPlan(input);
-      setWorkoutPlanResult(result.workoutPlan);
-      toast({
-        title: 'Workout Plan Generated!',
-        description: 'Your personalized workout plan is ready.',
-      });
-    } catch (error) {
-      console.error('Error generating workout plan:', error);
-      let errorMessage = 'Failed to generate workout plan. Please try again.';
-      if (error instanceof Error) {
-        errorMessage = error.message;
+      if (result && result.workoutPlan) {
+        setWorkoutPlanResult(result.workoutPlan);
+        toast({
+          title: 'Workout Plan Generated!',
+          description: 'Your personalized workout plan is ready.',
+        });
+      } else {
+        setError('The AI did not return a workout plan. Please try again with different inputs.');
+        toast({
+          variant: 'destructive',
+          title: 'No Plan Generated',
+          description: 'The AI could not generate a plan based on your input. Please try adjusting your preferences.',
+        });
       }
+    } catch (err) {
+      console.error('Error generating workout plan:', err);
+      let errorMessage = 'Failed to generate workout plan. Please check your inputs or try again later.';
+      if (err instanceof Error && err.message) {
+        errorMessage = err.message;
+      }
+      setError(errorMessage);
       toast({
         variant: 'destructive',
         title: 'Error Generating Plan',
@@ -81,13 +94,13 @@ export default function WorkoutPlanPage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8"> {/* Increased spacing */}
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
                 control={form.control}
                 name="fitnessGoals"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-lg">Fitness Goals</FormLabel> {/* More prominent label */}
+                    <FormLabel className="text-lg">Fitness Goals</FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="e.g., lose 10 pounds, build muscle in arms and chest, run a 5k"
@@ -104,7 +117,7 @@ export default function WorkoutPlanPage() {
                 name="workoutPreferences"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-lg">Workout Preferences</FormLabel> {/* More prominent label */}
+                    <FormLabel className="text-lg">Workout Preferences</FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="e.g., 30-minute home workouts, no equipment, enjoy HIIT and yoga"
@@ -121,7 +134,7 @@ export default function WorkoutPlanPage() {
                 name="currentFitnessLevel"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-lg">Current Fitness Level</FormLabel> {/* More prominent label */}
+                    <FormLabel className="text-lg">Current Fitness Level</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -152,15 +165,26 @@ export default function WorkoutPlanPage() {
         </CardContent>
       </Card>
 
-      {workoutPlanResult && (
-        <Card className="max-w-2xl mx-auto mt-12 glassmorphic-card result-card-animate"> {/* Added animation class */}
+      {(workoutPlanResult || error) && (
+        <Card className="max-w-2xl mx-auto mt-12 glassmorphic-card result-card-animate">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold">Your Personalized Workout Plan</CardTitle>
+            <CardTitle className="text-2xl font-bold">
+              {error ? 'Error Generating Plan' : 'Your Personalized Workout Plan'}
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="prose dark:prose-invert max-w-none text-card-foreground/90 whitespace-pre-wrap p-4 bg-background/20 rounded-md">
-              {workoutPlanResult}
-            </div>
+            {error && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertTriangle className="h-5 w-5" />
+                <AlertTitle>Oops! Something went wrong.</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            {workoutPlanResult && !error && (
+              <div className="prose dark:prose-invert max-w-none text-card-foreground/90 whitespace-pre-wrap p-4 bg-background/20 rounded-md">
+                {workoutPlanResult}
+              </div>
+            )}
           </CardContent>
         </Card>
       )}

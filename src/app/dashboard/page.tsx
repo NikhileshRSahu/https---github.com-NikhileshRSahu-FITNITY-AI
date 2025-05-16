@@ -5,42 +5,26 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { LineChart, CartesianGrid, XAxis, YAxis, Line, ResponsiveContainer } from 'recharts';
-import { Award, Flame, HeartPulse, TrendingUp, Scaling, Star, Droplets, Trophy, CalendarDays } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Award, Flame, HeartPulse, TrendingUp, Scaling, Star, Droplets, Trophy, CalendarDays, BarChart4 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const weeklyWorkoutData = [
-  { week: 'Wk 1', workouts: 3 },
-  { week: 'Wk 2', workouts: 4 },
-  { week: 'Wk 3', workouts: 2 },
-  { week: 'Wk 4', workouts: 5 },
-  { week: 'Wk 5', workouts: 3 },
-  { week: 'Wk 6', workouts: 4 },
-  { week: 'Wk 7', workouts: 5 },
-  { week: 'Wk 8', workouts: 3 },
+  { week: 'Wk 1', workouts: 3 }, { week: 'Wk 2', workouts: 4 }, { week: 'Wk 3', workouts: 2 }, { week: 'Wk 4', workouts: 5 },
+  { week: 'Wk 5', workouts: 3 }, { week: 'Wk 6', workouts: 4 }, { week: 'Wk 7', workouts: 5 }, { week: 'Wk 8', workouts: 3 },
 ];
 
 const monthlyWorkoutData = [
-  { month: 'Jan', workouts: 15 },
-  { month: 'Feb', workouts: 18 },
-  { month: 'Mar', workouts: 12 },
-  { month: 'Apr', workouts: 20 },
-  { month: 'May', workouts: 16 },
-  { month: 'Jun', workouts: 19 },
-  { month: 'Jul', workouts: 22 },
-  { month: 'Aug', workouts: 17 },
+  { month: 'Jan', workouts: 15 }, { month: 'Feb', workouts: 18 }, { month: 'Mar', workouts: 12 }, { month: 'Apr', workouts: 20 },
+  { month: 'May', workouts: 16 }, { month: 'Jun', workouts: 19 }, { month: 'Jul', workouts: 22 }, { month: 'Aug', workouts: 17 },
 ];
 
 const allTimeWorkoutData = [ 
-    { period: 'Q1 \'23', workouts: 45 },
-    { period: 'Q2 \'23', workouts: 55 },
-    { period: 'Q3 \'23', workouts: 50 },
-    { period: 'Q4 \'23', workouts: 60 },
-    { period: 'Q1 \'24', workouts: 52 },
-    { period: 'Q2 \'24', workouts: 58 },
+    { period: 'Q1 \'23', workouts: 45 }, { period: 'Q2 \'23', workouts: 55 }, { period: 'Q3 \'23', workouts: 50 },
+    { period: 'Q4 \'23', workouts: 60 }, { period: 'Q1 \'24', workouts: 52 }, { period: 'Q2 \'24', workouts: 58 },
 ];
-
 
 const chartConfig: ChartConfig = {
   workouts: {
@@ -77,6 +61,7 @@ const personalRecordsData = [
     { name: 'Longest Plank', value: '3m 15s', icon: Flame },
     { name: 'Peak Steps in a Day', value: '15,870', icon: Award },
 ];
+// const personalRecordsData: typeof personalRecordsData = []; // Example for empty state
 
 type TimeRange = 'weekly' | 'monthly' | 'allTime';
 
@@ -115,7 +100,6 @@ export default function DashboardPage() {
       <h1 className="text-3xl md:text-4xl font-bold mb-10 text-foreground text-center">My Progress Dashboard</h1>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {/* Workout Consistency Card */}
         <Card className="glassmorphic-card lg:col-span-2 hover:shadow-2xl transition-shadow duration-300 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
@@ -144,48 +128,57 @@ export default function DashboardPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={chartConfig} className="h-[250px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData} margin={{ top: 5, right: 20, left: -20, bottom: 5 }}>
-                  <CartesianGrid 
-                    vertical={false} 
-                    stroke="hsl(var(--muted-foreground) / 0.2)" 
-                    strokeDasharray="3 3"
-                  />
-                  <XAxis 
-                    dataKey={xAxisKey}
-                    tickLine={false} 
-                    axisLine={false} 
-                    stroke="hsl(var(--muted-foreground))" 
-                    dy={10}
-                  />
-                  <YAxis 
-                    tickLine={false} 
-                    axisLine={false} 
-                    stroke="hsl(var(--muted-foreground))" 
-                    allowDecimals={false}
-                    width={40}
-                    dx={-5}
-                  />
-                  <ChartTooltip
-                    cursor={{ stroke: "hsl(var(--muted-foreground) / 0.3)", strokeWidth: 1, strokeDasharray: "3 3" }}
-                    content={<ChartTooltipContent indicator="dot" labelClassName="text-sm" className="glassmorphic-card !border-border/50" />}
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="workouts" 
-                    strokeWidth={3} 
-                    stroke="hsl(var(--accent))" 
-                    dot={false} 
-                    activeDot={{ r: 6, strokeWidth: 0, fill: "hsl(var(--accent))" }} 
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </ChartContainer>
+            {chartData && chartData.length > 0 ? (
+              <ChartContainer config={chartConfig} className="h-[250px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={chartData} margin={{ top: 5, right: 20, left: -20, bottom: 5 }}>
+                    <CartesianGrid 
+                      vertical={false} 
+                      stroke="hsl(var(--muted-foreground) / 0.2)" 
+                      strokeDasharray="3 3"
+                    />
+                    <XAxis 
+                      dataKey={xAxisKey}
+                      tickLine={false} 
+                      axisLine={false} 
+                      stroke="hsl(var(--muted-foreground))" 
+                      dy={10}
+                    />
+                    <YAxis 
+                      tickLine={false} 
+                      axisLine={false} 
+                      stroke="hsl(var(--muted-foreground))" 
+                      allowDecimals={false}
+                      width={40}
+                      dx={-5}
+                    />
+                    <ChartTooltip
+                      cursor={{ stroke: "hsl(var(--muted-foreground) / 0.3)", strokeWidth: 1, strokeDasharray: "3 3" }}
+                      content={<ChartTooltipContent indicator="dot" labelClassName="text-sm" className="glassmorphic-card !border-border/50" />}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="workouts" 
+                      strokeWidth={3} 
+                      stroke="hsl(var(--accent))" 
+                      dot={false} 
+                      activeDot={{ r: 6, strokeWidth: 0, fill: "hsl(var(--accent))" }} 
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            ) : (
+              <Alert className="bg-background/30 border-border/50 text-card-foreground">
+                <BarChart4 className="h-5 w-5 text-accent" />
+                <AlertTitle>No Data Yet</AlertTitle>
+                <AlertDescription>
+                  No workout data available for this period. Start logging your workouts to see your consistency!
+                </AlertDescription>
+              </Alert>
+            )}
           </CardContent>
         </Card>
 
-        {/* Body Measurements Card */}
         <Card className="glassmorphic-card hover:shadow-2xl transition-shadow duration-300 animate-fade-in-up" style={{animationDelay: '0.2s'}}>
           <CardHeader>
             <CardTitle className="flex items-center text-xl">
@@ -209,7 +202,6 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
         
-        {/* Personal Records Card */}
         <Card className="glassmorphic-card hover:shadow-2xl transition-shadow duration-300 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
           <CardHeader>
             <CardTitle className="flex items-center text-xl">
@@ -218,20 +210,28 @@ export default function DashboardPage() {
             <CardDescription>Your noteworthy achievements.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            {personalRecordsData.map((pr, idx) => (
-              <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-background/10 hover:bg-background/20 transition-colors">
-                <div className="flex items-center gap-3">
-                    <pr.icon className="h-5 w-5 text-accent/80 flex-shrink-0" />
-                    <span className="font-medium text-sm text-card-foreground">{pr.name}:</span>
+            {personalRecordsData && personalRecordsData.length > 0 ? (
+              personalRecordsData.map((pr, idx) => (
+                <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-background/10 hover:bg-background/20 transition-colors">
+                  <div className="flex items-center gap-3">
+                      <pr.icon className="h-5 w-5 text-accent/80 flex-shrink-0" />
+                      <span className="font-medium text-sm text-card-foreground">{pr.name}:</span>
+                  </div>
+                  <span className="text-sm font-semibold text-accent">{pr.value}</span>
                 </div>
-                <span className="text-sm font-semibold text-accent">{pr.value}</span>
-              </div>
-            ))}
+              ))
+            ) : (
+              <Alert className="bg-background/30 border-border/50 text-card-foreground">
+                <Trophy className="h-5 w-5 text-accent" />
+                <AlertTitle>No Records Yet</AlertTitle>
+                <AlertDescription>
+                  Achieve new milestones in your fitness journey and they'll appear here!
+                </AlertDescription>
+              </Alert>
+            )}
           </CardContent>
         </Card>
 
-
-        {/* Streaks & Achievements Card */}
         <Card className="glassmorphic-card hover:shadow-2xl transition-shadow duration-300 animate-fade-in-up" style={{animationDelay: '0.4s'}}>
           <CardHeader>
             <CardTitle className="flex items-center text-xl">
@@ -265,7 +265,6 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Health Snapshot Card */}
         <Card className="glassmorphic-card lg:col-span-2 hover:shadow-2xl transition-shadow duration-300 animate-fade-in-up" style={{animationDelay: '0.5s'}}>
           <CardHeader>
             <CardTitle className="flex items-center text-xl">
@@ -296,10 +295,7 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-
       </div>
     </div>
   );
 }
-
-    

@@ -40,6 +40,7 @@ interface Message {
 
 export default function AiCoachPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [isChatLoading, setIsChatLoading] = useState(false);
   const [isCoachReady, setIsCoachReady] = useState(false);
   const [coachSettings, setCoachSettings] = useState<AiCoachSetupValues | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -66,9 +67,13 @@ export default function AiCoachPage() {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
-  }, [messages, isLoading]);
+  }, [messages, isChatLoading]);
 
   async function onSetupSubmit(data: AiCoachSetupValues) {
+    setIsLoading(true); // For setup form submission
+    // Simulate some processing if needed
+    await new Promise(resolve => setTimeout(resolve, 500));
+
     setCoachSettings(data);
     setIsCoachReady(true);
     setMessages([
@@ -83,6 +88,7 @@ export default function AiCoachPage() {
       title: 'AI Coach Ready!',
       description: 'Your AI coach is set up and ready to chat.',
     });
+    setIsLoading(false);
   }
 
   async function onChatSubmit(data: ChatMessageValues) {
@@ -102,7 +108,7 @@ export default function AiCoachPage() {
       timestamp: new Date(),
     };
     setMessages(prev => [...prev, newUserMessage]);
-    setIsLoading(true);
+    setIsChatLoading(true);
     chatForm.reset();
 
     try {
@@ -122,24 +128,24 @@ export default function AiCoachPage() {
       setMessages(prev => [...prev, aiResponse]);
     } catch (error) {
       console.error('Error with AI Coach:', error);
-      let errorMessage = 'Failed to get response from AI Coach. Please try again.';
-       if (error instanceof Error) {
-        errorMessage = error.message;
+      let errorMessage = 'Sorry, I encountered an issue and could not respond. Please try again later.';
+       if (error instanceof Error && error.message) {
+        errorMessage = `Sorry, I encountered an error: ${error.message}. Please check your input or try again.`;
       }
       const errorResponse: Message = {
         id: `ai-error-${Date.now()}`,
         sender: 'ai',
-        text: `Sorry, I encountered an error: ${errorMessage}`,
+        text: errorMessage,
         timestamp: new Date(),
       }
       setMessages(prev => [...prev, errorResponse]);
-      toast({
+      toast({ // Still show a toast for system-level errors
         variant: 'destructive',
         title: 'AI Coach Error',
-        description: errorMessage,
+        description: 'There was a problem communicating with the AI coach.',
       });
     } finally {
-      setIsLoading(false);
+      setIsChatLoading(false);
     }
   }
 
@@ -163,7 +169,7 @@ export default function AiCoachPage() {
                   name="fitnessGoal"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Primary Fitness Goal</FormLabel>
+                      <FormLabel className="text-lg">Primary Fitness Goal</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="e.g., Improve stamina, build upper body strength"
@@ -179,7 +185,7 @@ export default function AiCoachPage() {
                   name="workoutHistorySummary"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Recent Activity / Current Status (Optional)</FormLabel>
+                      <FormLabel className="text-lg">Recent Activity / Current Status (Optional)</FormLabel>
                       <FormControl>
                         <Textarea
                           placeholder="e.g., Went for a 30 min run yesterday, feeling a bit tired."
@@ -199,7 +205,7 @@ export default function AiCoachPage() {
                   name="language"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Preferred Language</FormLabel>
+                      <FormLabel className="text-lg">Preferred Language</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -215,8 +221,8 @@ export default function AiCoachPage() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg transition-transform duration-300 hover:scale-105 cta-glow-pulse active:scale-95">
-                  Start Chatting
+                <Button type="submit" disabled={isLoading} size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg transition-transform duration-300 hover:scale-105 cta-glow-pulse active:scale-95">
+                  {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Start Chatting'}
                 </Button>
               </form>
             </Form>
@@ -236,8 +242,8 @@ export default function AiCoachPage() {
             {messages.map((msg) => (
               <ChatMessage key={msg.id} message={msg} />
             ))}
-            {isLoading && (
-              <div className="flex items-end gap-2 justify-start">
+            {isChatLoading && (
+              <div className="flex items-end gap-2 justify-start animate-fade-in-up">
                 <div className="flex-shrink-0 p-1.5 rounded-full bg-accent/80 text-accent-foreground">
                   <Bot className="h-5 w-5" />
                 </div>
@@ -265,14 +271,15 @@ export default function AiCoachPage() {
                           placeholder="Ask your AI coach anything..."
                           {...field}
                           autoComplete="off"
+                          disabled={isChatLoading}
                         />
                       </FormControl>
                        <FormMessage className="text-xs pt-1" />
                     </FormItem>
                   )}
                 />
-                <Button type="submit" disabled={isLoading} size="icon" className="bg-accent hover:bg-accent/90 text-accent-foreground flex-shrink-0 transition-colors duration-200 ease-in-out active:scale-95">
-                  {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                <Button type="submit" disabled={isChatLoading} size="icon" className="bg-accent hover:bg-accent/90 text-accent-foreground flex-shrink-0 transition-colors duration-200 ease-in-out active:scale-95">
+                  {isChatLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                 </Button>
               </form>
             </Form>
