@@ -88,17 +88,18 @@ export default function NutritionPlanPage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8"> {/* Increased spacing */}
               <FormField
                 control={form.control}
                 name="dietaryPreferences"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Dietary Preferences</FormLabel>
+                    <FormLabel className="text-lg">Dietary Preferences</FormLabel> {/* More prominent label */}
                     <FormControl>
                       <Textarea
                         placeholder="e.g., Vegetarian, prefer eggs, occasionally eat fish. Enjoy Indian and Thai food."
                         {...field}
+                        rows={3}
                       />
                     </FormControl>
                     <FormMessage />
@@ -110,11 +111,12 @@ export default function NutritionPlanPage() {
                 name="healthGoals"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Health & Fitness Goals</FormLabel>
+                    <FormLabel className="text-lg">Health & Fitness Goals</FormLabel> {/* More prominent label */}
                     <FormControl>
                       <Textarea
                         placeholder="e.g., Lose 5kg in 2 months, gain lean muscle, improve energy for running."
                         {...field}
+                        rows={3}
                       />
                     </FormControl>
                     <FormMessage />
@@ -126,7 +128,7 @@ export default function NutritionPlanPage() {
                 name="dailyActivityLevel"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Daily Activity Level</FormLabel>
+                    <FormLabel className="text-lg">Daily Activity Level</FormLabel> {/* More prominent label */}
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -150,7 +152,7 @@ export default function NutritionPlanPage() {
                 name="allergies"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Allergies or Intolerances (Optional)</FormLabel>
+                    <FormLabel className="text-lg">Allergies or Intolerances (Optional)</FormLabel> {/* More prominent label */}
                     <FormControl>
                       <Input
                         placeholder="e.g., Gluten, lactose, peanuts"
@@ -166,7 +168,7 @@ export default function NutritionPlanPage() {
                 name="cuisinePreferences"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Cuisine Preferences (Optional)</FormLabel>
+                    <FormLabel className="text-lg">Cuisine Preferences (Optional)</FormLabel> {/* More prominent label */}
                     <FormControl>
                       <Input
                         placeholder="e.g., Indian, Mediterranean, Mexican"
@@ -177,7 +179,12 @@ export default function NutritionPlanPage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" disabled={isLoading} size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg transition-transform duration-300 hover:scale-105 cta-glow-pulse">
+              <Button 
+                type="submit" 
+                disabled={isLoading} 
+                size="lg" 
+                className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg transition-transform duration-300 hover:scale-105 cta-glow-pulse active:scale-95"
+              >
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Generate Nutrition Plan
               </Button>
@@ -187,7 +194,7 @@ export default function NutritionPlanPage() {
       </Card>
 
       {nutritionPlanResult && (
-        <Card className="max-w-2xl mx-auto mt-12 glassmorphic-card">
+        <Card className="max-w-2xl mx-auto mt-12 glassmorphic-card result-card-animate"> {/* Added animation class */}
           <CardHeader>
             <CardTitle className="text-2xl font-bold">Your Personalized Nutrition Plan</CardTitle>
           </CardHeader>

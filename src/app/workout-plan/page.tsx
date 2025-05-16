@@ -81,17 +81,18 @@ export default function WorkoutPlanPage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8"> {/* Increased spacing */}
               <FormField
                 control={form.control}
                 name="fitnessGoals"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Fitness Goals</FormLabel>
+                    <FormLabel className="text-lg">Fitness Goals</FormLabel> {/* More prominent label */}
                     <FormControl>
                       <Textarea
                         placeholder="e.g., lose 10 pounds, build muscle in arms and chest, run a 5k"
                         {...field}
+                        rows={3}
                       />
                     </FormControl>
                     <FormMessage />
@@ -103,11 +104,12 @@ export default function WorkoutPlanPage() {
                 name="workoutPreferences"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Workout Preferences</FormLabel>
+                    <FormLabel className="text-lg">Workout Preferences</FormLabel> {/* More prominent label */}
                     <FormControl>
                       <Textarea
                         placeholder="e.g., 30-minute home workouts, no equipment, enjoy HIIT and yoga"
                         {...field}
+                        rows={3}
                       />
                     </FormControl>
                     <FormMessage />
@@ -119,7 +121,7 @@ export default function WorkoutPlanPage() {
                 name="currentFitnessLevel"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Current Fitness Level</FormLabel>
+                    <FormLabel className="text-lg">Current Fitness Level</FormLabel> {/* More prominent label */}
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -136,7 +138,12 @@ export default function WorkoutPlanPage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" disabled={isLoading} size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg transition-transform duration-300 hover:scale-105 cta-glow-pulse">
+              <Button 
+                type="submit" 
+                disabled={isLoading} 
+                size="lg" 
+                className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg transition-transform duration-300 hover:scale-105 cta-glow-pulse active:scale-95"
+              >
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Generate Plan
               </Button>
@@ -146,7 +153,7 @@ export default function WorkoutPlanPage() {
       </Card>
 
       {workoutPlanResult && (
-        <Card className="max-w-2xl mx-auto mt-12 glassmorphic-card">
+        <Card className="max-w-2xl mx-auto mt-12 glassmorphic-card result-card-animate"> {/* Added animation class */}
           <CardHeader>
             <CardTitle className="text-2xl font-bold">Your Personalized Workout Plan</CardTitle>
           </CardHeader>
