@@ -8,16 +8,16 @@ export default function HeroSection() {
       {/* Video Background */}
       <div className="absolute inset-0 z-0">
         <video
-          src="/videos/hero-background.mp4" // IMPORTANT: Replace with your video path if different
+          src="/videos/hero-background.mp4"
           autoPlay
           loop
           muted
           playsInline
           className="w-full h-full object-cover"
-          poster="https://placehold.co/1200x800.png?text=Loading+Video..." // Optional: poster image
+          poster="https://placehold.co/1200x800.png?text=Loading+Video..."
         />
-        {/* Overlay for text readability */}
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        {/* Overlay for text readability - Increased opacity */}
+        <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
       </div>
 
       {/* Content Overlay */}
