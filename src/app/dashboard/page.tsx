@@ -21,7 +21,6 @@ const weeklyWorkoutData = [
   { week: 'Wk 8', workouts: 3 },
 ];
 
-// Placeholder data - in a real app, this would be fetched or calculated
 const monthlyWorkoutData = [
   { month: 'Jan', workouts: 15 },
   { month: 'Feb', workouts: 18 },
@@ -29,19 +28,23 @@ const monthlyWorkoutData = [
   { month: 'Apr', workouts: 20 },
   { month: 'May', workouts: 16 },
   { month: 'Jun', workouts: 19 },
+  { month: 'Jul', workouts: 22 },
+  { month: 'Aug', workouts: 17 },
 ];
 
-const allTimeWorkoutData = [ // Could be quarterly or yearly aggregated
-    { period: 'Q1', workouts: 45 },
-    { period: 'Q2', workouts: 55 },
-    { period: 'Q3', workouts: 50 },
-    { period: 'Q4', workouts: 60 },
+const allTimeWorkoutData = [ 
+    { period: 'Q1 \'23', workouts: 45 },
+    { period: 'Q2 \'23', workouts: 55 },
+    { period: 'Q3 \'23', workouts: 50 },
+    { period: 'Q4 \'23', workouts: 60 },
+    { period: 'Q1 \'24', workouts: 52 },
+    { period: 'Q2 \'24', workouts: 58 },
 ];
 
 
 const chartConfig: ChartConfig = {
   workouts: {
-    label: "Workouts", // Simplified label
+    label: "Workouts", 
     color: "hsl(var(--accent))",
   },
 };
@@ -108,12 +111,12 @@ export default function DashboardPage() {
   const xAxisKey = getXAxisDataKey();
 
   return (
-    <div className="container mx-auto px-4 md:px-6 py-12 md:py-20">
+    <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 animate-fade-in-up">
       <h1 className="text-3xl md:text-4xl font-bold mb-10 text-foreground text-center">My Progress Dashboard</h1>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Workout Consistency Card */}
-        <Card className="glassmorphic-card lg:col-span-2 hover:shadow-2xl transition-shadow duration-300">
+        <Card className="glassmorphic-card lg:col-span-2 hover:shadow-2xl transition-shadow duration-300 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle className="flex items-center text-xl">
@@ -141,7 +144,6 @@ export default function DashboardPage() {
             </div>
           </CardHeader>
           <CardContent>
-            {/* In a real app, chartData would dynamically update based on selectedTimeRange */}
             <ChartContainer config={chartConfig} className="h-[250px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={chartData} margin={{ top: 5, right: 20, left: -20, bottom: 5 }}>
@@ -184,7 +186,7 @@ export default function DashboardPage() {
         </Card>
 
         {/* Body Measurements Card */}
-        <Card className="glassmorphic-card hover:shadow-2xl transition-shadow duration-300">
+        <Card className="glassmorphic-card hover:shadow-2xl transition-shadow duration-300 animate-fade-in-up" style={{animationDelay: '0.2s'}}>
           <CardHeader>
             <CardTitle className="flex items-center text-xl">
               <Scaling className="mr-3 h-6 w-6 text-accent" /> Body Measurements
@@ -208,7 +210,7 @@ export default function DashboardPage() {
         </Card>
         
         {/* Personal Records Card */}
-        <Card className="glassmorphic-card hover:shadow-2xl transition-shadow duration-300">
+        <Card className="glassmorphic-card hover:shadow-2xl transition-shadow duration-300 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
           <CardHeader>
             <CardTitle className="flex items-center text-xl">
               <Trophy className="mr-3 h-6 w-6 text-accent" /> Personal Records
@@ -230,7 +232,7 @@ export default function DashboardPage() {
 
 
         {/* Streaks & Achievements Card */}
-        <Card className="glassmorphic-card hover:shadow-2xl transition-shadow duration-300">
+        <Card className="glassmorphic-card hover:shadow-2xl transition-shadow duration-300 animate-fade-in-up" style={{animationDelay: '0.4s'}}>
           <CardHeader>
             <CardTitle className="flex items-center text-xl">
               <Award className="mr-3 h-6 w-6 text-accent" /> Streaks & Badges
@@ -264,7 +266,7 @@ export default function DashboardPage() {
         </Card>
 
         {/* Health Snapshot Card */}
-        <Card className="glassmorphic-card lg:col-span-2 hover:shadow-2xl transition-shadow duration-300">
+        <Card className="glassmorphic-card lg:col-span-2 hover:shadow-2xl transition-shadow duration-300 animate-fade-in-up" style={{animationDelay: '0.5s'}}>
           <CardHeader>
             <CardTitle className="flex items-center text-xl">
               <HeartPulse className="mr-3 h-6 w-6 text-accent" /> Daily Health Snapshot

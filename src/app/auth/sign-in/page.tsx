@@ -9,15 +9,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { LogIn, Mail, Lock } from 'lucide-react';
+import { LogIn, Mail, Lock, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
-import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 const signInSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
-  password: z.string().min(1, { message: 'Password is required.' }),
+  password: z.string().min(1, { message: 'Password is required.' }), // Keep it simple for demo
 });
 
 type SignInFormValues = z.infer<typeof signInSchema>;
@@ -41,16 +40,17 @@ export default function SignInPage() {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
     
+    // Simulate successful login
     if (typeof window !== 'undefined') {
       localStorage.setItem('fitnityUserLoggedIn', 'true');
     }
 
     toast({
-      title: 'Sign In Successful (Simulated)',
+      title: 'Sign In Successful!',
       description: 'Welcome back! You are now signed in.',
     });
     setIsLoading(false);
-    router.push('/dashboard'); // Redirect to dashboard or desired page
+    router.push('/dashboard'); // Redirect to dashboard
     router.refresh(); // Force refresh to update header state
   }
 

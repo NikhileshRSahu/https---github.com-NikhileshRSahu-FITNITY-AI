@@ -10,10 +10,10 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { UserPlus, User, Mail, Lock } from 'lucide-react';
+import { UserPlus, User, Mail, Lock, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const signUpSchema = z.object({
   fullName: z.string().min(2, { message: 'Full name must be at least 2 characters.' }),
@@ -25,7 +25,7 @@ const signUpSchema = z.object({
   }),
 }).refine(data => data.password === data.confirmPassword, {
   message: "Passwords don't match.",
-  path: ['confirmPassword'], // path of error
+  path: ['confirmPassword'],
 });
 
 type SignUpFormValues = z.infer<typeof signUpSchema>;
@@ -33,6 +33,7 @@ type SignUpFormValues = z.infer<typeof signUpSchema>;
 export default function SignUpPage() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
@@ -50,17 +51,19 @@ export default function SignUpPage() {
     console.log('Sign Up submitted:', data);
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
+    
     toast({
-      title: 'Account Created (Simulated)',
-      description: 'Welcome to Fitnity AI! Your account has been created.',
+      title: 'Account Created!',
+      description: 'Welcome to Fitnity AI! Your account has been successfully created.',
     });
     setIsLoading(false);
-    // In a real app, you would redirect the user, e.g., router.push('/dashboard');
+    // In a real app, you might auto-login or direct to sign-in
+    router.push('/auth/sign-in'); 
   }
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 flex items-center justify-center min-h-[calc(100vh-10rem)]">
-      <Card className="w-full max-w-lg glassmorphic-card"> {/* Adjusted max-width for more fields */}
+      <Card className="w-full max-w-lg glassmorphic-card">
         <CardHeader className="text-center">
            <div className="inline-flex justify-center items-center mb-4">
             <UserPlus className="h-10 w-10 text-accent" />
@@ -144,10 +147,11 @@ export default function SignUpPage() {
                       <Checkbox
                         checked={field.value}
                         onCheckedChange={field.onChange}
+                        id="agreeToTerms"
                       />
                     </FormControl>
                     <div className="space-y-1 leading-none">
-                      <FormLabel>
+                      <FormLabel htmlFor="agreeToTerms">
                         I agree to the Fitnity AI{' '}
                         <Link href="/terms-of-service" className="text-accent hover:underline" target="_blank">
                           Terms of Service
