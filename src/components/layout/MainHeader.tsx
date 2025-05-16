@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Zap, UserCircle } from 'lucide-react';
+import { Zap, LogIn, UserPlus } from 'lucide-react'; // Added LogIn, UserPlus
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -23,13 +23,13 @@ export default function MainHeader() {
   const navIconClasses = "h-5 w-5 flex-shrink-0";
 
   return (
-    <header 
+    <header
       className={cn(
         "sticky top-0 z-50 w-full glassmorphic-card transition-all duration-300 ease-in-out",
         isScrolled ? "shadow-xl shadow-accent/10 dark:shadow-accent/20 h-16" : "h-20"
       )}
     >
-      <div 
+      <div
         className={cn(
           "container mx-auto flex items-center justify-between px-4 md:px-6 transition-all duration-300 ease-in-out h-full"
         )}
@@ -39,25 +39,32 @@ export default function MainHeader() {
           <span className="text-2xl font-bold text-card-foreground">Fitnity AI</span>
         </Link>
         <nav className="flex items-center gap-2 md:gap-3">
-          {[
-            { href: "/profile", icon: UserCircle, label: "Profile" },
-          ].map((item) => (
-            <Button key={item.label} asChild variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground hover:bg-transparent focus-visible:bg-accent/10")}>
-              <Link href={item.href}>
-                <item.icon className={cn(navIconClasses, "group-hover:text-accent")} />
-                <span className="hidden md:inline">{item.label}</span>
-              </Link>
-            </Button>
-          ))}
-          <Button 
-            asChild 
-            variant="default" 
+          {/* Profile link removed, would be conditional in a real app */}
+          {/*
+          <Button asChild variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground hover:bg-transparent focus-visible:bg-accent/10")}>
+            <Link href="/profile">
+              <UserCircle className={cn(navIconClasses, "group-hover:text-accent")} />
+              <span className="hidden md:inline">Profile</span>
+            </Link>
+          </Button>
+          */}
+
+          <Button asChild variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground hover:bg-transparent focus-visible:bg-accent/10")}>
+            <Link href="/auth/sign-in">
+              <LogIn className={cn(navIconClasses, "group-hover:text-accent")} />
+              <span className="hidden md:inline">Sign In</span>
+            </Link>
+          </Button>
+
+          <Button
+            asChild
+            variant="default"
             className={cn(
               "ml-2 px-4 py-2 rounded-lg shadow-md transition-all duration-300 ease-in-out text-sm text-accent-foreground",
               "bg-gradient-to-r from-[hsl(var(--accent)_/_0.9)] via-[hsl(var(--primary)_/_0.9)] to-[hsl(var(--accent)_/_0.9)] hover:shadow-[0_0_15px_3px_hsl(var(--accent)_/_0.7)] hover:scale-105 cta-glow-pulse active:scale-95"
             )}
           >
-            <Link href="/#pricing">Get Started</Link>
+            <Link href="/auth/sign-up">Sign Up</Link>
           </Button>
         </nav>
       </div>
