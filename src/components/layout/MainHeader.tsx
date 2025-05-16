@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Zap, LogIn, UserPlus, LayoutDashboard, User, LogOut as LogOutIcon, Settings } from 'lucide-react';
+import { Zap, LogIn, UserPlus, LayoutDashboard, User, LogOut as LogOutIcon, ClipboardList, Bot, Apple as NutritionIcon, Camera } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
@@ -26,7 +26,7 @@ export default function MainHeader() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Re-check localStorage if it changes (e.g. after login/logout on another page)
+  // Re-check localStorage if it changes (e.g. after login/logout on another page or tab)
   useEffect(() => {
     const checkStorage = () => {
       if (typeof window !== 'undefined') {
@@ -36,7 +36,8 @@ export default function MainHeader() {
         }
       }
     };
-    window.addEventListener('storage', checkStorage);
+    window.addEventListener('storage', checkStorage); // Listen for storage changes in other tabs
+    checkStorage(); // Initial check in case it changed while component was unmounted
     return () => window.removeEventListener('storage', checkStorage);
   }, [isLoggedIn]);
 
@@ -47,7 +48,7 @@ export default function MainHeader() {
     }
     setIsLoggedIn(false);
     router.push('/');
-    router.refresh(); // Ensure header re-renders immediately
+    router.refresh(); // Ensure header re-renders immediately across the app
   };
 
   const navLinkBaseClasses = "flex items-center justify-center md:justify-start gap-1 md:gap-1.5 px-2 md:px-3 py-2 rounded-lg text-sm transition-all duration-300 ease-in-out";
@@ -58,7 +59,7 @@ export default function MainHeader() {
     <header
       className={cn(
         "sticky top-0 z-50 w-full glassmorphic-card transition-all duration-300 ease-in-out",
-        isScrolled ? "shadow-xl shadow-accent/10 dark:shadow-accent/20 h-16" : "h-20"
+        isScrolled ? "shadow-xl shadow-accent/10 dark:shadow-accent/20 h-16" : "h-20 dark:shadow-accent/10"
       )}
     >
       <div
@@ -70,13 +71,38 @@ export default function MainHeader() {
           <Zap className="h-8 w-8 text-accent" />
           <span className="text-2xl font-bold text-card-foreground">Fitnity AI</span>
         </Link>
-        <nav className="flex items-center gap-2 md:gap-3">
+        <nav className="flex items-center gap-1 md:gap-2">
           {isLoggedIn ? (
             <>
               <Button asChild variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground hover:bg-transparent focus-visible:bg-accent/10")}>
                 <Link href="/dashboard">
                   <LayoutDashboard className={cn(navIconClasses, "group-hover:text-accent")} />
                   <span className="hidden md:inline">Dashboard</span>
+                </Link>
+              </Button>
+              <Button asChild variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground hover:bg-transparent focus-visible:bg-accent/10")}>
+                <Link href="/workout-plan">
+                  <ClipboardList className={cn(navIconClasses, "group-hover:text-accent")} />
+                  <span className="hidden md:inline">Workout</span>
+                </Link>
+              </Button>
+              <Button asChild variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground hover:bg-transparent focus-visible:bg-accent/10")}>
+                <Link href="/nutrition-plan">
+                  <NutritionIcon className={cn(navIconClasses, "group-hover:text-accent")} />
+                  <span className="hidden md:inline">Nutrition</span>
+                </Link>
+              </Button>
+              <Button asChild variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground hover:bg-transparent focus-visible:bg-accent/10")}>
+                <Link href="/form-analysis">
+                  <Camera className={cn(navIconClasses, "group-hover:text-accent")} />
+                  <span className="hidden md:inline">Form Check</span>
+                </Link>
+              </Button>
+              <Button asChild variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground hover:bg-transparent focus-visible:bg-accent/10")}>
+                <Link href="/ai-coach">
+                  <Bot className={cn(navIconClasses, "group-hover:text-accent")} />
+                  <span className="hidden md:inline">AI Coach</span>
+                  <span className="glowing-orb ml-1.5 hidden md:inline-block"></span>
                 </Link>
               </Button>
               <Button asChild variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground hover:bg-transparent focus-visible:bg-accent/10")}>
@@ -102,13 +128,14 @@ export default function MainHeader() {
                 asChild
                 variant="default"
                 className={cn(
-                  "ml-2 px-4 py-2 rounded-lg shadow-md transition-all duration-300 ease-in-out text-sm text-accent-foreground",
+                  "ml-2 px-3 md:px-4 py-2 rounded-lg shadow-md transition-all duration-300 ease-in-out text-sm text-accent-foreground",
                   "bg-gradient-to-r from-[hsl(var(--accent)_/_0.9)] via-[hsl(var(--primary)_/_0.9)] to-[hsl(var(--accent)_/_0.9)] hover:shadow-[0_0_15px_3px_hsl(var(--accent)_/_0.7)] hover:scale-105 cta-glow-pulse active:scale-95"
                 )}
               >
                 <Link href="/auth/sign-up">
                   <UserPlus className={cn(navIconClasses, "mr-1 md:mr-1.5")} />
-                  Get Started
+                  <span className="hidden sm:inline">Get Started</span>
+                  <span className="sm:hidden">Sign Up</span>
                 </Link>
               </Button>
             </>
