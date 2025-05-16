@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Zap, BarChart3, BotMessageSquare, Camera, UserCircle, LayoutDashboard } from 'lucide-react';
+import { Zap, BarChart3, BotMessageSquare, Camera, UserCircle, LayoutDashboard, Apple as NutritionIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -26,7 +26,7 @@ export default function MainHeader() {
     <header 
       className={cn(
         "sticky top-0 z-50 w-full glassmorphic-card transition-all duration-300 ease-in-out",
-        isScrolled ? "shadow-xl shadow-accent/20 h-16" : "h-20"
+        isScrolled ? "shadow-xl shadow-accent/20 h-16" : "h-20" // Adjusted shadow for better glow effect
       )}
     >
       <div 
@@ -42,6 +42,7 @@ export default function MainHeader() {
           {[
             { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
             { href: "/workout-plan", icon: BarChart3, label: "Workout Plan" },
+            { href: "/nutrition-plan", icon: NutritionIcon, label: "Nutrition" },
             { href: "/form-analysis", icon: Camera, label: "Form Analysis" },
             { href: "/ai-coach", icon: BotMessageSquare, label: "AI Coach", hasOrb: true },
             { href: "/profile", icon: UserCircle, label: "Profile" },
