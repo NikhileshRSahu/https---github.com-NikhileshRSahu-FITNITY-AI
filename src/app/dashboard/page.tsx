@@ -4,7 +4,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { LineChart, CartesianGrid, XAxis, YAxis, Line, ResponsiveContainer, Legend } from 'recharts';
-import { Award, Flame, HeartPulse, TrendingUp, Scaling, Star, Droplets } from 'lucide-react';
+import { Award, Flame, HeartPulse, TrendingUp, Scaling, Star, Droplets, Trophy } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
 const workoutData = [
@@ -28,14 +28,14 @@ const chartConfig: ChartConfig = {
 };
 
 const bodyMeasurementData = {
-  weight: { value: '72.1', unit: 'kg', trend: 'down' },
-  bodyFat: { value: '17.8', unit: '%', trend: 'down' },
-  muscleMass: { value: '35.2', unit: 'kg', trend: 'up' },
+  weight: { value: '72.1', unit: 'kg' },
+  bodyFat: { value: '17.8', unit: '%' },
+  muscleMass: { value: '35.2', unit: 'kg' },
 };
 
 const streaksAndBadges = {
   currentStreak: 14,
-  totalBadges: 6,
+  totalBadges: 7, // Increased due to new PRs card acting like achievements
   recentBadges: [
     { name: 'Consistent Challenger', icon: Flame, date: 'July 23' },
     { name: 'Morning Mover Pro', icon: Star, date: 'July 21' },
@@ -49,6 +49,13 @@ const healthSnapshotData = {
   steps: { current: 9200, goal: 10000 },
 };
 
+const personalRecordsData = [
+    { name: 'Fastest 1km Run', value: '4:25 min', icon: TrendingUp },
+    { name: 'Max Bench Press', value: '85 kg', icon: Scaling },
+    { name: 'Longest Plank', value: '3m 15s', icon: Flame },
+    { name: 'Peak Steps in a Day', value: '15,870', icon: Award },
+];
+
 export default function DashboardPage() {
   return (
     <div className="container mx-auto px-4 md:px-6 py-12 md:py-20">
@@ -61,7 +68,7 @@ export default function DashboardPage() {
             <CardTitle className="flex items-center text-xl">
               <TrendingUp className="mr-3 h-6 w-6 text-accent" /> Workout Consistency
             </CardTitle>
-            <CardDescription>Your workouts per week over the last 6 weeks.</CardDescription>
+            <CardDescription>Your workouts per week over the last 6 weeks compared to your goal.</CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer config={chartConfig} className="h-[250px] w-full">
@@ -115,12 +122,34 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
+        
+        {/* Personal Records Card */}
+        <Card className="glassmorphic-card hover:shadow-2xl transition-shadow duration-300">
+          <CardHeader>
+            <CardTitle className="flex items-center text-xl">
+              <Trophy className="mr-3 h-6 w-6 text-accent" /> Personal Records
+            </CardTitle>
+            <CardDescription>Your noteworthy achievements.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {personalRecordsData.map((pr, idx) => (
+              <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-background/10 hover:bg-background/20 transition-colors">
+                <div className="flex items-center gap-3">
+                    <pr.icon className="h-5 w-5 text-accent/80 flex-shrink-0" />
+                    <span className="font-medium text-sm text-card-foreground">{pr.name}:</span>
+                </div>
+                <span className="text-sm font-semibold text-accent">{pr.value}</span>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
 
         {/* Streaks & Achievements Card */}
         <Card className="glassmorphic-card hover:shadow-2xl transition-shadow duration-300">
           <CardHeader>
             <CardTitle className="flex items-center text-xl">
-              <Award className="mr-3 h-6 w-6 text-accent" /> Streaks & Achievements
+              <Award className="mr-3 h-6 w-6 text-accent" /> Streaks & Badges
             </CardTitle>
             <CardDescription>Your accomplishments and consistency.</CardDescription>
           </CardHeader>
@@ -186,3 +215,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    
