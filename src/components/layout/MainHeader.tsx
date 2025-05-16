@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Zap, BarChart3, BotMessageSquare, Camera, UserCircle, LayoutDashboard, Apple as NutritionIcon } from 'lucide-react';
+import { Zap, UserCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -26,7 +26,7 @@ export default function MainHeader() {
     <header 
       className={cn(
         "sticky top-0 z-50 w-full glassmorphic-card transition-all duration-300 ease-in-out",
-        isScrolled ? "shadow-xl shadow-accent/20 h-16" : "h-20" // Adjusted shadow for better glow effect
+        isScrolled ? "shadow-xl shadow-accent/10 dark:shadow-accent/20 h-16" : "h-20"
       )}
     >
       <div 
@@ -38,22 +38,14 @@ export default function MainHeader() {
           <Zap className="h-8 w-8 text-accent" />
           <span className="text-2xl font-bold text-card-foreground">Fitnity AI</span>
         </Link>
-        <nav className="flex items-center gap-1 md:gap-2">
+        <nav className="flex items-center gap-2 md:gap-3">
           {[
-            { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-            { href: "/workout-plan", icon: BarChart3, label: "Workout Plan" },
-            { href: "/nutrition-plan", icon: NutritionIcon, label: "Nutrition" },
-            { href: "/form-analysis", icon: Camera, label: "Form Analysis" },
-            { href: "/ai-coach", icon: BotMessageSquare, label: "AI Coach", hasOrb: true },
             { href: "/profile", icon: UserCircle, label: "Profile" },
           ].map((item) => (
             <Button key={item.label} asChild variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground hover:bg-transparent focus-visible:bg-accent/10")}>
               <Link href={item.href}>
                 <item.icon className={navIconClasses} />
                 <span className="hidden md:inline">{item.label}</span>
-                {item.hasOrb && (
-                  <span className="ml-1 hidden md:inline-block glowing-orb"></span>
-                )}
               </Link>
             </Button>
           ))}
