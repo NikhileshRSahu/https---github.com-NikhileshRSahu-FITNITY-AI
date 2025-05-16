@@ -13,6 +13,7 @@ import { LogIn, Mail, Lock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const signInSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
@@ -24,6 +25,7 @@ type SignInFormValues = z.infer<typeof signInSchema>;
 export default function SignInPage() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
@@ -38,12 +40,18 @@ export default function SignInPage() {
     console.log('Sign In submitted:', data);
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('fitnityUserLoggedIn', 'true');
+    }
+
     toast({
       title: 'Sign In Successful (Simulated)',
       description: 'Welcome back! You are now signed in.',
     });
     setIsLoading(false);
-    // In a real app, you would redirect the user, e.g., router.push('/dashboard');
+    router.push('/dashboard'); // Redirect to dashboard or desired page
+    router.refresh(); // Force refresh to update header state
   }
 
   return (

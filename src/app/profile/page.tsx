@@ -9,31 +9,44 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Moon, Sun, Settings as SettingsIcon, Bell, Globe, ShieldCheck, LogOut, Zap, Edit3 } from 'lucide-react'
+import { Moon, Sun, Settings as SettingsIcon, Bell, Globe, ShieldCheck, LogOut as LogOutIcon, Zap, Edit3 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useRouter } from 'next/navigation' // Added for logout redirection
 
 export default function ProfilePage() {
   const { theme, setTheme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
+  const router = useRouter(); // Added for logout redirection
 
   useEffect(() => {
     setMounted(true)
-  }, [])
+    // Redirect to sign-in if not logged in (simulated)
+    if (typeof window !== 'undefined' && localStorage.getItem('fitnityUserLoggedIn') !== 'true') {
+        router.replace('/auth/sign-in');
+    }
+  }, [router])
 
-  if (!mounted) {
+
+  const handleLogout = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('fitnityUserLoggedIn');
+    }
+    router.push('/');
+    router.refresh();
+  };
+
+  if (!mounted || (typeof window !== 'undefined' && localStorage.getItem('fitnityUserLoggedIn') !== 'true')) {
+    // Show skeleton or redirecting message while checking auth state or redirecting
     return (
         <div className="container mx-auto px-4 md:px-6 py-12 md:py-20">
           <div className="max-w-3xl mx-auto space-y-8">
-            {/* Profile Header Skeleton */}
             <div className="flex flex-col items-center space-y-4 mb-12">
                 <Skeleton className="h-24 w-24 rounded-full" />
                 <Skeleton className="h-8 w-1/2" />
                 <Skeleton className="h-5 w-3/4" />
             </div>
-
-            {/* Settings Cards Skeleton */}
             {[...Array(4)].map((_, i) => ( 
               <Card key={i} className="glassmorphic-card">
                 <CardHeader>
@@ -67,9 +80,8 @@ export default function ProfilePage() {
   return (
     <div className="container mx-auto px-4 md:px-6 py-12 md:py-20">
       <div className="max-w-3xl mx-auto space-y-10">
-        {/* Profile Header */}
         <div className="flex flex-col items-center text-center space-y-4 mb-12">
-            <Avatar className="h-24 w-24 ring-4 ring-accent/50 shadow-lg hover:opacity-80 transition-opacity duration-200">
+            <Avatar className="h-24 w-24 ring-4 ring-accent/50 shadow-lg hover:opacity-80 transition-opacity duration-200 active:scale-95">
                 <AvatarImage src="https://placehold.co/100x100.png" alt="Aarav Patel" data-ai-hint="user portrait" />
                 <AvatarFallback>AP</AvatarFallback>
             </Avatar>
@@ -80,10 +92,9 @@ export default function ProfilePage() {
             </Button>
         </div>
         
-        {/* Fitness Snapshot Card */}
         <Card className="glassmorphic-card">
           <CardHeader>
-            <CardTitle className="flex items-center text-xl">
+            <CardTitle className="text-xl font-bold flex items-center">
               <Zap className="mr-3 h-6 w-6 text-accent" /> My Fitness Snapshot
             </CardTitle>
             <CardDescription>Your current fitness goals and preferences.</CardDescription>
@@ -108,10 +119,9 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
-        {/* Account Information Card */}
         <Card className="glassmorphic-card">
           <CardHeader>
-            <CardTitle className="flex items-center text-xl">
+            <CardTitle className="text-xl font-bold flex items-center">
               <SettingsIcon className="mr-3 h-6 w-6 text-accent" /> Account Settings
             </CardTitle>
             <CardDescription>Manage your personal details and security.</CardDescription>
@@ -129,10 +139,9 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
-        {/* Appearance Card */}
         <Card className="glassmorphic-card">
           <CardHeader>
-            <CardTitle className="flex items-center text-xl">
+            <CardTitle className="text-xl font-bold flex items-center">
               {isDarkMode ? 
                 <Moon className="mr-3 h-6 w-6 text-accent" /> : 
                 <Sun className="mr-3 h-6 w-6 text-accent" />
@@ -156,10 +165,9 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
-        {/* Notification Preferences Card */}
         <Card className="glassmorphic-card">
           <CardHeader>
-            <CardTitle className="flex items-center text-xl">
+            <CardTitle className="text-xl font-bold flex items-center">
               <Bell className="mr-3 h-6 w-6 text-accent" /> Notification Preferences
             </CardTitle>
             <CardDescription>Choose what updates you want to receive.</CardDescription>
@@ -180,10 +188,9 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
         
-        {/* Language Preference Card */}
         <Card className="glassmorphic-card">
           <CardHeader>
-            <CardTitle className="flex items-center text-xl">
+            <CardTitle className="text-xl font-bold flex items-center">
               <Globe className="mr-3 h-6 w-6 text-accent" /> Language Preference
             </CardTitle>
             <CardDescription>Select your preferred language for the app interface.</CardDescription>
@@ -196,16 +203,14 @@ export default function ProfilePage() {
                 <SelectContent>
                   <SelectItem value="English">English</SelectItem>
                   <SelectItem value="Hindi">हिंदी (Hindi)</SelectItem>
-                  {/* Add more languages as needed */}
                 </SelectContent>
               </Select>
           </CardContent>
         </Card>
 
-        {/* Data & Privacy Card */}
         <Card className="glassmorphic-card">
           <CardHeader>
-            <CardTitle className="flex items-center text-xl">
+            <CardTitle className="text-xl font-bold flex items-center">
               <ShieldCheck className="mr-3 h-6 w-6 text-accent" /> Data & Privacy
             </CardTitle>
             <CardDescription>Manage your data and review our policies.</CardDescription>
@@ -225,11 +230,10 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
-        {/* Logout Button */}
          <Card className="glassmorphic-card">
             <CardContent className="pt-6">
-                 <Button variant="destructive" className="w-full text-lg py-6 transition-transform duration-300 hover:scale-105 active:scale-95">
-                    <LogOut className="mr-2 h-5 w-5" /> Logout
+                 <Button variant="destructive" onClick={handleLogout} className="w-full text-lg py-6 transition-transform duration-300 hover:scale-105 active:scale-95">
+                    <LogOutIcon className="mr-2 h-5 w-5" /> Logout
                 </Button>
             </CardContent>
          </Card>
