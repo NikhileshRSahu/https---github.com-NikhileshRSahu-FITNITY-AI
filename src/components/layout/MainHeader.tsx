@@ -44,7 +44,7 @@ export default function MainHeader() {
           ].map((item) => (
             <Button key={item.label} asChild variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground hover:bg-transparent focus-visible:bg-accent/10")}>
               <Link href={item.href}>
-                <item.icon className={navIconClasses} />
+                <item.icon className={cn(navIconClasses, "group-hover:text-accent")} />
                 <span className="hidden md:inline">{item.label}</span>
               </Link>
             </Button>
@@ -54,7 +54,7 @@ export default function MainHeader() {
             variant="default" 
             className={cn(
               "ml-2 px-4 py-2 rounded-lg shadow-md transition-all duration-300 ease-in-out text-sm text-accent-foreground",
-              "bg-gradient-to-r from-[hsl(var(--accent)_/_0.9)] via-[hsl(var(--primary)_/_0.9)] to-[hsl(var(--accent)_/_0.9)] hover:shadow-[0_0_15px_3px_hsl(var(--accent)_/_0.7)] hover:scale-105 cta-glow-pulse"
+              "bg-gradient-to-r from-[hsl(var(--accent)_/_0.9)] via-[hsl(var(--primary)_/_0.9)] to-[hsl(var(--accent)_/_0.9)] hover:shadow-[0_0_15px_3px_hsl(var(--accent)_/_0.7)] hover:scale-105 cta-glow-pulse active:scale-95"
             )}
           >
             <Link href="/#pricing">Get Started</Link>
