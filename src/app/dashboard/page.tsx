@@ -21,14 +21,14 @@ const monthlyWorkoutData = [
   { month: 'May', workouts: 16 }, { month: 'Jun', workouts: 19 }, { month: 'Jul', workouts: 22 }, { month: 'Aug', workouts: 17 },
 ];
 
-const allTimeWorkoutData = [ 
+const allTimeWorkoutData = [
     { period: 'Q1 \'23', workouts: 45 }, { period: 'Q2 \'23', workouts: 55 }, { period: 'Q3 \'23', workouts: 50 },
     { period: 'Q4 \'23', workouts: 60 }, { period: 'Q1 \'24', workouts: 52 }, { period: 'Q2 \'24', workouts: 58 },
 ];
 
 const chartConfig: ChartConfig = {
   workouts: {
-    label: "Workouts", 
+    label: "Workouts",
     color: "hsl(var(--accent))",
   },
 };
@@ -91,7 +91,7 @@ export default function DashboardPage() {
         return 'week';
     }
   };
-  
+
   const chartData = getCurrentChartData();
   const xAxisKey = getXAxisDataKey();
 
@@ -117,8 +117,8 @@ export default function DashboardPage() {
                   onClick={() => setSelectedTimeRange(range)}
                   className={cn(
                     "capitalize text-xs px-3 py-1 h-auto",
-                    selectedTimeRange === range 
-                      ? "bg-accent hover:bg-accent/90 text-accent-foreground" 
+                    selectedTimeRange === range
+                      ? "bg-accent hover:bg-accent/90 text-accent-foreground"
                       : "border-accent text-accent hover:bg-accent/10 hover:text-accent"
                   )}
                 >
@@ -132,22 +132,22 @@ export default function DashboardPage() {
               <ChartContainer config={chartConfig} className="h-[250px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={chartData} margin={{ top: 5, right: 20, left: -20, bottom: 5 }}>
-                    <CartesianGrid 
-                      vertical={false} 
-                      stroke="hsl(var(--muted-foreground) / 0.2)" 
+                    <CartesianGrid
+                      vertical={false}
+                      stroke="hsl(var(--muted-foreground) / 0.2)"
                       strokeDasharray="3 3"
                     />
-                    <XAxis 
+                    <XAxis
                       dataKey={xAxisKey}
-                      tickLine={false} 
-                      axisLine={false} 
-                      stroke="hsl(var(--muted-foreground))" 
+                      tickLine={false}
+                      axisLine={false}
+                      stroke="hsl(var(--muted-foreground))"
                       dy={10}
                     />
-                    <YAxis 
-                      tickLine={false} 
-                      axisLine={false} 
-                      stroke="hsl(var(--muted-foreground))" 
+                    <YAxis
+                      tickLine={false}
+                      axisLine={false}
+                      stroke="hsl(var(--muted-foreground))"
                       allowDecimals={false}
                       width={40}
                       dx={-5}
@@ -156,13 +156,13 @@ export default function DashboardPage() {
                       cursor={{ stroke: "hsl(var(--muted-foreground) / 0.3)", strokeWidth: 1, strokeDasharray: "3 3" }}
                       content={<ChartTooltipContent indicator="dot" labelClassName="text-sm" className="glassmorphic-card !border-border/50" />}
                     />
-                    <Line 
-                      type="monotone" 
-                      dataKey="workouts" 
-                      strokeWidth={3} 
-                      stroke="hsl(var(--accent))" 
-                      dot={false} 
-                      activeDot={{ r: 6, strokeWidth: 0, fill: "hsl(var(--accent))" }} 
+                    <Line
+                      type="monotone"
+                      dataKey="workouts"
+                      strokeWidth={3}
+                      stroke="hsl(var(--accent))"
+                      dot={false}
+                      activeDot={{ r: 6, strokeWidth: 0, fill: "hsl(var(--accent))" }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -201,7 +201,7 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card className="glassmorphic-card hover:shadow-2xl transition-shadow duration-300 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
           <CardHeader>
             <CardTitle className="flex items-center text-xl">
@@ -221,9 +221,9 @@ export default function DashboardPage() {
                 </div>
               ))
             ) : (
-              <Alert className="bg-background/30 border-border/50 text-card-foreground">
-                <Trophy className="h-5 w-5 text-accent" />
-                <AlertTitle>No Records Yet</AlertTitle>
+              <Alert className="bg-background/30 border-border/50 text-card-foreground flex flex-col items-center text-center">
+                <Trophy className="h-6 w-6 text-accent mb-2" />
+                <AlertTitle className="mb-1">No Records Yet</AlertTitle>
                 <AlertDescription>
                   Achieve new milestones in your fitness journey and they'll appear here!
                 </AlertDescription>
@@ -252,7 +252,7 @@ export default function DashboardPage() {
               <h4 className="font-medium text-card-foreground/90 mb-2">Recent Badges:</h4>
               <ul className="space-y-2">
                 {streaksAndBadges.recentBadges.map((badge, idx) => (
-                  <li key={idx} className="flex items-center gap-3 p-2 rounded-md bg-background/5 hover:bg-background/10 transition-colors">
+                  <li key={idx} className="flex items-center gap-3 p-2.5 rounded-lg bg-background/10 hover:bg-background/20 transition-colors">
                     <badge.icon className="h-6 w-6 text-accent" />
                     <div>
                       <p className="font-medium text-sm text-card-foreground">{badge.name}</p>
