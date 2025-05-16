@@ -34,7 +34,7 @@ export default function ProfilePage() {
             </div>
 
             {/* Settings Cards Skeleton */}
-            {[...Array(4)].map((_, i) => ( // Increased to 4 to account for fitness snapshot
+            {[...Array(4)].map((_, i) => ( 
               <Card key={i} className="glassmorphic-card">
                 <CardHeader>
                   <Skeleton className="h-7 w-1/3 mb-1" />
@@ -75,7 +75,7 @@ export default function ProfilePage() {
             </Avatar>
             <h1 className="text-4xl font-bold text-foreground">Aarav Patel</h1>
             <p className="text-lg text-foreground/80">aarav.patel@example.com</p>
-            <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground transition-transform duration-300 hover:scale-105">
+            <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground transition-transform duration-300 hover:scale-105 active:scale-95">
                 <Edit3 className="mr-2 h-4 w-4" /> Edit Profile
             </Button>
         </div>
@@ -91,15 +91,19 @@ export default function ProfilePage() {
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between p-3 rounded-lg bg-background/10">
                 <span className="font-medium text-card-foreground">Primary Fitness Goal:</span>
-                <span className="text-card-foreground/80">Build upper body strength</span>
+                <span className="text-card-foreground/80">Weight Loss & Endurance</span>
             </div>
              <div className="flex items-center justify-between p-3 rounded-lg bg-background/10">
-                <span className="font-medium text-card-foreground">Workout Style:</span>
-                <span className="text-card-foreground/80">Home workouts, 3x week</span>
+                <span className="font-medium text-card-foreground">Preferred Workout Style:</span>
+                <span className="text-card-foreground/80">Home workouts, HIIT, 3-4x week</span>
             </div>
              <div className="flex items-center justify-between p-3 rounded-lg bg-background/10">
-                <span className="font-medium text-card-foreground">Current Level:</span>
+                <span className="font-medium text-card-foreground">Current Fitness Level:</span>
                 <span className="text-card-foreground/80">Intermediate</span>
+            </div>
+             <div className="flex items-center justify-between p-3 rounded-lg bg-background/10">
+                <span className="font-medium text-card-foreground">Preferred Language (Coach):</span>
+                <span className="text-card-foreground/80">English</span>
             </div>
           </CardContent>
         </Card>
@@ -121,7 +125,7 @@ export default function ProfilePage() {
               <Label htmlFor="email" className="text-sm font-medium">Email Address</Label>
               <Input id="email" type="email" defaultValue="aarav.patel@example.com" readOnly className="mt-1 bg-background/50 text-card-foreground" />
             </div>
-            <Button variant="outline" className="w-full sm:w-auto hover:bg-accent/10 hover:text-accent-foreground transition-transform duration-300 hover:scale-105">Change Password</Button>
+            <Button variant="outline" className="w-full sm:w-auto hover:bg-accent/10 hover:text-accent-foreground transition-transform duration-300 hover:scale-105 active:scale-95">Change Password</Button>
           </CardContent>
         </Card>
 
@@ -215,7 +219,7 @@ export default function ProfilePage() {
               <Link href="/terms-of-service">View Terms of Service</Link>
             </Button>
              <br />
-            <Button variant="outline" className="text-destructive hover:text-destructive-foreground hover:bg-destructive/90 border-destructive hover:border-destructive/90 w-full sm:w-auto mt-2 transition-transform duration-300 hover:scale-105">
+            <Button variant="outline" className="text-destructive hover:text-destructive-foreground hover:bg-destructive/90 border-destructive hover:border-destructive/90 w-full sm:w-auto mt-2 transition-transform duration-300 hover:scale-105 active:scale-95">
               Download My Data
             </Button>
           </CardContent>
@@ -224,7 +228,7 @@ export default function ProfilePage() {
         {/* Logout Button */}
          <Card className="glassmorphic-card">
             <CardContent className="pt-6">
-                 <Button variant="destructive" className="w-full text-lg py-6 transition-transform duration-300 hover:scale-105">
+                 <Button variant="destructive" className="w-full text-lg py-6 transition-transform duration-300 hover:scale-105 active:scale-95">
                     <LogOut className="mr-2 h-5 w-5" /> Logout
                 </Button>
             </CardContent>

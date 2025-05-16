@@ -75,7 +75,7 @@ export default function AiCoachPage() {
       {
         id: 'initial-greet',
         sender: 'ai',
-        text: `Hello! I'm your Fitnity AI Coach. I'm excited to help you with your fitness goal: "${data.fitnessGoal}". We'll be communicating in ${data.language}. How can I assist you today?`,
+        text: `Hello! I'm your Fitnity AI Coach, ready to assist in ${data.language}. I see your goal is "${data.fitnessGoal}". ${data.workoutHistorySummary ? `You mentioned: "${data.workoutHistorySummary}". ` : ''}How can I help you kickstart your journey today?`,
         timestamp: new Date(),
       }
     ]);
@@ -109,7 +109,7 @@ export default function AiCoachPage() {
       const input: AiCoachInput = {
         language: coachSettings.language,
         fitnessGoal: coachSettings.fitnessGoal,
-        workoutHistory: coachSettings.workoutHistorySummary || 'No specific recent activity shared by the user.',
+        workoutHistory: coachSettings.workoutHistorySummary || 'User has not shared any specific recent activity or current status.',
         userMessage: data.userMessage,
       };
       const result = await aiCoach(input);
@@ -184,6 +184,7 @@ export default function AiCoachPage() {
                         <Textarea
                           placeholder="e.g., Went for a 30 min run yesterday, feeling a bit tired."
                           {...field}
+                          rows={3}
                         />
                       </FormControl>
                       <FormDescription>
@@ -214,7 +215,7 @@ export default function AiCoachPage() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg transition-transform duration-300 hover:scale-105 cta-glow-pulse">
+                <Button type="submit" size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg transition-transform duration-300 hover:scale-105 cta-glow-pulse active:scale-95">
                   Start Chatting
                 </Button>
               </form>
