@@ -1,13 +1,16 @@
 
 'use client';
 
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { LineChart, CartesianGrid, XAxis, YAxis, Line, ResponsiveContainer } from 'recharts';
-import { Award, Flame, HeartPulse, TrendingUp, Scaling, Star, Droplets, Trophy } from 'lucide-react';
+import { Award, Flame, HeartPulse, TrendingUp, Scaling, Star, Droplets, Trophy, CalendarDays } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
-const workoutData = [
+const weeklyWorkoutData = [
   { week: 'Wk 1', workouts: 3 },
   { week: 'Wk 2', workouts: 4 },
   { week: 'Wk 3', workouts: 2 },
@@ -18,9 +21,27 @@ const workoutData = [
   { week: 'Wk 8', workouts: 3 },
 ];
 
+// Placeholder data - in a real app, this would be fetched or calculated
+const monthlyWorkoutData = [
+  { month: 'Jan', workouts: 15 },
+  { month: 'Feb', workouts: 18 },
+  { month: 'Mar', workouts: 12 },
+  { month: 'Apr', workouts: 20 },
+  { month: 'May', workouts: 16 },
+  { month: 'Jun', workouts: 19 },
+];
+
+const allTimeWorkoutData = [ // Could be quarterly or yearly aggregated
+    { period: 'Q1', workouts: 45 },
+    { period: 'Q2', workouts: 55 },
+    { period: 'Q3', workouts: 50 },
+    { period: 'Q4', workouts: 60 },
+];
+
+
 const chartConfig: ChartConfig = {
   workouts: {
-    label: "Workouts Completed",
+    label: "Workouts", // Simplified label
     color: "hsl(var(--accent))",
   },
 };
@@ -54,7 +75,38 @@ const personalRecordsData = [
     { name: 'Peak Steps in a Day', value: '15,870', icon: Award },
 ];
 
+type TimeRange = 'weekly' | 'monthly' | 'allTime';
+
 export default function DashboardPage() {
+  const [selectedTimeRange, setSelectedTimeRange] = useState<TimeRange>('weekly');
+
+  const getCurrentChartData = () => {
+    switch (selectedTimeRange) {
+      case 'monthly':
+        return monthlyWorkoutData;
+      case 'allTime':
+        return allTimeWorkoutData;
+      case 'weekly':
+      default:
+        return weeklyWorkoutData;
+    }
+  };
+
+  const getXAxisDataKey = () => {
+    switch (selectedTimeRange) {
+      case 'monthly':
+        return 'month';
+      case 'allTime':
+        return 'period';
+      case 'weekly':
+      default:
+        return 'week';
+    }
+  };
+  
+  const chartData = getCurrentChartData();
+  const xAxisKey = getXAxisDataKey();
+
   return (
     <div className="container mx-auto px-4 md:px-6 py-12 md:py-20">
       <h1 className="text-3xl md:text-4xl font-bold mb-10 text-foreground text-center">My Progress Dashboard</h1>
@@ -62,23 +114,44 @@ export default function DashboardPage() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Workout Consistency Card */}
         <Card className="glassmorphic-card lg:col-span-2 hover:shadow-2xl transition-shadow duration-300">
-          <CardHeader>
-            <CardTitle className="flex items-center text-xl">
-              <TrendingUp className="mr-3 h-6 w-6 text-accent" /> Workout Consistency
-            </CardTitle>
-            <CardDescription>Your workouts completed per week over the last 8 weeks.</CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center text-xl">
+                <TrendingUp className="mr-3 h-6 w-6 text-accent" /> Workout Consistency
+              </CardTitle>
+              <CardDescription>Your workouts completed over time.</CardDescription>
+            </div>
+            <div className="flex items-center gap-2">
+              {(['weekly', 'monthly', 'allTime'] as TimeRange[]).map((range) => (
+                <Button
+                  key={range}
+                  variant={selectedTimeRange === range ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSelectedTimeRange(range)}
+                  className={cn(
+                    "capitalize text-xs px-3 py-1 h-auto",
+                    selectedTimeRange === range 
+                      ? "bg-accent hover:bg-accent/90 text-accent-foreground" 
+                      : "border-accent text-accent hover:bg-accent/10 hover:text-accent"
+                  )}
+                >
+                  {range === 'allTime' ? 'All Time' : range}
+                </Button>
+              ))}
+            </div>
           </CardHeader>
           <CardContent>
+            {/* In a real app, chartData would dynamically update based on selectedTimeRange */}
             <ChartContainer config={chartConfig} className="h-[250px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={workoutData} margin={{ top: 5, right: 20, left: -20, bottom: 5 }}>
+                <LineChart data={chartData} margin={{ top: 5, right: 20, left: -20, bottom: 5 }}>
                   <CartesianGrid 
                     vertical={false} 
                     stroke="hsl(var(--muted-foreground) / 0.2)" 
                     strokeDasharray="3 3"
                   />
                   <XAxis 
-                    dataKey="week" 
+                    dataKey={xAxisKey}
                     tickLine={false} 
                     axisLine={false} 
                     stroke="hsl(var(--muted-foreground))" 
@@ -226,3 +299,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    
