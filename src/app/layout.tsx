@@ -7,6 +7,7 @@ import { Toaster } from '@/components/ui/toaster';
 import MainHeader from '@/components/layout/MainHeader';
 import MainFooter from '@/components/layout/MainFooter';
 import { ThemeProvider } from '@/components/theme-provider';
+import CursorFollower from '@/components/effects/CursorFollower'; // Added import
 
 const geistSans = GeistSans;
 const geistMono = GeistMono;
@@ -28,10 +29,11 @@ export default function RootLayout({
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark" // Changed to dark by default
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
+          <CursorFollower /> {/* Added CursorFollower component */}
           <MainHeader />
           <main className="flex-grow">{children}</main>
           <MainFooter />
