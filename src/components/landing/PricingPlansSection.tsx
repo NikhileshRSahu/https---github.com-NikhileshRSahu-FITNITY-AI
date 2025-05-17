@@ -1,125 +1,218 @@
 
+'use client';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle2, Star } from 'lucide-react';
+import { CheckCircle2, Sparkles, Star, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useState } from 'react';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 interface Plan {
-  name: string;
-  priceUsd: string;
-  priceInr: string;
-  priceFrequency: string;
+  id: string;
+  name: string; // e.g. "Base", "Premium", "Unlimited" - internal identifier
+  displayName: string; // e.g. "FREE", "Premium", "Unlimited" - for display
+  icon?: React.ElementType;
+  priceMonthlyUsd: number;
+  priceMonthlyInr: number;
   description: string;
   features: string[];
   ctaText: string;
   ctaLink: string;
   isPopular?: boolean;
+  isCurrent?: boolean; // For the "Selected plan" style
+  planAccentClass?: string; // For specific accent colors
+  buttonGradientClass?: string; // For gradient button
 }
 
-const plans: Plan[] = [
+const plansData: Plan[] = [
   {
-    name: 'Free',
-    priceUsd: '$0',
-    priceInr: '₹0',
-    priceFrequency: '/month',
-    description: 'Get started with basic AI workout generation and progress tracking.',
+    id: 'free',
+    name: 'Base',
+    displayName: 'FREE',
+    priceMonthlyUsd: 0,
+    priceMonthlyInr: 0,
+    description: 'Get started with core AI workout generation and basic tracking.',
     features: [
       'Limited AI workout plans',
       'Basic progress dashboard',
-      'Community access',
-      'Email support',
+      'Community access (read-only)',
     ],
-    ctaText: 'Start for Free',
-    ctaLink: '/auth/sign-up', // Changed to sign-up
+    ctaText: 'Current Plan',
+    ctaLink: '#', // Link to dashboard or stay on page
+    isCurrent: true,
   },
   {
-    name: 'Premium AI Coaching',
-    priceUsd: '$19',
-    priceInr: '₹1599', // Approx $19 based on ~₹84/$
-    priceFrequency: '/month',
-    description: 'Unlock the full power of Fitnity AI with advanced features and coaching.',
+    id: 'premium',
+    name: 'Premium',
+    displayName: 'Premium',
+    icon: Sparkles, // Placeholder for the unique icon
+    priceMonthlyUsd: 10, // Updated price
+    priceMonthlyInr: 799, // Updated price
+    description: 'Unlock powerful AI tools to optimize your fitness journey.',
     features: [
       'Unlimited adaptive AI workouts',
       'Real-time form analysis',
       'AI Coach (Chat & Voice)',
-      'Advanced progress tracking & insights',
-      'Gamified workouts & challenges',
       'Priority support',
     ],
-    ctaText: 'Start Free Trial',
-    ctaLink: '/auth/sign-up', // Changed to sign-up
+    ctaText: 'Upgrade to Premium',
+    ctaLink: '/auth/sign-up',
     isPopular: true,
+    planAccentClass: 'premium-accent-glow', // Custom class for gold/yellow glow
+  },
+  {
+    id: 'unlimited',
+    name: 'Unlimited',
+    displayName: 'Unlimited',
+    icon: Zap, // Placeholder, could be different
+    priceMonthlyUsd: 25, // Updated price
+    priceMonthlyInr: 1999, // Updated price
+    description: 'The ultimate AI fitness experience with every feature unlocked.',
+    features: [
+      'All Premium features',
+      'Advanced progress tracking & insights',
+      'Personalized nutrition guidance',
+      'Exclusive early access to new features',
+    ],
+    ctaText: 'Go Unlimited',
+    ctaLink: '/auth/sign-up',
+    planAccentClass: 'unlimited-accent-text', // Custom class for green text
+    buttonGradientClass: 'unlimited-button-gradient', // Custom class for gradient button
   },
 ];
 
 export default function PricingPlansSection() {
+  const [isAnnual, setIsAnnual] = useState(false);
+
+  const getPrice = (plan: Plan) => {
+    const factor = isAnnual ? 0.8 * 12 : 1; // 20% discount for annual, then multiply by 12 if annual
+    const monthlyFactor = isAnnual ? 0.8 : 1; // for /month text with discount
+
+    return {
+      usd: plan.priceMonthlyUsd === 0 ? 0 : Math.round(plan.priceMonthlyUsd * monthlyFactor),
+      inr: plan.priceMonthlyInr === 0 ? 0 : Math.round(plan.priceMonthlyInr * monthlyFactor),
+    };
+  };
+
   return (
-    <section id="pricing" className="py-16 md:py-24 bg-background/5">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="max-w-xl mx-auto text-center mb-16 animate-fade-in-up">
+    <section id="pricing" className="py-16 md:py-24 bg-pricing-section-dark relative overflow-hidden">
+      <div className="animated-bg-waves"></div>
+      <div className="container mx-auto px-4 md:px-6 relative z-10">
+        <div className="max-w-xl mx-auto text-center mb-12 animate-fade-in-up">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl text-foreground">
             Choose Your Fitnity Plan
           </h2>
           <p className="mt-4 text-lg text-foreground/80">
-            Select the perfect plan to kickstart your AI-powered fitness journey. All plans start with a free trial period.
+            Flexible plans designed for every step of your fitness journey.
           </p>
         </div>
-        <div className="grid gap-8 md:grid-cols-2 max-w-4xl mx-auto">
-          {plans.map((plan, index) => (
-            <Card 
-              key={plan.name} 
-              className={cn(
-                "glassmorphic-card flex flex-col hover:-translate-y-2 transition-all duration-300 ease-in-out animate-fade-in-up",
-                plan.isPopular ? 'border-accent/50 ring-2 ring-accent shadow-[0_0_30px_3px_hsl(var(--accent)/0.3)]' : 'border-border/30',
-              )}
-              style={{ animationDelay: `${index * 0.1 + 0.2}s` }}
-            >
-              <CardHeader className="pb-4 relative">
+
+        <div className="flex justify-center items-center gap-4 mb-12 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+          <Label htmlFor="billing-cycle" className={cn("font-medium", !isAnnual ? "text-accent" : "text-foreground/70")}>
+            MONTHLY
+          </Label>
+          <Switch
+            id="billing-cycle"
+            checked={isAnnual}
+            onCheckedChange={setIsAnnual}
+            className="pricing-toggle"
+          />
+          <Label htmlFor="billing-cycle" className={cn("font-medium", isAnnual ? "text-accent" : "text-foreground/70")}>
+            ANNUALLY
+          </Label>
+          {isAnnual && (
+            <div className="ml-2 px-3 py-1 bg-accent/20 text-accent text-xs font-semibold rounded-full">
+              SAVE 20%
+            </div>
+          )}
+        </div>
+
+        <div className="grid gap-8 md:grid-cols-1 lg:grid-cols-3 max-w-5xl mx-auto items-stretch">
+          {plansData.map((plan, index) => {
+            const currentPrice = getPrice(plan);
+            return (
+              <Card
+                key={plan.id}
+                className={cn(
+                  "flex flex-col bg-neutral-800/80 backdrop-blur-sm text-neutral-200 rounded-2xl shadow-xl border border-neutral-700/70 hover:-translate-y-2 transition-all duration-300 ease-in-out animate-fade-in-up relative overflow-hidden",
+                  plan.isPopular ? 'border-2 border-yellow-400/70 popular-plan-glow' : '',
+                  plan.isCurrent ? 'opacity-80' : ''
+                )}
+                style={{ animationDelay: `${index * 0.15 + 0.2}s` }}
+              >
                 {plan.isPopular && (
-                  <div className="absolute -top-4 right-4 bg-accent text-accent-foreground px-4 py-1.5 rounded-full text-sm font-semibold shadow-lg flex items-center gap-1">
-                    <Star className="h-4 w-4" /> Most Popular
+                  <div className="absolute top-4 right-4 bg-yellow-500 text-neutral-900 px-3 py-1 rounded-full text-xs font-bold shadow-md">
+                    MOST POPULAR
                   </div>
                 )}
-                <CardTitle className="text-2xl sm:text-3xl font-bold text-foreground">{plan.name}</CardTitle>
-                <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 mt-2">
-                  <span className="text-4xl sm:text-5xl font-extrabold text-accent">{plan.priceInr}</span>
-                  <span className="text-xl font-semibold text-foreground/80">/ {plan.priceUsd}</span>
-                  <span className="text-sm font-medium text-card-foreground/70 self-end sm:self-baseline">{plan.priceFrequency}</span>
-                </div>
-                <CardDescription className="pt-3 text-card-foreground/80 min-h-[3em]">{plan.description}</CardDescription>
-              </CardHeader>
-              <CardContent className="flex-grow py-6">
-                <h4 className="mb-4 text-lg font-semibold text-foreground">What's included:</h4>
-                <ul className="space-y-3">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-3 group">
-                      <CheckCircle2 className="h-5 w-5 text-accent flex-shrink-0 mt-0.5 group-hover:text-accent/80 transition-colors" />
-                      <span className="text-card-foreground/90 group-hover:text-card-foreground transition-colors">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-              <CardFooter className="pt-6">
-                <Button 
-                  asChild 
-                  size="lg" 
-                  className={cn(
-                    "w-full text-lg py-3 h-auto transition-all duration-300 ease-in-out hover:shadow-lg active:scale-95",
-                    plan.isPopular 
-                      ? 'bg-accent hover:bg-accent/90 text-accent-foreground cta-glow-pulse' 
-                      : 'bg-primary hover:bg-primary/90 text-primary-foreground hover:scale-105'
+                <CardHeader className="pb-4 pt-8 text-center">
+                  {plan.icon && <plan.icon className={cn("h-12 w-12 mx-auto mb-4", plan.planAccentClass || 'text-yellow-400')} />}
+                  <CardTitle className={cn(
+                      "text-lg font-semibold uppercase tracking-wider mb-1",
+                      plan.id === 'free' ? 'text-neutral-400' : plan.planAccentClass || 'text-yellow-400'
+                    )}
+                  >
+                    {plan.id === 'free' ? plan.name : plan.displayName}
+                  </CardTitle>
+                  {plan.id === 'free' && <p className="text-5xl font-extrabold text-foreground">{plan.displayName}</p>}
+                  
+                  {plan.id !== 'free' && (
+                    <div className="flex flex-col items-center justify-center">
+                      <span className="text-5xl font-extrabold text-foreground">
+                        <span className="text-3xl align-top mr-0.5">₹</span>
+                        {currentPrice.inr}
+                        <span className="text-lg text-neutral-400">
+                          {plan.priceMonthlyUsd > 0 ? (isAnnual ? '/yr' : '/mo') : ''}
+                        </span>
+                      </span>
+                       {plan.priceMonthlyUsd > 0 && <span className="text-sm text-neutral-500 mt-1">(${currentPrice.usd}{isAnnual ? '/yr' : '/mo'})</span>}
+                    </div>
                   )}
-                >
-                  <Link href={plan.ctaLink}>{plan.ctaText}</Link>
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
+                   <CardDescription className="pt-3 text-neutral-400 text-sm min-h-[3.5em] px-4">
+                    {plan.description}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex-grow py-6">
+                  <ul className="space-y-3">
+                    {plan.features.map((feature) => (
+                      <li key={feature} className="flex items-start gap-3 group">
+                        <CheckCircle2 className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5 group-hover:text-green-300 transition-colors" />
+                        <span className="text-neutral-300 group-hover:text-neutral-100 transition-colors text-sm">
+                          {feature}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+                <CardFooter className="pt-6 pb-8 px-6">
+                  <Button
+                    asChild
+                    size="lg"
+                    className={cn(
+                      "w-full text-base py-3 h-auto font-semibold transition-all duration-300 ease-in-out hover:shadow-lg active:scale-95 rounded-lg",
+                      plan.isCurrent
+                        ? 'bg-neutral-700 text-neutral-400 cursor-default hover:bg-neutral-700'
+                        : plan.buttonGradientClass 
+                          ? `${plan.buttonGradientClass} text-neutral-900 hover:opacity-90`
+                          : 'bg-yellow-500 hover:bg-yellow-400 text-neutral-900',
+                       plan.id === 'free' && !plan.isCurrent ? 'bg-primary hover:bg-primary/90 text-primary-foreground' : '' // For non-current free plan if needed
+                    )}
+                    disabled={plan.isCurrent}
+                  >
+                    <Link href={plan.ctaLink}>{plan.ctaText}</Link>
+                  </Button>
+                </CardFooter>
+              </Card>
+            );
+          })}
         </div>
-         <p className="text-center mt-12 text-sm text-foreground/70 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
-            Currency conversions are approximate. All subscriptions are billed in USD or equivalent local currency.
-          </p>
+        <p className="text-center mt-12 text-xs text-neutral-500 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
+          {isAnnual ? 'Annual prices shown. ' : 'Monthly prices shown. '}
+          All subscriptions are processed securely. You can cancel anytime.
+        </p>
       </div>
     </section>
   );

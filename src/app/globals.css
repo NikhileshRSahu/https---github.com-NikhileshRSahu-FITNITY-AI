@@ -53,6 +53,10 @@ body {
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+
+    /* Custom colors for pricing page from image */
+    --pricing-premium-accent-color: 45 100% 50%; /* Gold/Yellow */
+    --pricing-unlimited-accent-color: 145 63% 49%; /* Green */
   }
 
   .light { /* Light theme overrides */
@@ -106,6 +110,10 @@ body {
   /* Ensure prose text also inherits themed foreground color */
   .prose {
     color: hsl(var(--foreground));
+    @apply leading-relaxed; /* Improved line height for prose */
+  }
+  .prose p {
+    @apply mb-4; /* Space between paragraphs in prose */
   }
   .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
     color: hsl(var(--foreground));
@@ -129,12 +137,6 @@ body {
   .dark .prose-invert p, .dark .prose-invert li, .dark .prose-invert ul, .dark .prose-invert strong, .dark .prose-invert a, .dark .prose-invert code, .dark .prose-invert blockquote {
     color: hsl(var(--foreground));
   }
-  .prose {
-    @apply leading-relaxed; /* Improved line height for prose */
-  }
-  .prose p {
-    @apply mb-4; /* Space between paragraphs in prose */
-  }
 }
 
 /* Glassmorphic card utility */
@@ -152,6 +154,7 @@ body {
 /* Styling for inputs and selects within glassmorphic cards */
 .glassmorphic-card input[type="text"], 
 .glassmorphic-card input[type="email"], 
+.glassmorphic-card input[type="password"], 
 .glassmorphic-card textarea,
 .glassmorphic-card .SelectTrigger { 
   @apply bg-background/30 border-border/50 text-card-foreground placeholder:text-card-foreground/60 
@@ -159,6 +162,7 @@ body {
 }
 .dark .glassmorphic-card input[type="text"],
 .dark .glassmorphic-card input[type="email"], 
+.dark .glassmorphic-card input[type="password"],
 .dark .glassmorphic-card textarea,
 .dark .glassmorphic-card .SelectTrigger {
    @apply bg-background/30 border-border/50 text-card-foreground placeholder:text-card-foreground/60 
@@ -199,7 +203,7 @@ footer .hover\:text-accent:hover {
 .glassmorphic-card .FormLabel,
 .glassmorphic-card label { 
   color: hsl(var(--card-foreground));
-  @apply font-medium; /* Make labels slightly more prominent */
+  @apply font-medium text-base; /* Make labels slightly more prominent */
 }
 .dark .glassmorphic-card .FormLabel,
 .dark .glassmorphic-card label {
@@ -258,4 +262,105 @@ footer .hover\:text-accent:hover {
 /* Result card animation */
 .result-card-animate {
   @apply animate-in fade-in slide-in-from-bottom-8 duration-500 ease-out;
+}
+
+/* Fade in Up animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+
+/* Pricing Page Specific Styles */
+.bg-pricing-section-dark {
+  background-color: #101010; /* Very dark background like the image */
+}
+
+.animated-bg-waves {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.animated-bg-waves::before,
+.animated-bg-waves::after {
+  content: '';
+  position: absolute;
+  width: 200%; /* Wider to allow for movement */
+  height: 200%; /* Taller to allow for movement */
+  border-radius: 40%; /* Creates oval shapes */
+  opacity: 0.05; /* Very subtle */
+  animation: wave-animation 30s infinite linear alternate;
+}
+
+.animated-bg-waves::before {
+  background: radial-gradient(ellipse at center, hsl(var(--pricing-premium-accent-color), 0.5) 0%, transparent 70%);
+  top: -50%;
+  left: -50%;
+  animation-duration: 35s; /* Different speed */
+}
+
+.animated-bg-waves::after {
+  background: radial-gradient(ellipse at center, hsl(var(--pricing-unlimited-accent-color), 0.4) 0%, transparent 70%);
+  bottom: -50%;
+  right: -50%;
+  animation-delay: -5s; /* Offset animation */
+}
+
+@keyframes wave-animation {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(5%, -5%) rotate(10deg);
+  }
+  50% {
+    transform: translate(-5%, 5%) rotate(-10deg);
+  }
+  75% {
+    transform: translate(3%, -3%) rotate(5deg);
+  }
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+}
+
+.pricing-toggle > span[data-state="checked"] {
+  background-color: hsl(var(--pricing-premium-accent-color)) !important;
+}
+.pricing-toggle > span[data-state="unchecked"] {
+  background-color: hsl(var(--muted)) !important;
+}
+
+.popular-plan-glow {
+  box-shadow: 0 0 30px 0px hsla(var(--pricing-premium-accent-color), 0.4), 0 0 15px 0px hsla(var(--pricing-premium-accent-color), 0.3);
+}
+
+.premium-accent-glow {
+  color: hsl(var(--pricing-premium-accent-color));
+  filter: drop-shadow(0 0 8px hsl(var(--pricing-premium-accent-color), 0.7));
+}
+
+.unlimited-accent-text {
+  color: hsl(var(--pricing-unlimited-accent-color));
+}
+
+.unlimited-button-gradient {
+  background-image: linear-gradient(to right, hsl(var(--pricing-unlimited-accent-color)) 0%, #6effb2 100%); /* Green to lighter green/cyan */
+}
+.unlimited-button-gradient:hover {
+   background-image: linear-gradient(to right, hsl(var(--pricing-unlimited-accent-color), 0.9) 0%, #60e0a0 100%);
 }
