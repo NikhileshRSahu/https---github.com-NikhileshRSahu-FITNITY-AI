@@ -15,10 +15,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Zap, LogIn, UserPlus, LayoutDashboard, User as UserIcon, LogOut as LogOutIcon, ClipboardList, Bot, Apple as NutritionIcon, Camera, ShoppingCart } from 'lucide-react';
+import { Zap, LogIn, UserPlus, LayoutDashboard, User as UserIcon, LogOut as LogOutIcon, ClipboardList, Bot, Apple as NutritionIcon, Camera, ShoppingCart, Settings as SettingsIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 interface NavItem {
   href: string;
@@ -33,22 +33,21 @@ export default function MainHeader() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
-    setMounted(true); // Indicate component has mounted to safely access localStorage
+    setMounted(true); 
 
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll);
 
-    // Check login status on mount
     if (typeof window !== 'undefined') {
       const loggedInStatus = localStorage.getItem('fitnityUserLoggedIn') === 'true';
       setIsLoggedIn(loggedInStatus);
     }
     
-    // Listen for storage changes (e.g., login/logout in another tab)
     const checkStorage = (event: StorageEvent) => {
       if (event.key === 'fitnityUserLoggedIn') {
         setIsLoggedIn(event.newValue === 'true');
@@ -62,30 +61,27 @@ export default function MainHeader() {
     };
   }, []);
 
-  // This effect specifically listens to router changes to re-check login state
-  // Useful if login state might change without a full page reload but with route changes
   useEffect(() => {
     if (mounted && typeof window !== 'undefined') { 
       const loggedInStatus = localStorage.getItem('fitnityUserLoggedIn') === 'true';
-      if (loggedInStatus !== isLoggedIn) { // Only update if state is actually different
+      if (loggedInStatus !== isLoggedIn) { 
          setIsLoggedIn(loggedInStatus);
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoggedIn, mounted, router]); // Added router to dependency array
+  }, [isLoggedIn, mounted, pathname]); // Listen to pathname to re-check on route changes
 
 
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('fitnityUserLoggedIn');
     }
-    setIsLoggedIn(false); // Update state immediately
-    router.push('/'); // Navigate to home
-    router.refresh(); // Force refresh to ensure all components re-evaluate state
+    setIsLoggedIn(false); 
+    router.push('/'); 
+    router.refresh(); 
   };
 
-  const navLinkBaseClasses = "flex items-center justify-center md:justify-start gap-1.5 px-2 md:px-3 py-2 rounded-lg text-sm transition-all duration-300 ease-in-out";
-  const navLinkHoverClasses = "hover:translate-y-[-2px] hover:text-accent hover:drop-shadow-[0_0_6px_hsl(var(--accent))] focus-visible:text-accent focus-visible:drop-shadow-[0_0_6px_hsl(var(--accent))]";
+  const navLinkBaseClasses = "flex items-center justify-center md:justify-start gap-1.5 px-2 md:px-3 py-2 rounded-lg text-sm transition-all duration-300 ease-in-out group";
+  const navLinkHoverClasses = "hover:translate-y-[-2px] hover:text-accent hover:drop-shadow-[0_0_6px_hsl(var(--accent))] focus-visible:text-accent focus-visible:drop-shadow-[0_0_6px_hsl(var(--accent))] hover:bg-transparent focus-visible:bg-accent/10";
   const navIconClasses = "h-5 w-5 flex-shrink-0 group-hover:text-accent group-focus-visible:text-accent transition-colors duration-300";
 
 
@@ -100,12 +96,12 @@ export default function MainHeader() {
     { href: '/nutrition-plan', label: 'Nutrition', icon: NutritionIcon },
     { href: '/form-analysis', label: 'Form Check', icon: Camera },
     { href: '/ai-coach', label: 'AI Coach', icon: Bot },
-    { href: '/shop', label: 'Shop', icon: ShoppingCart }, // New Shop Link
+    { href: '/shop', label: 'Shop', icon: ShoppingCart },
     { href: '/profile', label: 'Profile', icon: UserIcon },
   ];
 
 
-  if (!mounted) { // Show a minimal skeleton or static header before hydration
+  if (!mounted) { 
     return (
        <header className={cn("sticky top-0 z-50 w-full glassmorphic-card transition-all duration-300 ease-in-out h-20 dark:shadow-accent/10", isScrolled ? "shadow-xl shadow-accent/10 dark:shadow-accent/20 h-16" : "h-20 dark:shadow-accent/10")}>
          <div className={cn("container mx-auto flex items-center justify-between px-4 md:px-6 transition-all duration-300 ease-in-out h-full")}>
@@ -140,14 +136,14 @@ export default function MainHeader() {
             <Zap className="h-8 w-8 text-accent" />
             <span className="text-2xl font-bold text-card-foreground">Fitnity AI</span>
           </Link>
-          <nav className="flex items-center gap-1 md:gap-1.5"> {/* Reduced gap for more items */}
+          <nav className="flex items-center gap-0.5 md:gap-1"> {/* Slightly reduced gap */}
             {itemsToDisplay.map(item => (
               item.isCTA ? (
                 <Button
                   key={item.href}
                   asChild
                   variant="default"
-                  size="sm" // Make CTA slightly more compact if needed
+                  size="sm" 
                   className={cn(
                     "ml-2 px-3 md:px-4 py-2 rounded-lg shadow-md transition-all duration-300 ease-in-out text-sm text-accent-foreground cta-glow-pulse active:scale-95",
                     "bg-gradient-to-r from-[hsl(var(--accent)_/_0.9)] via-[hsl(var(--primary)_/_0.9)] to-[hsl(var(--accent)_/_0.9)] hover:shadow-[0_0_15px_3px_hsl(var(--accent)_/_0.7)] hover:scale-105"
@@ -162,10 +158,10 @@ export default function MainHeader() {
               ) : (
                 <Tooltip key={item.href}>
                   <TooltipTrigger asChild>
-                    <Button asChild variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground hover:bg-transparent focus-visible:bg-accent/10 group")}>
+                    <Button asChild variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground")}>
                       <Link href={item.href}>
-                        <item.icon className={cn(navIconClasses, item.icon === LogIn ? "text-card-foreground group-hover:text-accent group-focus-visible:text-accent" : "text-card-foreground group-hover:text-accent group-focus-visible:text-accent" )} />
-                        <span className="hidden md:inline">{item.label}</span>
+                        <item.icon className={cn(navIconClasses, "text-card-foreground group-hover:text-accent group-focus-visible:text-accent" )} />
+                        <span className="hidden md:inline text-sm">{item.label}</span> {/* Ensured text-sm */}
                         {item.label === 'AI Coach' && isLoggedIn && <span className="glowing-orb ml-1.5 hidden md:inline-block"></span>}
                       </Link>
                     </Button>
@@ -181,9 +177,9 @@ export default function MainHeader() {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <AlertDialogTrigger asChild>
-                      <Button variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground hover:bg-transparent focus-visible:bg-accent/10 group")}>
+                      <Button variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground")}>
                         <LogOutIcon className={cn(navIconClasses, "text-card-foreground group-hover:text-accent group-focus-visible:text-accent")} />
-                        <span className="hidden md:inline">Logout</span>
+                        <span className="hidden md:inline text-sm">Logout</span> {/* Ensured text-sm */}
                       </Button>
                     </AlertDialogTrigger>
                   </TooltipTrigger>
