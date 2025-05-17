@@ -6,24 +6,27 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { LineChart, CartesianGrid, XAxis, YAxis, Line, ResponsiveContainer } from 'recharts';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Award, Flame, HeartPulse, TrendingUp, Scaling, Star, Droplets, Trophy, CalendarDays, BarChart4 } from 'lucide-react';
+import { Award, Flame, HeartPulse, TrendingUp, Scaling, Star, Droplets, Trophy, CalendarDays, BarChart4, Dumbbell, Zap, Activity } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const weeklyWorkoutData = [
   { week: 'Wk 1', workouts: 3 }, { week: 'Wk 2', workouts: 4 }, { week: 'Wk 3', workouts: 2 }, { week: 'Wk 4', workouts: 5 },
-  { week: 'Wk 5', workouts: 3 }, { week: 'Wk 6', workouts: 4 }, { week: 'Wk 7', workouts: 5 }, { week: 'Wk 8', workouts: 3 },
+  { week: 'Wk 5', workouts: 4 }, { week: 'Wk 6', workouts: 3 }, { week: 'Wk 7', workouts: 5 }, { week: 'Wk 8', workouts: 4 },
+  { week: 'Wk 9', workouts: 2 }, { week: 'Wk 10', workouts: 5 }, { week: 'Wk 11', workouts: 3 }, { week: 'Wk 12', workouts: 4 },
 ];
 
 const monthlyWorkoutData = [
   { month: 'Jan', workouts: 15 }, { month: 'Feb', workouts: 18 }, { month: 'Mar', workouts: 12 }, { month: 'Apr', workouts: 20 },
   { month: 'May', workouts: 16 }, { month: 'Jun', workouts: 19 }, { month: 'Jul', workouts: 22 }, { month: 'Aug', workouts: 17 },
+  { month: 'Sep', workouts: 14 }, { month: 'Oct', workouts: 21 }, { month: 'Nov', workouts: 18 }, { month: 'Dec', workouts: 15 },
 ];
 
 const allTimeWorkoutData = [
     { period: 'Q1 \'23', workouts: 45 }, { period: 'Q2 \'23', workouts: 55 }, { period: 'Q3 \'23', workouts: 50 },
     { period: 'Q4 \'23', workouts: 60 }, { period: 'Q1 \'24', workouts: 52 }, { period: 'Q2 \'24', workouts: 58 },
+    { period: 'Q3 \'24', workouts: 65 }, { period: 'Q4 \'24', workouts: 70 },
 ];
 
 const chartConfig: ChartConfig = {
@@ -34,34 +37,37 @@ const chartConfig: ChartConfig = {
 };
 
 const bodyMeasurementData = {
-  weight: { value: '72.1', unit: 'kg' },
-  bodyFat: { value: '17.8', unit: '%' },
-  muscleMass: { value: '35.2', unit: 'kg' },
+  weight: { value: '71.5', unit: 'kg' },
+  bodyFat: { value: '16.9', unit: '%' },
+  muscleMass: { value: '35.8', unit: 'kg' },
 };
 
 const streaksAndBadges = {
-  currentStreak: 14,
-  totalBadges: 7,
+  currentStreak: 21,
+  totalBadges: 12,
   recentBadges: [
-    { name: 'Consistent Challenger', icon: Flame, date: 'July 23' },
-    { name: 'Morning Mover Pro', icon: Star, date: 'July 21' },
-    { name: 'Workout Warrior Elite', icon: Award, date: 'July 19' },
+    { name: 'Consistent Challenger Pro', icon: Flame, date: 'July 28' },
+    { name: 'Workout Warrior Supreme', icon: Award, date: 'July 25' },
+    { name: 'Zen Master Yogi', icon: Zap, date: 'July 22' },
+    { name: 'Cardio King', icon: Activity, date: 'July 20' },
   ],
 };
 
 const healthSnapshotData = {
-  sleep: { value: '7h 45m', avgLastWeek: '7h 20m' },
-  waterIntake: { current: 2.8, goal: 3, unit: 'L' },
-  steps: { current: 9200, goal: 10000 },
+  sleep: { value: '7h 55m', avgLastWeek: '7h 30m' },
+  waterIntake: { current: 2.9, goal: 3.5, unit: 'L' },
+  steps: { current: 10500, goal: 10000 },
 };
 
 const personalRecordsData = [
-    { name: 'Fastest 1km Run', value: '4:25 min', icon: TrendingUp },
-    { name: 'Max Bench Press', value: '85 kg', icon: Scaling },
-    { name: 'Longest Plank', value: '3m 15s', icon: Flame },
-    { name: 'Peak Steps in a Day', value: '15,870', icon: Award },
+    { name: 'Fastest 5km Run', value: '22:15 min', icon: TrendingUp },
+    { name: 'Max Deadlift', value: '120 kg', icon: Scaling },
+    { name: 'Longest Plank Hold', value: '3m 45s', icon: Flame },
+    { name: 'Most Steps in a Day', value: '18,250', icon: Award },
+    { name: 'Highest Elevation Climbed', value: '1200 m', icon: Dumbbell},
+    { name: 'Consecutive Pull-ups', value: '15 reps', icon: Zap},
 ];
-// const personalRecordsData: typeof personalRecordsData = []; // Example for empty state
+// const personalRecordsData: typeof personalRecordsData = []; // Example for empty state testing
 
 type TimeRange = 'weekly' | 'monthly' | 'allTime';
 
@@ -299,3 +305,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+
