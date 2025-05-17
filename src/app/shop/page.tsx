@@ -73,7 +73,7 @@ export default function ShopPage() {
         </div>
       </section>
 
-      {/* Placeholder for AI Recommendations */}
+      {/* AI Recommendations Section */}
       <section id="ai-recommendations" className="text-center py-12 border-t border-b border-border/20 my-16">
          <h2 className="text-3xl font-semibold text-foreground mb-4">AI Picks For You</h2>
          <p className="text-foreground/70 mb-6">Coming soon: Products recommended by Fitnity AI based on your profile and goals!</p>
