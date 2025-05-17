@@ -12,9 +12,8 @@ import { Label } from '@/components/ui/label';
 
 interface Plan {
   id: string;
-  name: string; 
-  displayName: string; 
-  icon?: React.ElementType;
+  name: string;
+  displayName: string;
   priceMonthlyUsd: number;
   priceMonthlyInr: number;
   description: string;
@@ -22,9 +21,9 @@ interface Plan {
   ctaText: string;
   ctaLink: string;
   isPopular?: boolean;
-  isCurrent?: boolean; 
-  planAccentClass?: string; 
-  buttonGradientClass?: string; 
+  isCurrent?: boolean;
+  planAccentClass?: string;
+  buttonGradientClass?: string;
 }
 
 const plansData: Plan[] = [
@@ -42,16 +41,15 @@ const plansData: Plan[] = [
     ],
     ctaText: 'Start for Free',
     ctaLink: '/auth/sign-up',
-    isCurrent: false, // Assuming user is not on free plan by default for demo
+    isCurrent: false,
   },
   {
     id: 'premium',
     name: 'Premium',
     displayName: 'Premium',
-    icon: Sparkles,
-    priceMonthlyUsd: 10, 
+    priceMonthlyUsd: 10,
     priceMonthlyInr: 799,
-    description: 'For dedicated users optimizing their fitness journey with powerful AI tools.',
+    description: 'Unlock powerful AI tools to optimize your fitness journey.',
     features: [
       'Unlimited adaptive AI workouts',
       'Real-time form analysis',
@@ -61,14 +59,13 @@ const plansData: Plan[] = [
     ctaText: 'Upgrade to Premium',
     ctaLink: '/auth/sign-up',
     isPopular: true,
-    planAccentClass: 'premium-accent-glow', 
+    planAccentClass: 'premium-accent-glow',
   },
   {
     id: 'unlimited',
     name: 'Unlimited',
     displayName: 'Unlimited',
-    icon: Zap, 
-    priceMonthlyUsd: 25, 
+    priceMonthlyUsd: 25,
     priceMonthlyInr: 1999,
     description: 'The ultimate AI fitness experience with every feature unlocked.',
     features: [
@@ -79,8 +76,8 @@ const plansData: Plan[] = [
     ],
     ctaText: 'Go Unlimited',
     ctaLink: '/auth/sign-up',
-    planAccentClass: 'unlimited-accent-text', 
-    buttonGradientClass: 'unlimited-button-gradient', 
+    planAccentClass: 'unlimited-accent-text',
+    buttonGradientClass: 'unlimited-button-gradient',
   },
 ];
 
@@ -90,19 +87,15 @@ export default function PricingPlansSection() {
   const getPrice = (plan: Plan) => {
     if (isAnnual) {
       return {
-        inr: plan.priceMonthlyInr === 0 ? 0 : Math.round(plan.priceMonthlyInr * 0.8),
-        usd: plan.priceMonthlyUsd === 0 ? 0 : Math.round(plan.priceMonthlyUsd * 0.8),
-        billingCycleText: '/yr', // Indicates the rate is for an annual billing cycle
-        totalAnnualInr: plan.priceMonthlyInr === 0 ? 0 : Math.round(plan.priceMonthlyInr * 0.8 * 12),
-        totalAnnualUsd: plan.priceMonthlyUsd === 0 ? 0 : Math.round(plan.priceMonthlyUsd * 0.8 * 12),
+        inr: plan.priceMonthlyInr === 0 ? 0 : Math.round(plan.priceMonthlyInr * 0.8), // Discounted monthly equivalent
+        usd: plan.priceMonthlyUsd === 0 ? 0 : Math.round(plan.priceMonthlyUsd * 0.8), // Discounted monthly equivalent
+        billingCycleText: '/yr',
       };
     } else {
       return {
         inr: plan.priceMonthlyInr,
         usd: plan.priceMonthlyUsd,
         billingCycleText: '/mo',
-        totalAnnualInr: 0, // Not applicable for monthly
-        totalAnnualUsd: 0, // Not applicable for monthly
       };
     }
   };
@@ -153,37 +146,42 @@ export default function PricingPlansSection() {
                 )}
                 style={{ animationDelay: `${index * 0.15 + 0.2}s` }}
               >
-                {plan.isPopular && (
-                  <div className="absolute top-4 right-4 bg-[hsl(var(--pricing-premium-accent-color))] text-neutral-900 px-3 py-1 rounded-full text-xs font-bold shadow-md uppercase">
-                    Most Popular
-                  </div>
-                )}
-                <CardHeader className="pb-4 pt-8 text-center">
-                  {plan.icon && <plan.icon className={cn("h-12 w-12 mx-auto mb-4", plan.planAccentClass || 'text-[hsl(var(--pricing-premium-accent-color))]')} />}
+                <CardHeader className="pb-6 pt-10 text-center relative"> {/* Adjusted padding */}
+                  {plan.isPopular && (
+                     <div className="absolute top-2 right-2 sm:top-3 sm:right-3 z-10"> {/* Simple positioning for badge */}
+                        <div className="relative bg-yellow-400 text-neutral-900 px-3 py-1.5 rounded-full text-xs font-bold shadow-md uppercase">
+                            Most Popular
+                        </div>
+                    </div>
+                  )}
                   <CardTitle className={cn(
-                      "text-lg font-semibold uppercase tracking-wider mb-1",
-                      plan.id === 'free' ? 'text-neutral-400' : plan.planAccentClass || 'text-[hsl(var(--pricing-premium-accent-color))]'
+                      "text-2xl font-extrabold uppercase tracking-wider mb-2",
+                       plan.isPopular ? "mt-5" : "mt-0", // Add margin top if popular badge is present
+                      plan.id === 'free' ? 'text-neutral-400' : plan.planAccentClass
                     )}
                   >
-                    {plan.id === 'free' ? plan.name : plan.displayName}
+                    {plan.displayName}
                   </CardTitle>
-                  {plan.id === 'free' && <p className="text-5xl font-extrabold text-foreground">{plan.displayName}</p>}
-                  
-                  {plan.id !== 'free' && (
-                    <div className="flex flex-col items-center justify-center">
-                      <span className="text-5xl font-extrabold text-foreground">
-                        <span className="text-3xl align-top mr-0.5">₹</span>
-                        {currentPrice.inr}
-                        <span className="text-lg text-neutral-400">
-                           {currentPrice.billingCycleText}
+
+                  {plan.id === 'free' ? (
+                     <p className="text-5xl font-extrabold text-foreground my-4">{plan.displayName}</p>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center my-1">
+                      <div className="flex items-baseline justify-center">
+                        <span className="text-6xl font-extrabold text-foreground">
+                          <span className="text-4xl align-baseline mr-0.5">₹</span>
+                          {currentPrice.inr}
                         </span>
-                      </span>
-                       <span className="text-sm text-neutral-500 mt-1">
-                         (${currentPrice.usd}{currentPrice.billingCycleText})
+                        <span className="text-xl font-medium text-neutral-400 ml-0.5 self-end leading-tight pb-[0.4rem]">
+                           {currentPrice.billingCycleText.toLowerCase()}
+                        </span>
+                      </div>
+                       <span className="text-base text-neutral-500 mt-0">
+                         (${currentPrice.usd}{currentPrice.billingCycleText.toLowerCase()})
                        </span>
                     </div>
                   )}
-                   <CardDescription className="pt-3 text-neutral-400 text-sm min-h-[3.5em] px-4">
+                   <CardDescription className="pt-3 text-neutral-400 text-sm min-h-[3em] px-4 max-w-xs mx-auto">
                     {plan.description}
                   </CardDescription>
                 </CardHeader>
@@ -207,9 +205,9 @@ export default function PricingPlansSection() {
                       "w-full text-base py-3 h-auto font-semibold transition-all duration-300 ease-in-out hover:shadow-lg active:scale-95 rounded-lg",
                       plan.isCurrent
                         ? 'bg-neutral-700 text-neutral-400 cursor-default hover:bg-neutral-700'
-                        : plan.buttonGradientClass 
+                        : plan.buttonGradientClass
                           ? `${plan.buttonGradientClass} text-neutral-900 hover:opacity-90`
-                          : plan.isPopular 
+                          : plan.isPopular
                             ? 'bg-[hsl(var(--pricing-premium-accent-color))] hover:bg-[hsl(var(--pricing-premium-accent-color),0.9)] text-neutral-900'
                             : 'bg-primary hover:bg-primary/90 text-primary-foreground'
                     )}
@@ -223,7 +221,7 @@ export default function PricingPlansSection() {
           })}
         </div>
         <p className="text-center mt-12 text-xs text-neutral-500 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
-          {isAnnual ? 'Annual plans are billed upfront for the year. ' : 'Monthly prices shown. '}
+          {isAnnual ? 'Annual plans show the discounted monthly equivalent, billed upfront for the year. ' : 'Monthly prices shown. '}
           All subscriptions are processed securely. You can cancel anytime.
           <br/>
           USD prices are approximate and may vary based on conversion rates.
@@ -232,3 +230,4 @@ export default function PricingPlansSection() {
     </section>
   );
 }
+
