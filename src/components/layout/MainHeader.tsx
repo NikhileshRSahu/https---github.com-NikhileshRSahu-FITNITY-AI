@@ -4,7 +4,18 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Zap, LogIn, UserPlus, LayoutDashboard, User, LogOut as LogOutIcon, ClipboardList, Bot, Apple as NutritionIcon, Camera, Settings } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Zap, LogIn, UserPlus, LayoutDashboard, User, LogOut as LogOutIcon, ClipboardList, Bot, Apple as NutritionIcon, Camera } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
@@ -24,19 +35,17 @@ export default function MainHeader() {
   const router = useRouter();
 
   useEffect(() => {
-    setMounted(true); // Indicates component has mounted and localStorage can be accessed
+    setMounted(true);
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll);
 
-    // Initial check for loggedIn status
     if (typeof window !== 'undefined') {
       const loggedInStatus = localStorage.getItem('fitnityUserLoggedIn') === 'true';
       setIsLoggedIn(loggedInStatus);
     }
     
-    // Listen for storage changes to update login status across tabs/windows
     const checkStorage = (event: StorageEvent) => {
       if (event.key === 'fitnityUserLoggedIn') {
         setIsLoggedIn(event.newValue === 'true');
@@ -48,17 +57,17 @@ export default function MainHeader() {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('storage', checkStorage);
     };
-  }, []); // Empty dependency array means this effect runs once on mount and cleanup on unmount
+  }, []);
 
-  // Effect to react to isLoggedIn state changes (e.g., after login/logout action)
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (mounted && typeof window !== 'undefined') { // Ensure mounted before accessing localStorage
       const loggedInStatus = localStorage.getItem('fitnityUserLoggedIn') === 'true';
       if (loggedInStatus !== isLoggedIn) {
-         setIsLoggedIn(loggedInStatus); // Sync if changed by other means (though primary control is via login/logout actions)
+         setIsLoggedIn(loggedInStatus);
       }
     }
-  }, [isLoggedIn]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoggedIn, mounted]);
 
 
   const handleLogout = () => {
@@ -70,9 +79,9 @@ export default function MainHeader() {
     router.refresh(); 
   };
 
-  const navLinkBaseClasses = "flex items-center justify-center md:justify-start gap-1 md:gap-1.5 px-2 md:px-3 py-2 rounded-lg text-sm transition-all duration-300 ease-in-out";
+  const navLinkBaseClasses = "flex items-center justify-center md:justify-start gap-1.5 px-2 md:px-3 py-2 rounded-lg text-sm transition-all duration-300 ease-in-out";
   const navLinkHoverClasses = "hover:translate-y-[-2px] hover:text-accent hover:drop-shadow-[0_0_6px_hsl(var(--accent))] focus-visible:text-accent focus-visible:drop-shadow-[0_0_6px_hsl(var(--accent))]";
-  const navIconClasses = "h-5 w-5 flex-shrink-0 group-hover:text-accent group-focus-visible:text-accent";
+  const navIconClasses = "h-5 w-5 flex-shrink-0 group-hover:text-accent group-focus-visible:text-accent transition-colors duration-300";
 
 
   const unauthenticatedNavItems: NavItem[] = [
@@ -91,7 +100,6 @@ export default function MainHeader() {
 
 
   if (!mounted) {
-    // Render a minimal header or skeleton to prevent hydration mismatch while waiting for client-side `localStorage` check
     return (
        <header className={cn("sticky top-0 z-50 w-full glassmorphic-card transition-all duration-300 ease-in-out h-20 dark:shadow-accent/10")}>
          <div className={cn("container mx-auto flex items-center justify-between px-4 md:px-6 transition-all duration-300 ease-in-out h-full")}>
@@ -99,7 +107,7 @@ export default function MainHeader() {
               <Zap className="h-8 w-8 text-accent" />
               <span className="text-2xl font-bold text-card-foreground">Fitnity AI</span>
             </Link>
-            <div className="flex items-center gap-1 md:gap-2">
+            <div className="flex items-center gap-2 md:gap-3">
                 {/* Placeholder for nav items or a simple spinner */}
             </div>
          </div>
@@ -134,14 +142,14 @@ export default function MainHeader() {
                   asChild
                   variant="default"
                   className={cn(
-                    "ml-2 px-3 md:px-4 py-2 rounded-lg shadow-md transition-all duration-300 ease-in-out text-sm text-accent-foreground",
-                    "bg-gradient-to-r from-[hsl(var(--accent)_/_0.9)] via-[hsl(var(--primary)_/_0.9)] to-[hsl(var(--accent)_/_0.9)] hover:shadow-[0_0_15px_3px_hsl(var(--accent)_/_0.7)] hover:scale-105 cta-glow-pulse active:scale-95"
+                    "ml-2 px-3 md:px-4 py-2 rounded-lg shadow-md transition-all duration-300 ease-in-out text-sm text-accent-foreground cta-glow-pulse active:scale-95",
+                    "bg-gradient-to-r from-[hsl(var(--accent)_/_0.9)] via-[hsl(var(--primary)_/_0.9)] to-[hsl(var(--accent)_/_0.9)] hover:shadow-[0_0_15px_3px_hsl(var(--accent)_/_0.7)] hover:scale-105"
                   )}
                 >
                   <Link href={item.href}>
-                    <item.icon className={cn(navIconClasses, "mr-1 md:mr-1.5")} />
+                    <item.icon className={cn(navIconClasses, "mr-1 md:mr-1.5", "text-accent-foreground group-hover:text-accent-foreground group-focus-visible:text-accent-foreground")} />
                     <span className="hidden sm:inline">{item.label}</span>
-                     <span className="sm:hidden">Sign Up</span> {/* Specific text for mobile CTA */}
+                     <span className="sm:hidden">Sign Up</span>
                   </Link>
                 </Button>
               ) : (
@@ -149,7 +157,7 @@ export default function MainHeader() {
                   <TooltipTrigger asChild>
                     <Button asChild variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground hover:bg-transparent focus-visible:bg-accent/10 group")}>
                       <Link href={item.href}>
-                        <item.icon className={cn(navIconClasses)} />
+                        <item.icon className={cn(navIconClasses, item.icon === LogIn ? "text-card-foreground group-hover:text-accent group-focus-visible:text-accent" : "text-card-foreground group-hover:text-accent group-focus-visible:text-accent" )} />
                         <span className="hidden md:inline">{item.label}</span>
                         {item.label === 'AI Coach' && isLoggedIn && <span className="glowing-orb ml-1.5 hidden md:inline-block"></span>}
                       </Link>
@@ -162,17 +170,35 @@ export default function MainHeader() {
               )
             ))}
             {isLoggedIn && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" onClick={handleLogout} className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground hover:bg-transparent focus-visible:bg-accent/10 group")}>
-                    <LogOutIcon className={cn(navIconClasses)} />
-                    <span className="hidden md:inline">Logout</span>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent className="md:hidden bg-popover text-popover-foreground border-border shadow-md">
-                  <p>Logout</p>
-                </TooltipContent>
-              </Tooltip>
+              <AlertDialog>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground hover:bg-transparent focus-visible:bg-accent/10 group")}>
+                        <LogOutIcon className={cn(navIconClasses, "text-card-foreground group-hover:text-accent group-focus-visible:text-accent")} />
+                        <span className="hidden md:inline">Logout</span>
+                      </Button>
+                    </AlertDialogTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent className="md:hidden bg-popover text-popover-foreground border-border shadow-md">
+                    <p>Logout</p>
+                  </TooltipContent>
+                </Tooltip>
+                <AlertDialogContent className="glassmorphic-card">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Confirm Logout</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to logout from Fitnity AI?
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleLogout} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">
+                      Logout
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             )}
           </nav>
         </div>
