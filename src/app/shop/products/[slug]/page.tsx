@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { products, type Product } from '@/lib/product-data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ShoppingCart, ArrowLeft, Tag, Info, DollarSign, IndianRupee } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Tag, Info, DollarSign, IndianRupee, Check, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
@@ -28,15 +28,17 @@ export default function ProductDetailPage() {
   }, [slug]);
 
   const handleAddToCart = () => {
-    if (!product) return;
+    if (!product || isAddingToCart) return;
+
     setIsAddingToCart(true);
     toast({
       title: `Added to cart: ${product.name} (Demo)`,
       description: 'This is a demo. Cart functionality is not yet implemented.',
     });
+
     setTimeout(() => {
       setIsAddingToCart(false);
-    }, 1500); // Simulate adding to cart
+    }, 2000); // Revert button state after 2 seconds
   };
 
   if (product === undefined) { // Loading state
@@ -65,9 +67,8 @@ export default function ProductDetailPage() {
   }
 
   if (!product) {
-    // Standard Next.js way to trigger a 404 page for dynamic segments
     notFound();
-    return null; // Or a custom "Product Not Found" component
+    return null;
   }
 
   return (
@@ -90,7 +91,7 @@ export default function ProductDetailPage() {
               fill
               className="object-cover transition-transform duration-500 hover:scale-105"
               data-ai-hint={product.aiHint}
-              priority // Prioritize loading for product image
+              priority
             />
           </div>
         </Card>
@@ -141,13 +142,19 @@ export default function ProductDetailPage() {
             onClick={handleAddToCart}
             disabled={isAddingToCart}
           >
-            <ShoppingCart className="mr-2 h-5 w-5" />
-            {isAddingToCart ? 'Added to Cart!' : 'Add to Cart'}
+            {isAddingToCart ? (
+              <>
+                <Check className="mr-2 h-5 w-5" /> Added to Cart!
+              </>
+            ) : (
+              <>
+                <ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart
+              </>
+            )}
           </Button>
         </div>
       </div>
 
-      {/* Placeholder for Related Products or Reviews */}
       <div className="mt-16">
         <h3 className="text-2xl font-semibold text-foreground mb-6">You Might Also Like</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
