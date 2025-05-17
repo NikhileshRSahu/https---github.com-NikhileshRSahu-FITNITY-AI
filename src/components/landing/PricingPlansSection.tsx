@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle2, Sparkles, Star, Zap } from 'lucide-react';
+import { CheckCircle2, Sparkles, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import { Switch } from '@/components/ui/switch';
@@ -12,8 +12,8 @@ import { Label } from '@/components/ui/label';
 
 interface Plan {
   id: string;
-  name: string; // e.g. "Base", "Premium", "Unlimited" - internal identifier
-  displayName: string; // e.g. "FREE", "Premium", "Unlimited" - for display
+  name: string; 
+  displayName: string; 
   icon?: React.ElementType;
   priceMonthlyUsd: number;
   priceMonthlyInr: number;
@@ -22,9 +22,9 @@ interface Plan {
   ctaText: string;
   ctaLink: string;
   isPopular?: boolean;
-  isCurrent?: boolean; // For the "Selected plan" style
-  planAccentClass?: string; // For specific accent colors
-  buttonGradientClass?: string; // For gradient button
+  isCurrent?: boolean; 
+  planAccentClass?: string; 
+  buttonGradientClass?: string; 
 }
 
 const plansData: Plan[] = [
@@ -36,22 +36,22 @@ const plansData: Plan[] = [
     priceMonthlyInr: 0,
     description: 'Get started with core AI workout generation and basic tracking.',
     features: [
-      'Limited AI workout plans',
-      'Basic progress dashboard',
+      'Basic AI workout plans',
+      'Limited progress dashboard',
       'Community access (read-only)',
     ],
-    ctaText: 'Current Plan',
-    ctaLink: '#', // Link to dashboard or stay on page
-    isCurrent: true,
+    ctaText: 'Start for Free',
+    ctaLink: '/auth/sign-up',
+    isCurrent: false, // Assuming user is not on free plan by default for demo
   },
   {
     id: 'premium',
     name: 'Premium',
     displayName: 'Premium',
-    icon: Sparkles, // Placeholder for the unique icon
-    priceMonthlyUsd: 10, // Updated price
-    priceMonthlyInr: 799, // Updated price
-    description: 'Unlock powerful AI tools to optimize your fitness journey.',
+    icon: Sparkles,
+    priceMonthlyUsd: 10, 
+    priceMonthlyInr: 799,
+    description: 'For dedicated users optimizing their fitness journey with powerful AI tools.',
     features: [
       'Unlimited adaptive AI workouts',
       'Real-time form analysis',
@@ -61,15 +61,15 @@ const plansData: Plan[] = [
     ctaText: 'Upgrade to Premium',
     ctaLink: '/auth/sign-up',
     isPopular: true,
-    planAccentClass: 'premium-accent-glow', // Custom class for gold/yellow glow
+    planAccentClass: 'premium-accent-glow', 
   },
   {
     id: 'unlimited',
     name: 'Unlimited',
     displayName: 'Unlimited',
-    icon: Zap, // Placeholder, could be different
-    priceMonthlyUsd: 25, // Updated price
-    priceMonthlyInr: 1999, // Updated price
+    icon: Zap, 
+    priceMonthlyUsd: 25, 
+    priceMonthlyInr: 1999,
     description: 'The ultimate AI fitness experience with every feature unlocked.',
     features: [
       'All Premium features',
@@ -79,8 +79,8 @@ const plansData: Plan[] = [
     ],
     ctaText: 'Go Unlimited',
     ctaLink: '/auth/sign-up',
-    planAccentClass: 'unlimited-accent-text', // Custom class for green text
-    buttonGradientClass: 'unlimited-button-gradient', // Custom class for gradient button
+    planAccentClass: 'unlimited-accent-text', 
+    buttonGradientClass: 'unlimited-button-gradient', 
   },
 ];
 
@@ -88,13 +88,23 @@ export default function PricingPlansSection() {
   const [isAnnual, setIsAnnual] = useState(false);
 
   const getPrice = (plan: Plan) => {
-    const factor = isAnnual ? 0.8 * 12 : 1; // 20% discount for annual, then multiply by 12 if annual
-    const monthlyFactor = isAnnual ? 0.8 : 1; // for /month text with discount
-
-    return {
-      usd: plan.priceMonthlyUsd === 0 ? 0 : Math.round(plan.priceMonthlyUsd * monthlyFactor),
-      inr: plan.priceMonthlyInr === 0 ? 0 : Math.round(plan.priceMonthlyInr * monthlyFactor),
-    };
+    if (isAnnual) {
+      return {
+        inr: plan.priceMonthlyInr === 0 ? 0 : Math.round(plan.priceMonthlyInr * 0.8),
+        usd: plan.priceMonthlyUsd === 0 ? 0 : Math.round(plan.priceMonthlyUsd * 0.8),
+        billingCycleText: '/yr', // Indicates the rate is for an annual billing cycle
+        totalAnnualInr: plan.priceMonthlyInr === 0 ? 0 : Math.round(plan.priceMonthlyInr * 0.8 * 12),
+        totalAnnualUsd: plan.priceMonthlyUsd === 0 ? 0 : Math.round(plan.priceMonthlyUsd * 0.8 * 12),
+      };
+    } else {
+      return {
+        inr: plan.priceMonthlyInr,
+        usd: plan.priceMonthlyUsd,
+        billingCycleText: '/mo',
+        totalAnnualInr: 0, // Not applicable for monthly
+        totalAnnualUsd: 0, // Not applicable for monthly
+      };
+    }
   };
 
   return (
@@ -138,21 +148,21 @@ export default function PricingPlansSection() {
                 key={plan.id}
                 className={cn(
                   "flex flex-col bg-neutral-800/80 backdrop-blur-sm text-neutral-200 rounded-2xl shadow-xl border border-neutral-700/70 hover:-translate-y-2 transition-all duration-300 ease-in-out animate-fade-in-up relative overflow-hidden",
-                  plan.isPopular ? 'border-2 border-yellow-400/70 popular-plan-glow' : '',
+                  plan.isPopular ? 'border-2 border-[hsl(var(--pricing-premium-accent-color))] popular-plan-glow' : '',
                   plan.isCurrent ? 'opacity-80' : ''
                 )}
                 style={{ animationDelay: `${index * 0.15 + 0.2}s` }}
               >
                 {plan.isPopular && (
-                  <div className="absolute top-4 right-4 bg-yellow-500 text-neutral-900 px-3 py-1 rounded-full text-xs font-bold shadow-md">
-                    MOST POPULAR
+                  <div className="absolute top-4 right-4 bg-[hsl(var(--pricing-premium-accent-color))] text-neutral-900 px-3 py-1 rounded-full text-xs font-bold shadow-md uppercase">
+                    Most Popular
                   </div>
                 )}
                 <CardHeader className="pb-4 pt-8 text-center">
-                  {plan.icon && <plan.icon className={cn("h-12 w-12 mx-auto mb-4", plan.planAccentClass || 'text-yellow-400')} />}
+                  {plan.icon && <plan.icon className={cn("h-12 w-12 mx-auto mb-4", plan.planAccentClass || 'text-[hsl(var(--pricing-premium-accent-color))]')} />}
                   <CardTitle className={cn(
                       "text-lg font-semibold uppercase tracking-wider mb-1",
-                      plan.id === 'free' ? 'text-neutral-400' : plan.planAccentClass || 'text-yellow-400'
+                      plan.id === 'free' ? 'text-neutral-400' : plan.planAccentClass || 'text-[hsl(var(--pricing-premium-accent-color))]'
                     )}
                   >
                     {plan.id === 'free' ? plan.name : plan.displayName}
@@ -165,10 +175,12 @@ export default function PricingPlansSection() {
                         <span className="text-3xl align-top mr-0.5">₹</span>
                         {currentPrice.inr}
                         <span className="text-lg text-neutral-400">
-                          {plan.priceMonthlyUsd > 0 ? (isAnnual ? '/yr' : '/mo') : ''}
+                           {currentPrice.billingCycleText}
                         </span>
                       </span>
-                       {plan.priceMonthlyUsd > 0 && <span className="text-sm text-neutral-500 mt-1">(${currentPrice.usd}{isAnnual ? '/yr' : '/mo'})</span>}
+                       <span className="text-sm text-neutral-500 mt-1">
+                         (${currentPrice.usd}{currentPrice.billingCycleText})
+                       </span>
                     </div>
                   )}
                    <CardDescription className="pt-3 text-neutral-400 text-sm min-h-[3.5em] px-4">
@@ -197,8 +209,9 @@ export default function PricingPlansSection() {
                         ? 'bg-neutral-700 text-neutral-400 cursor-default hover:bg-neutral-700'
                         : plan.buttonGradientClass 
                           ? `${plan.buttonGradientClass} text-neutral-900 hover:opacity-90`
-                          : 'bg-yellow-500 hover:bg-yellow-400 text-neutral-900',
-                       plan.id === 'free' && !plan.isCurrent ? 'bg-primary hover:bg-primary/90 text-primary-foreground' : '' // For non-current free plan if needed
+                          : plan.isPopular 
+                            ? 'bg-[hsl(var(--pricing-premium-accent-color))] hover:bg-[hsl(var(--pricing-premium-accent-color),0.9)] text-neutral-900'
+                            : 'bg-primary hover:bg-primary/90 text-primary-foreground'
                     )}
                     disabled={plan.isCurrent}
                   >
@@ -210,8 +223,10 @@ export default function PricingPlansSection() {
           })}
         </div>
         <p className="text-center mt-12 text-xs text-neutral-500 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
-          {isAnnual ? 'Annual prices shown. ' : 'Monthly prices shown. '}
+          {isAnnual ? 'Annual plans are billed upfront for the year. ' : 'Monthly prices shown. '}
           All subscriptions are processed securely. You can cancel anytime.
+          <br/>
+          USD prices are approximate and may vary based on conversion rates.
         </p>
       </div>
     </section>
