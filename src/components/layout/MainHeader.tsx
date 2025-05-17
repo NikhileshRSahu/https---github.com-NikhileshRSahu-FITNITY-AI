@@ -15,7 +15,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Zap, LogIn, UserPlus, LayoutDashboard, User, LogOut as LogOutIcon, ClipboardList, Bot, Apple as NutritionIcon, Camera } from 'lucide-react';
+import { Zap, LogIn, UserPlus, LayoutDashboard, User as UserIcon, LogOut as LogOutIcon, ClipboardList, Bot, Apple as NutritionIcon, Camera, ShoppingCart } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
@@ -35,17 +35,20 @@ export default function MainHeader() {
   const router = useRouter();
 
   useEffect(() => {
-    setMounted(true);
+    setMounted(true); // Indicate component has mounted to safely access localStorage
+
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll);
 
+    // Check login status on mount
     if (typeof window !== 'undefined') {
       const loggedInStatus = localStorage.getItem('fitnityUserLoggedIn') === 'true';
       setIsLoggedIn(loggedInStatus);
     }
     
+    // Listen for storage changes (e.g., login/logout in another tab)
     const checkStorage = (event: StorageEvent) => {
       if (event.key === 'fitnityUserLoggedIn') {
         setIsLoggedIn(event.newValue === 'true');
@@ -59,24 +62,26 @@ export default function MainHeader() {
     };
   }, []);
 
+  // This effect specifically listens to router changes to re-check login state
+  // Useful if login state might change without a full page reload but with route changes
   useEffect(() => {
-    if (mounted && typeof window !== 'undefined') { // Ensure mounted before accessing localStorage
+    if (mounted && typeof window !== 'undefined') { 
       const loggedInStatus = localStorage.getItem('fitnityUserLoggedIn') === 'true';
-      if (loggedInStatus !== isLoggedIn) {
+      if (loggedInStatus !== isLoggedIn) { // Only update if state is actually different
          setIsLoggedIn(loggedInStatus);
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoggedIn, mounted]);
+  }, [isLoggedIn, mounted, router]); // Added router to dependency array
 
 
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('fitnityUserLoggedIn');
     }
-    setIsLoggedIn(false);
-    router.push('/');
-    router.refresh(); 
+    setIsLoggedIn(false); // Update state immediately
+    router.push('/'); // Navigate to home
+    router.refresh(); // Force refresh to ensure all components re-evaluate state
   };
 
   const navLinkBaseClasses = "flex items-center justify-center md:justify-start gap-1.5 px-2 md:px-3 py-2 rounded-lg text-sm transition-all duration-300 ease-in-out";
@@ -95,13 +100,14 @@ export default function MainHeader() {
     { href: '/nutrition-plan', label: 'Nutrition', icon: NutritionIcon },
     { href: '/form-analysis', label: 'Form Check', icon: Camera },
     { href: '/ai-coach', label: 'AI Coach', icon: Bot },
-    { href: '/profile', label: 'Profile', icon: User },
+    { href: '/shop', label: 'Shop', icon: ShoppingCart }, // New Shop Link
+    { href: '/profile', label: 'Profile', icon: UserIcon },
   ];
 
 
-  if (!mounted) {
+  if (!mounted) { // Show a minimal skeleton or static header before hydration
     return (
-       <header className={cn("sticky top-0 z-50 w-full glassmorphic-card transition-all duration-300 ease-in-out h-20 dark:shadow-accent/10")}>
+       <header className={cn("sticky top-0 z-50 w-full glassmorphic-card transition-all duration-300 ease-in-out h-20 dark:shadow-accent/10", isScrolled ? "shadow-xl shadow-accent/10 dark:shadow-accent/20 h-16" : "h-20 dark:shadow-accent/10")}>
          <div className={cn("container mx-auto flex items-center justify-between px-4 md:px-6 transition-all duration-300 ease-in-out h-full")}>
             <Link href="/" className="flex items-center gap-2 logo-pulse" prefetch={false}>
               <Zap className="h-8 w-8 text-accent" />
@@ -134,13 +140,14 @@ export default function MainHeader() {
             <Zap className="h-8 w-8 text-accent" />
             <span className="text-2xl font-bold text-card-foreground">Fitnity AI</span>
           </Link>
-          <nav className="flex items-center gap-1 md:gap-2">
+          <nav className="flex items-center gap-1 md:gap-1.5"> {/* Reduced gap for more items */}
             {itemsToDisplay.map(item => (
               item.isCTA ? (
                 <Button
                   key={item.href}
                   asChild
                   variant="default"
+                  size="sm" // Make CTA slightly more compact if needed
                   className={cn(
                     "ml-2 px-3 md:px-4 py-2 rounded-lg shadow-md transition-all duration-300 ease-in-out text-sm text-accent-foreground cta-glow-pulse active:scale-95",
                     "bg-gradient-to-r from-[hsl(var(--accent)_/_0.9)] via-[hsl(var(--primary)_/_0.9)] to-[hsl(var(--accent)_/_0.9)] hover:shadow-[0_0_15px_3px_hsl(var(--accent)_/_0.7)] hover:scale-105"
@@ -188,7 +195,7 @@ export default function MainHeader() {
                   <AlertDialogHeader>
                     <AlertDialogTitle>Confirm Logout</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Are you sure you want to logout from Fitnity AI?
+                       Are you sure you want to logout from Fitnity AI?
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
