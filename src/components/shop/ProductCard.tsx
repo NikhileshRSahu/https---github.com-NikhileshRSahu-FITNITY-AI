@@ -52,14 +52,14 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="flex items-baseline gap-2 mt-auto pt-2">
             <p className="text-xl font-bold text-accent">₹{product.priceINR.toLocaleString()}</p>
             {product.originalPriceINR && (
-              <p className="text-sm text-card-foreground/60 line-through">₹{(product.originalPriceINR).toLocaleString()}</p> 
+              <p className="text-sm text-card-foreground/60 line-through">₹{(product.originalPriceINR).toLocaleString()}</p>
             )}
         </div>
          <p className="text-xs text-card-foreground/50 mb-2">Approx. ${product.priceUSD}</p>
       </CardContent>
       <CardFooter className="p-4 pt-0 flex flex-col sm:flex-row gap-2">
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           className="w-full sm:w-auto flex-grow border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground active:scale-95 transition-all duration-200"
           asChild
         >
@@ -67,8 +67,8 @@ export default function ProductCard({ product }: ProductCardProps) {
             <Eye className="mr-2 h-4 w-4" /> View Details
           </Link>
         </Button>
-        <Button 
-          className="w-full sm:w-auto flex-grow bg-accent hover:bg-accent/90 text-accent-foreground active:scale-95 transition-all duration-200 text-sm py-2.5 px-4"
+        <Button
+          className="w-full sm:w-auto flex-grow bg-accent hover:bg-accent/90 text-accent-foreground active:scale-95 transition-all duration-200 text-sm py-2.5 px-4 cta-glow-pulse"
           onClick={handleAddToCart}
         >
           <ShoppingCart className="mr-1.5 h-4 w-4" /> Add to Cart
