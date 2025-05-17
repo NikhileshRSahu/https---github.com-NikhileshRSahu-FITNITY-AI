@@ -3,11 +3,25 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import ProductCard from '@/components/shop/ProductCard';
 import { products } from '@/lib/product-data';
-import { ShoppingBag, ListChecks, Tag } from 'lucide-react';
+import { ShoppingBag, ListChecks, Tag, Zap, Shirt, Apple, Watch, Dumbbell } from 'lucide-react'; // Added icons
+import type { LucideIcon } from 'lucide-react';
 
 export default function ShopPage() {
-  const featuredProducts = products.slice(0, 3); // Show first 3 as featured
-  const categories = ['Equipment', 'Apparel', 'Nutrition', 'Wearables', 'Accessories'];
+  const featuredProducts = products.slice(0, 3); 
+  
+  type CategoryWithIcon = {
+    name: string;
+    icon: LucideIcon;
+    slug: string;
+  };
+
+  const categories: CategoryWithIcon[] = [
+    { name: 'Equipment', icon: Dumbbell, slug: 'equipment' },
+    { name: 'Apparel', icon: Shirt, slug: 'apparel' },
+    { name: 'Nutrition', icon: Apple, slug: 'nutrition' },
+    { name: 'Wearables', icon: Watch, slug: 'wearables' },
+    { name: 'Accessories', icon: Zap, slug: 'accessories' },
+  ];
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 animate-fade-in-up">
@@ -48,11 +62,12 @@ export default function ShopPage() {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 md:gap-6">
           {categories.map((category) => (
             <Link
-              key={category}
-              href={`/shop/products?category=${category.toLowerCase()}`} // Placeholder for actual filtering
-              className="block p-6 glassmorphic-card rounded-lg text-center hover:shadow-accent/40 hover:-translate-y-1 transition-all duration-300"
+              key={category.name}
+              href={`/shop/products?category=${category.slug}`}
+              className="block p-6 glassmorphic-card rounded-lg text-center hover:shadow-accent/40 hover:-translate-y-1 transition-all duration-300 group"
             >
-              <h3 className="text-lg font-medium text-card-foreground group-hover:text-accent">{category}</h3>
+              <category.icon className="h-10 w-10 text-accent mx-auto mb-3 transition-transform duration-300 group-hover:scale-110" />
+              <h3 className="text-lg font-medium text-card-foreground group-hover:text-accent transition-colors duration-300">{category.name}</h3>
             </Link>
           ))}
         </div>

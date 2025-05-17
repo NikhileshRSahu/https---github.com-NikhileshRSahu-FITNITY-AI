@@ -51,8 +51,9 @@ export default function ProductCard({ product }: ProductCardProps) {
         <p className="text-sm text-card-foreground/70 mb-3 line-clamp-2 flex-grow">{product.description}</p>
         <div className="flex items-baseline gap-2 mt-auto pt-2">
             <p className="text-xl font-bold text-accent">₹{product.priceINR.toLocaleString()}</p>
-            <p className="text-sm text-card-foreground/60 line-through">₹{(product.priceINR * 1.2).toLocaleString()}</p> 
-            {/* Example of showing a strikethrough price */}
+            {product.originalPriceINR && (
+              <p className="text-sm text-card-foreground/60 line-through">₹{(product.originalPriceINR).toLocaleString()}</p> 
+            )}
         </div>
          <p className="text-xs text-card-foreground/50 mb-2">Approx. ${product.priceUSD}</p>
       </CardContent>
@@ -67,10 +68,10 @@ export default function ProductCard({ product }: ProductCardProps) {
           </Link>
         </Button>
         <Button 
-          className="w-full sm:w-auto flex-grow bg-accent hover:bg-accent/90 text-accent-foreground active:scale-95 transition-all duration-200"
+          className="w-full sm:w-auto flex-grow bg-accent hover:bg-accent/90 text-accent-foreground active:scale-95 transition-all duration-200 text-sm py-2.5 px-4"
           onClick={handleAddToCart}
         >
-          <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
+          <ShoppingCart className="mr-1.5 h-4 w-4" /> Add to Cart
         </Button>
       </CardFooter>
     </Card>

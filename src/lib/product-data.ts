@@ -4,11 +4,12 @@ export type Product = {
   name: string;
   description: string;
   priceINR: number;
+  originalPriceINR?: number; // Optional: for showing a discounted price
   priceUSD: number;
-  imagePlaceholder: string; // URL for placeholder image
-  aiHint: string; // Hint for AI image generation if needed
+  imagePlaceholder: string; 
+  aiHint: string; 
   category: 'Equipment' | 'Apparel' | 'Nutrition' | 'Wearables' | 'Accessories';
-  slug: string; // for URL generation
+  slug: string; 
 };
 
 export const products: Product[] = [
@@ -17,6 +18,7 @@ export const products: Product[] = [
     name: 'Smart Hydration Bottle',
     description: 'Tracks your water intake and glows to remind you to drink. Syncs with the Fitnity AI app.',
     priceINR: 2499,
+    originalPriceINR: 2999,
     priceUSD: 30,
     imagePlaceholder: 'https://placehold.co/300x300.png',
     aiHint: 'smart water bottle futuristic',
@@ -39,6 +41,7 @@ export const products: Product[] = [
     name: 'Performance T-Shirt',
     description: 'Lightweight, breathable fabric with moisture-wicking technology. Designed for intense workouts.',
     priceINR: 1299,
+    originalPriceINR: 1599,
     priceUSD: 18,
     imagePlaceholder: 'https://placehold.co/300x300.png',
     aiHint: 'performance t-shirt fitness',
@@ -61,6 +64,7 @@ export const products: Product[] = [
     name: 'Advanced Fitness Tracker',
     description: 'Monitors heart rate, sleep, SpO2, and integrates seamlessly with your Fitnity AI dashboard.',
     priceINR: 7999,
+    originalPriceINR: 8999,
     priceUSD: 99,
     imagePlaceholder: 'https://placehold.co/300x300.png',
     aiHint: 'fitness tracker sleek display',
@@ -80,7 +84,7 @@ export const products: Product[] = [
   },
   {
     id: 'prod_007',
-    name: 'Resistance Bands Set (Set of 5)',
+    name: 'Resistance Bands Set (5 pcs)',
     description: 'Versatile latex bands for strength training, stretching, and rehabilitation. Multiple resistance levels.',
     priceINR: 1499,
     priceUSD: 20,
@@ -91,14 +95,15 @@ export const products: Product[] = [
   },
   {
     id: 'prod_008',
-    name: 'Smart Jump Rope',
+    name: 'Smart Jump Rope X1',
     description: 'Digital jump rope that tracks skips, time, and calories burned. Connects to fitness apps.',
     priceINR: 2999,
+    originalPriceINR: 3499,
     priceUSD: 38,
     imagePlaceholder: 'https://placehold.co/300x300.png',
     aiHint: 'smart jump rope digital',
     category: 'Equipment',
-    slug: 'smart-jump-rope',
+    slug: 'smart-jump-rope-x1',
   },
   {
     id: 'prod_009',
@@ -124,14 +129,15 @@ export const products: Product[] = [
   },
   {
     id: 'prod_011',
-    name: 'Smart Body Composition Scale',
+    name: 'Smart Body Scale Pro',
     description: 'Measures weight, BMI, body fat, muscle mass, and more. Syncs data to the Fitnity AI app.',
     priceINR: 4999,
+    originalPriceINR: 5599,
     priceUSD: 65,
     imagePlaceholder: 'https://placehold.co/300x300.png',
     aiHint: 'smart scale sleek',
     category: 'Wearables',
-    slug: 'smart-body-scale',
+    slug: 'smart-body-scale-pro',
   },
   {
     id: 'prod_012',
@@ -149,6 +155,7 @@ export const products: Product[] = [
     name: 'Breathable Training Tank',
     description: 'Ultra-lightweight and breathable tank top, perfect for high-intensity workouts. Quick-drying material.',
     priceINR: 999,
+    originalPriceINR: 1199,
     priceUSD: 14,
     imagePlaceholder: 'https://placehold.co/300x300.png',
     aiHint: 'training tank top minimalist',
@@ -157,25 +164,26 @@ export const products: Product[] = [
   },
   {
     id: 'prod_014',
-    name: 'BCAA Amino Acids',
+    name: 'BCAA Max Strength',
     description: 'Essential Branch-Chain Amino Acids to support muscle recovery, reduce fatigue, and promote lean muscle growth.',
     priceINR: 1899,
     priceUSD: 25,
     imagePlaceholder: 'https://placehold.co/300x300.png',
     aiHint: 'bcaa supplement container',
     category: 'Nutrition',
-    slug: 'bcaa-amino-acids',
+    slug: 'bcaa-max-strength',
   },
   {
     id: 'prod_015',
-    name: 'Compact Gym Bag',
+    name: 'Compact Gym Bag Elite',
     description: 'Durable and water-resistant gym bag with multiple compartments, including a shoe tunnel.',
     priceINR: 2299,
+    originalPriceINR: 2599,
     priceUSD: 29,
     imagePlaceholder: 'https://placehold.co/300x300.png',
     aiHint: 'gym bag modern',
     category: 'Accessories',
-    slug: 'compact-gym-bag',
+    slug: 'compact-gym-bag-elite',
   },
   {
     id: 'prod_016',
