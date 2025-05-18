@@ -6,9 +6,11 @@ import Link from 'next/link';
 import type { Product } from '@/lib/product-data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { ShoppingCart, Eye } from 'lucide-react';
+import { ShoppingCart, Eye, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { useCart } from '@/contexts/CartContext'; // Import useCart
+import { useState } from 'react';
 
 interface ProductCardProps {
   product: Product;
@@ -16,12 +18,18 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { toast } = useToast();
+  const { addItem } = useCart();
+  const [isAdding, setIsAdding] = useState(false);
 
   const handleAddToCart = () => {
+    if (isAdding) return;
+    setIsAdding(true);
+    addItem(product);
     toast({
-      title: `${product.name} added to cart! (Demo)`,
-      description: "This is a demo. Cart functionality is not yet implemented.",
+      title: `${product.name} added to cart!`,
+      description: "You can view your cart or continue shopping.",
     });
+    setTimeout(() => setIsAdding(false), 1500); // Reset after 1.5s
   };
 
   return (
@@ -68,10 +76,15 @@ export default function ProductCard({ product }: ProductCardProps) {
           </Link>
         </Button>
         <Button
-          className="w-full sm:w-auto flex-grow bg-accent hover:bg-accent/90 text-accent-foreground active:scale-95 transition-all duration-200 text-sm py-2.5 px-4 cta-glow-pulse"
+          className={cn(
+            "w-full sm:w-auto flex-grow text-accent-foreground active:scale-95 transition-all duration-200 text-sm py-2.5 px-4 cta-glow-pulse",
+            isAdding ? "bg-green-500 hover:bg-green-600" : "bg-accent hover:bg-accent/90"
+          )}
           onClick={handleAddToCart}
+          disabled={isAdding}
         >
-          <ShoppingCart className="mr-1.5 h-4 w-4" /> Add to Cart
+          {isAdding ? <Check className="mr-1.5 h-4 w-4" /> : <ShoppingCart className="mr-1.5 h-4 w-4" />}
+          {isAdding ? 'Added!' : 'Add to Cart'}
         </Button>
       </CardFooter>
     </Card>

@@ -19,6 +19,7 @@ import { Zap, LogIn, UserPlus, LayoutDashboard, User as UserIcon, LogOut as LogO
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useRouter, usePathname } from 'next/navigation';
+import { useCart } from '@/contexts/CartContext'; // Import useCart
 
 interface NavItem {
   href: string;
@@ -34,56 +35,51 @@ export default function MainHeader() {
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  const { getItemCount } = useCart(); // Get cart item count
+  const [cartItemCount, setCartItemCount] = useState(0);
 
   useEffect(() => {
-    setMounted(true); 
-
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
+    setMounted(true);
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
 
-    if (typeof window !== 'undefined') {
+    const checkLoginStatus = () => {
       const loggedInStatus = localStorage.getItem('fitnityUserLoggedIn') === 'true';
       setIsLoggedIn(loggedInStatus);
-    }
-    
-    const checkStorage = (event: StorageEvent) => {
+    };
+    checkLoginStatus(); // Initial check
+
+    const handleStorageChange = (event: StorageEvent) => {
       if (event.key === 'fitnityUserLoggedIn') {
-        setIsLoggedIn(event.newValue === 'true');
+        checkLoginStatus();
       }
     };
-    window.addEventListener('storage', checkStorage);
+    window.addEventListener('storage', handleStorageChange);
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('storage', checkStorage);
+      window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
 
   useEffect(() => {
-    if (mounted && typeof window !== 'undefined') { 
-      const loggedInStatus = localStorage.getItem('fitnityUserLoggedIn') === 'true';
-      if (loggedInStatus !== isLoggedIn) { 
-         setIsLoggedIn(loggedInStatus);
-      }
+    if (mounted) {
+      setCartItemCount(getItemCount());
     }
-  }, [isLoggedIn, mounted, pathname]); // Listen to pathname to re-check on route changes
-
+  }, [mounted, getItemCount, pathname]); // Re-check cart count on pathname change too
 
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('fitnityUserLoggedIn');
     }
-    setIsLoggedIn(false); 
-    router.push('/'); 
-    router.refresh(); 
+    setIsLoggedIn(false);
+    router.push('/');
+    router.refresh();
   };
 
-  const navLinkBaseClasses = "flex items-center justify-center md:justify-start gap-1.5 px-2 md:px-3 py-2 rounded-lg text-sm transition-all duration-300 ease-in-out group";
+  const navLinkBaseClasses = "relative flex items-center justify-center md:justify-start gap-1.5 px-2 md:px-3 py-2 rounded-lg text-sm transition-all duration-300 ease-in-out group";
   const navLinkHoverClasses = "hover:translate-y-[-2px] hover:text-accent hover:drop-shadow-[0_0_6px_hsl(var(--accent))] focus-visible:text-accent focus-visible:drop-shadow-[0_0_6px_hsl(var(--accent))] hover:bg-transparent focus-visible:bg-accent/10";
   const navIconClasses = "h-5 w-5 flex-shrink-0 group-hover:text-accent group-focus-visible:text-accent transition-colors duration-300";
-
 
   const unauthenticatedNavItems: NavItem[] = [
     { href: '/auth/sign-in', label: 'Login', icon: LogIn },
@@ -100,8 +96,7 @@ export default function MainHeader() {
     { href: '/profile', label: 'Profile', icon: UserIcon },
   ];
 
-
-  if (!mounted) { 
+  if (!mounted) {
     return (
        <header className={cn("sticky top-0 z-50 w-full glassmorphic-card transition-all duration-300 ease-in-out h-20 dark:shadow-accent/10", isScrolled ? "shadow-xl shadow-accent/10 dark:shadow-accent/20 h-16" : "h-20 dark:shadow-accent/10")}>
          <div className={cn("container mx-auto flex items-center justify-between px-4 md:px-6 transition-all duration-300 ease-in-out h-full")}>
@@ -109,8 +104,8 @@ export default function MainHeader() {
               <Zap className="h-8 w-8 text-accent" />
               <span className="text-2xl font-bold text-card-foreground">Fitnity AI</span>
             </Link>
-            <div className="flex items-center gap-2 md:gap-3">
-                {/* Placeholder for nav items or a simple spinner */}
+            <div className="flex items-center gap-0.5 md:gap-1">
+              {/* Skeleton for nav items or a simple spinner */}
             </div>
          </div>
        </header>
@@ -136,23 +131,23 @@ export default function MainHeader() {
             <Zap className="h-8 w-8 text-accent" />
             <span className="text-2xl font-bold text-card-foreground">Fitnity AI</span>
           </Link>
-          <nav className="flex items-center gap-0.5 md:gap-1"> {/* Slightly reduced gap */}
+          <nav className="flex items-center gap-0 md:gap-0.5">
             {itemsToDisplay.map(item => (
               item.isCTA ? (
                 <Button
                   key={item.href}
                   asChild
                   variant="default"
-                  size="sm" 
+                  size="sm"
                   className={cn(
-                    "ml-2 px-3 md:px-4 py-2 rounded-lg shadow-md transition-all duration-300 ease-in-out text-sm text-accent-foreground cta-glow-pulse active:scale-95",
+                    "ml-1 md:ml-2 px-3 md:px-4 py-2 rounded-lg shadow-md transition-all duration-300 ease-in-out text-sm text-accent-foreground cta-glow-pulse active:scale-95",
                     "bg-gradient-to-r from-[hsl(var(--accent)_/_0.9)] via-[hsl(var(--primary)_/_0.9)] to-[hsl(var(--accent)_/_0.9)] hover:shadow-[0_0_15px_3px_hsl(var(--accent)_/_0.7)] hover:scale-105"
                   )}
                 >
                   <Link href={item.href}>
                     <item.icon className={cn(navIconClasses, "mr-1 md:mr-1.5", "text-accent-foreground group-hover:text-accent-foreground group-focus-visible:text-accent-foreground")} />
-                    <span className="hidden sm:inline">{item.label}</span>
-                     <span className="sm:hidden">Sign Up</span>
+                    <span className="hidden sm:inline">{item.label === 'Get Started' ? 'Sign Up' : item.label}</span>
+                    <span className="sm:hidden">{item.label === 'Get Started' ? 'Sign Up' : item.label}</span>
                   </Link>
                 </Button>
               ) : (
@@ -161,8 +156,13 @@ export default function MainHeader() {
                     <Button asChild variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground")}>
                       <Link href={item.href}>
                         <item.icon className={cn(navIconClasses, "text-card-foreground group-hover:text-accent group-focus-visible:text-accent" )} />
-                        <span className="hidden md:inline text-sm">{item.label}</span> {/* Ensured text-sm */}
+                        <span className="hidden md:inline text-sm">{item.label}</span>
                         {item.label === 'AI Coach' && isLoggedIn && <span className="glowing-orb ml-1.5 hidden md:inline-block"></span>}
+                        {item.label === 'Shop' && isLoggedIn && cartItemCount > 0 && (
+                          <span className="absolute top-0 right-0 -mt-1 -mr-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
+                            {cartItemCount}
+                          </span>
+                        )}
                       </Link>
                     </Button>
                   </TooltipTrigger>
@@ -179,7 +179,7 @@ export default function MainHeader() {
                     <AlertDialogTrigger asChild>
                       <Button variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground")}>
                         <LogOutIcon className={cn(navIconClasses, "text-card-foreground group-hover:text-accent group-focus-visible:text-accent")} />
-                        <span className="hidden md:inline text-sm">Logout</span> {/* Ensured text-sm */}
+                        <span className="hidden md:inline text-sm">Logout</span>
                       </Button>
                     </AlertDialogTrigger>
                   </TooltipTrigger>

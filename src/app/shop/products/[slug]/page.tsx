@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useParams, notFound } from 'next/navigation';
+import { useParams, notFound, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { products, type Product } from '@/lib/product-data';
@@ -12,18 +12,22 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useCart } from '@/contexts/CartContext'; // Import useCart
 
 export default function ProductDetailPage() {
   const params = useParams();
   const slug = params?.slug as string | undefined;
   const { toast } = useToast();
-  const [product, setProduct] = useState<Product | null | undefined>(undefined); // undefined for loading state
+  const [product, setProduct] = useState<Product | null | undefined>(undefined);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const { addItem } = useCart();
+  const router = useRouter();
+
 
   useEffect(() => {
     if (slug) {
       const foundProduct = products.find(p => p.slug === slug);
-      setProduct(foundProduct || null); // null if not found after checking
+      setProduct(foundProduct || null);
     }
   }, [slug]);
 
@@ -31,17 +35,23 @@ export default function ProductDetailPage() {
     if (!product || isAddingToCart) return;
 
     setIsAddingToCart(true);
+    addItem(product); // Add to cart context
     toast({
-      title: `Added to cart: ${product.name} (Demo)`,
+      title: `Added to cart: ${product.name}`,
       description: 'This is a demo. Cart functionality is not yet implemented.',
+      action: (
+        <Button variant="outline" size="sm" onClick={() => router.push('/shop/cart')}>
+          View Cart
+        </Button>
+      )
     });
 
     setTimeout(() => {
       setIsAddingToCart(false);
-    }, 2000); // Revert button state after 2 seconds
+    }, 2000);
   };
 
-  if (product === undefined) { // Loading state
+  if (product === undefined) { 
     return (
       <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 animate-fade-in-up">
         <div className="mb-8">
@@ -67,8 +77,10 @@ export default function ProductDetailPage() {
   }
 
   if (!product) {
-    notFound();
-    return null;
+    // This will trigger the not-found.tsx page if you have one,
+    // or a default Next.js 404 page.
+    notFound(); 
+    return null; // Necessary for TypeScript after calling notFound()
   }
 
   return (
@@ -136,8 +148,8 @@ export default function ProductDetailPage() {
           <Button
             size="lg"
             className={cn(
-              "w-full text-lg py-3 bg-accent hover:bg-accent/90 text-accent-foreground cta-glow-pulse active:scale-95 transition-all duration-200",
-              isAddingToCart && "bg-green-500 hover:bg-green-600"
+              "w-full text-lg py-3 text-accent-foreground cta-glow-pulse active:scale-95 transition-all duration-200",
+              isAddingToCart ? "bg-green-500 hover:bg-green-600" : "bg-accent hover:bg-accent/90"
             )}
             onClick={handleAddToCart}
             disabled={isAddingToCart}

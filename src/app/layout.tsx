@@ -7,7 +7,8 @@ import { Toaster } from '@/components/ui/toaster';
 import MainHeader from '@/components/layout/MainHeader';
 import MainFooter from '@/components/layout/MainFooter';
 import { ThemeProvider } from '@/components/theme-provider';
-import CursorFollower from '@/components/effects/CursorFollower'; // Added import
+import CursorFollower from '@/components/effects/CursorFollower';
+import { CartProvider } from '@/contexts/CartContext'; // Added CartProvider import
 
 const geistSans = GeistSans;
 const geistMono = GeistMono;
@@ -33,11 +34,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <CursorFollower /> {/* Added CursorFollower component */}
-          <MainHeader />
-          <main className="flex-grow">{children}</main>
-          <MainFooter />
-          <Toaster />
+          <CartProvider> {/* Wrapped with CartProvider */}
+            <CursorFollower />
+            <MainHeader />
+            <main className="flex-grow">{children}</main>
+            <MainFooter />
+            <Toaster />
+          </CartProvider>
         </ThemeProvider>
       </body>
     </html>
