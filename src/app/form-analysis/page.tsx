@@ -174,13 +174,15 @@ export default function FormAnalysisPage() {
       });
     } finally {
       setIsSubmitting(false);
-       // Ensure status is correctly set based on outcome
-      if (analysisStatus !== 'done' && analysisStatus !== 'error') {
-        // If an error occurred before 'done' or explicit 'error'
-        setAnalysisStatus(error ? 'error' : 'idle');
-      } else if (analysisStatus === 'done' && error) {
-        // If it was 'done' but an error was also set (e.g. in the else block)
-        setAnalysisStatus('error');
+      if (analysisResult && analysisStatus !== 'error') { // Check if result is actually set and no error
+        setAnalysisStatus('done');
+      } else if (error) {
+         setAnalysisStatus('error');
+      } else if (!analysisResult && !error) { // No result and no error, implies AI didn't return feedback but didn't throw
+         setAnalysisStatus('error'); // Or some other status like 'no_feedback'
+         setError('The AI could not provide feedback for this exercise. Please try again.');
+      } else {
+        setAnalysisStatus('idle');
       }
     }
   }
@@ -303,12 +305,12 @@ export default function FormAnalysisPage() {
                 )}
               </>
             )}
-            {!isLoading && !isSubmitting && !error && analysisStatus === 'done' && !analysisResult?.feedback && (
+            {analysisStatus === 'error' && !isSubmitting && !analysisResult?.feedback && (
                  <Alert className="bg-background/30 border-border/50 text-card-foreground">
                     <AlertTriangle className="h-5 w-5 text-accent" />
-                    <AlertTitle>No Feedback Available</AlertTitle>
+                    <AlertTitle>{ error ? "Analysis Failed" : "No Feedback Available"}</AlertTitle>
                     <AlertDescription>
-                    The AI could not provide feedback for this exercise. Please try again.
+                     {error || "The AI could not provide feedback for this exercise. Please try again."}
                     </AlertDescription>
                 </Alert>
             )}

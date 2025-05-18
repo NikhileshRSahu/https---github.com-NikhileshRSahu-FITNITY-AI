@@ -73,8 +73,7 @@ export default function AiCoachPage() {
   }, [messages, isChatLoading]);
 
   async function onSetupSubmit(data: AiCoachSetupValues) {
-    setIsLoading(true); // For setup form submission
-    // Simulate some processing if needed
+    setIsLoading(true); 
     await new Promise(resolve => setTimeout(resolve, 500));
 
     setCoachSettings(data);
