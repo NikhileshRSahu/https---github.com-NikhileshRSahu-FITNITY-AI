@@ -31,8 +31,15 @@ export default function CartPage() {
     const newQuantity = parseInt(value, 10);
     if (!isNaN(newQuantity) && newQuantity >= 1) {
       updateQuantity(id, newQuantity);
-    } else if (value === '' || newQuantity === 0) {
-        updateQuantity(id, 1); // Revert to 1 if input is cleared or invalid
+    } else if (value === '' || (!isNaN(newQuantity) && newQuantity === 0)) {
+        // Do nothing on empty or zero, wait for blur
+    }
+  };
+
+  const handleInputBlur = (id: string, currentValue: string) => {
+    const currentQuantityNum = parseInt(currentValue, 10);
+    if (currentValue === '' || isNaN(currentQuantityNum) || currentQuantityNum === 0) {
+      updateQuantity(id, 1); // Revert to 1 if input is cleared or invalid
     }
   };
   
@@ -51,7 +58,7 @@ export default function CartPage() {
 
   if (getItemCount() === 0) {
     return (
-      <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 flex flex-col items-center justify-center text-center animate-fade-in-up">
+      <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 flex flex-col items-center justify-center text-center animate-fade-in-up min-h-[calc(100vh-10rem)]">
         <XCircle className="h-20 w-20 text-destructive mb-6" />
         <h1 className="text-3xl font-bold text-foreground mb-4">Your Cart is Empty</h1>
         <p className="text-foreground/70 mb-8 max-w-md">
@@ -71,14 +78,14 @@ export default function CartPage() {
           <ShoppingCart className="mr-3 h-8 w-8 text-accent" /> Your Shopping Cart
         </CardTitle>
         <CardDescription className="text-lg text-foreground/80 mt-1">
-          Review items in your cart and proceed to checkout.
+          Review items in your cart and proceed to checkout. You have {getItemCount()} items in your cart.
         </CardDescription>
       </CardHeader>
 
       <div className="grid lg:grid-cols-3 gap-8 items-start">
         <div className="lg:col-span-2 space-y-6">
           {state.items.map(item => (
-            <Card key={item.id} className="glassmorphic-card flex flex-col sm:flex-row items-center gap-4 p-4">
+            <Card key={item.id} className="glassmorphic-card flex flex-col sm:flex-row items-center gap-4 p-4 hover:shadow-accent/20 transition-shadow duration-300">
               <div className="relative h-24 w-24 sm:h-28 sm:w-28 rounded-md overflow-hidden flex-shrink-0">
                 <Image
                   src={item.imagePlaceholder}
@@ -105,7 +112,7 @@ export default function CartPage() {
                   type="number"
                   min="1"
                   value={item.quantity}
-                  onBlur={(e) => { if(e.target.value === '' || parseInt(e.target.value) === 0) handleInputChange(item.id, '1');}} // Revert to 1 if blurred empty
+                  onBlur={(e) => handleInputBlur(item.id, e.target.value)}
                   onChange={(e) => handleInputChange(item.id, e.target.value)}
                   className="h-9 w-14 text-center bg-background/30 border-border/50 focus:ring-accent"
                 />
@@ -135,7 +142,11 @@ export default function CartPage() {
               </div>
               <div className="flex justify-between text-card-foreground/80">
                 <span>Shipping</span>
-                <span className="text-green-500">FREE</span>
+                <span className="text-green-500 font-medium">FREE</span>
+              </div>
+               <div className="flex justify-between text-card-foreground/80">
+                <span>Estimated Taxes</span>
+                <span className="text-card-foreground/70">Calculated at checkout</span>
               </div>
               <hr className="my-2 border-border/30" />
               <div className="flex justify-between text-xl font-bold text-card-foreground">

@@ -49,11 +49,20 @@ export default function CheckoutPage() {
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
       country: 'India', // Default country
+      // Pre-fill with some dummy data for faster testing, remove in production
+      // fullName: 'Aarav Patel',
+      // addressLine1: '123 Fitnity Lane',
+      // city: 'Mumbai',
+      // postalCode: '400001',
+      // phone: '9876543210',
+      // cardholderName: 'Aarav Patel',
+      // cardNumber: '1234567812345678',
+      // expiryDate: '12/25',
+      // cvv: '123',
     },
   });
 
   useEffect(() => {
-    // Ensure cart is loaded before checking count
     if (state.items !== undefined) {
       setIsLoadingCart(false);
       if (getItemCount() === 0) {
@@ -72,7 +81,6 @@ export default function CheckoutPage() {
     setIsProcessing(true);
     console.log('Checkout data (simulated):', data);
 
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 2000));
 
     toast({
@@ -88,7 +96,6 @@ export default function CheckoutPage() {
 
     clearCart();
     setIsProcessing(false);
-    // Redirect to order confirmation page, passing some order data for display
     router.push(`/shop/order-confirmation?orderId=${orderDetails.orderId}&total=${orderDetails.totalAmount}`);
   };
 
@@ -111,9 +118,8 @@ export default function CheckoutPage() {
   }
   
   if (getItemCount() === 0 && !isLoadingCart) {
-    // This case should ideally be caught by useEffect, but as a fallback:
     return (
-      <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 flex flex-col items-center justify-center text-center">
+      <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 flex flex-col items-center justify-center text-center min-h-[calc(100vh-10rem)]">
         <AlertTriangle className="h-20 w-20 text-destructive mb-6" />
         <h1 className="text-3xl font-bold text-foreground mb-4">Cart is Empty</h1>
         <p className="text-foreground/70 mb-8">Redirecting you to your cart...</p>
@@ -127,8 +133,7 @@ export default function CheckoutPage() {
       <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-10 text-center">Checkout</h1>
       
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="grid md:grid-cols-3 gap-8 md:gap-12">
-          {/* Shipping & Payment Forms Column */}
+        <form onSubmit={form.handleSubmit(onSubmit)} className="grid md:grid-cols-3 gap-8 md:gap-12 items-start">
           <div className="md:col-span-2 space-y-8">
             <Card className="glassmorphic-card">
               <CardHeader>
@@ -203,7 +208,7 @@ export default function CheckoutPage() {
                 <CardTitle className="text-2xl font-semibold flex items-center">
                   <CreditCard className="mr-3 h-6 w-6 text-accent" /> Payment Details
                 </CardTitle>
-                <CardDescription className="text-sm">Payment processing is simulated for this demo.</CardDescription>
+                <CardDescription className="text-sm text-card-foreground/70">Payment processing is simulated for this demo.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <FormField name="cardholderName" control={form.control} render={({ field }) => (
@@ -240,7 +245,6 @@ export default function CheckoutPage() {
             </Card>
           </div>
 
-          {/* Order Summary Column */}
           <div className="md:col-span-1">
             <Card className="glassmorphic-card p-6 sticky top-24">
               <CardHeader className="p-0 mb-6">
@@ -251,7 +255,7 @@ export default function CheckoutPage() {
               <CardContent className="p-0 space-y-4">
                 {state.items.map(item => (
                   <div key={item.id} className="flex justify-between items-center gap-3 border-b border-border/20 pb-3 last:border-b-0">
-                    <div className="relative h-14 w-14 rounded-md overflow-hidden flex-shrink-0">
+                    <div className="relative h-14 w-14 rounded-md overflow-hidden flex-shrink-0 border border-border/20">
                         <Image src={item.imagePlaceholder} alt={item.name} fill className="object-cover" data-ai-hint={item.aiHint} />
                     </div>
                     <div className="flex-grow">
@@ -271,11 +275,11 @@ export default function CheckoutPage() {
                   </div>
                   <div className="flex justify-between text-card-foreground/80">
                     <span>Shipping</span>
-                    <span className="text-green-500">FREE</span>
+                    <span className="text-green-500 font-medium">FREE</span>
                   </div>
                   <div className="flex justify-between text-card-foreground/80">
-                    <span>Taxes</span>
-                    <span>Calculated at next step</span>
+                    <span>Estimated Taxes</span>
+                    <span className="text-card-foreground/70">Calculated at next step</span>
                   </div>
                   <hr className="my-2 border-border/30" />
                   <div className="flex justify-between text-xl font-bold text-card-foreground">
@@ -287,7 +291,7 @@ export default function CheckoutPage() {
                   type="submit" 
                   size="lg" 
                   className="w-full mt-6 bg-accent hover:bg-accent/90 text-accent-foreground text-lg cta-glow-pulse active:scale-95"
-                  disabled={isProcessing || !form.formState.isValid}
+                  disabled={isProcessing || !form.formState.isValid && form.formState.isSubmitted}
                 >
                   {isProcessing ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : null}
                   {isProcessing ? 'Processing...' : 'Place Order'}
