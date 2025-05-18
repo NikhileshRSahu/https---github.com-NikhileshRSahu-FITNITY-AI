@@ -12,12 +12,12 @@ interface FeatureCardProps {
 function FeatureCard({ icon: IconComponent, title, description }: FeatureCardProps) {
   return (
     <Card className="glassmorphic-card hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-in-out flex flex-col h-full">
-      <CardHeader className="flex flex-row items-center gap-4 pb-2">
-        <IconComponent className="h-10 w-10 text-accent flex-shrink-0" />
-        <CardTitle className="text-xl font-semibold">{title}</CardTitle> 
+      <CardHeader className="flex flex-row items-center gap-3 sm:gap-4 pb-2">
+        <IconComponent className="h-8 w-8 sm:h-10 sm:w-10 text-accent flex-shrink-0" />
+        <CardTitle className="text-lg sm:text-xl font-semibold">{title}</CardTitle> 
       </CardHeader>
       <CardContent className="flex-grow">
-        <p className="text-card-foreground/80">{description}</p>
+        <p className="text-card-foreground/80 text-sm sm:text-base">{description}</p>
       </CardContent>
     </Card>
   );
@@ -64,12 +64,17 @@ export default function FeaturesSnapshotSection() {
   return (
     <section id="features" className="py-16 md:py-24 bg-background/5">
       <div className="container mx-auto px-4 md:px-6">
-        <h2 className="text-3xl font-bold tracking-tight text-center sm:text-4xl md:text-5xl text-foreground mb-16">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-center text-foreground mb-12 md:mb-16 animate-fade-in-up">
           Unlock Your Fitness Potential
         </h2>
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
-          {features.map((feature) => (
-            <Link key={feature.title} href={feature.href} className="flex h-full">
+        <div className="grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+          {features.map((feature, index) => (
+            <Link 
+              key={feature.title} 
+              href={feature.href} 
+              className="flex h-full animate-fade-in-up"
+              style={{ animationDelay: `${index * 0.1 + 0.2}s` }} // Stagger animation
+            >
               <FeatureCard 
                 icon={feature.icon}
                 title={feature.title}

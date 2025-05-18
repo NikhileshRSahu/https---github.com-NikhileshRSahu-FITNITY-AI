@@ -21,7 +21,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Moon, Sun, Settings as SettingsIcon, Bell, Globe, ShieldCheck, LogOut as LogOutIcon, Zap, Edit3, Save, XCircle, User as UserIcon, CalendarClock } from 'lucide-react'
+import { Moon, Sun, Bell, Globe, ShieldCheck, LogOut as LogOutIcon, Zap, Edit3, Save, XCircle, User as UserIcon, CalendarClock, Settings as SettingsIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -32,7 +32,8 @@ import { cn } from '@/lib/utils'
 export default function ProfilePage() {
   const { theme, setTheme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
-  const [isEditing, setIsEditing] = useState(false)
+  const [isEditing, setIsEditing] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -40,16 +41,22 @@ export default function ProfilePage() {
   const [profileData, setProfileData] = useState({
     fullName: 'Aarav Patel',
     email: 'aarav.patel@example.com',
-    fitnessGoal: 'Weight Loss & Endurance',
-    workoutStyle: 'Home workouts, HIIT, 3-4x week',
+    fitnessGoal: 'Weight Loss & Endurance Improvement',
+    workoutStyle: 'Home workouts (HIIT, Bodyweight), 3-4 times per week, 30-45 min sessions',
     fitnessLevel: 'intermediate',
     preferredLanguage: 'English',
   });
+   const [initialProfileData, setInitialProfileData] = useState(profileData);
+
 
   useEffect(() => {
     setMounted(true);
-    if (typeof window !== 'undefined' && localStorage.getItem('fitnityUserLoggedIn') !== 'true') {
+     if (typeof window !== 'undefined') {
+      const loggedInStatus = localStorage.getItem('fitnityUserLoggedIn') === 'true';
+      setIsLoggedIn(loggedInStatus);
+      if (!loggedInStatus) {
         router.replace('/auth/sign-in');
+      }
     }
   }, [router]);
 
@@ -64,6 +71,7 @@ export default function ProfilePage() {
 
   const handleSaveChanges = () => {
     console.log('Saving profile data (simulated):', profileData);
+    setInitialProfileData(profileData); // Update initial data to current edits
     toast({
       title: 'Profile Updated (Simulated)',
       description: 'Your changes have been saved.',
@@ -71,15 +79,21 @@ export default function ProfilePage() {
     setIsEditing(false);
   };
 
+  const handleCancelEdit = () => {
+    setProfileData(initialProfileData); // Revert to last saved state
+    setIsEditing(false);
+  }
+
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('fitnityUserLoggedIn');
+      window.dispatchEvent(new Event('loginStateChange')); // Notify header
     }
     router.push('/');
-    router.refresh();
+    // router.refresh(); // May not be needed if storage event handles it
   };
 
-  if (!mounted || (typeof window !== 'undefined' && localStorage.getItem('fitnityUserLoggedIn') !== 'true')) {
+  if (!mounted || !isLoggedIn) { // Show skeleton if not mounted OR not logged in (before redirect)
     return (
         <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 animate-fade-in-up">
           <div className="max-w-3xl mx-auto space-y-8">
@@ -147,7 +161,10 @@ export default function ProfilePage() {
               <Button 
                 variant="outline" 
                 size="sm" 
-                onClick={() => setIsEditing(true)}
+                onClick={() => {
+                  setInitialProfileData(profileData); // Store current state before editing
+                  setIsEditing(true);
+                }}
                 className="border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground transition-transform duration-300 hover:scale-105 active:scale-95"
               >
                   <Edit3 className="mr-2 h-4 w-4" /> Edit Profile
@@ -164,10 +181,7 @@ export default function ProfilePage() {
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  onClick={() => {
-                    setIsEditing(false);
-                    // Reset to original data if needed, for now just closes edit mode
-                  }}
+                  onClick={handleCancelEdit}
                   className="border-destructive text-destructive hover:bg-destructive/10 hover:text-destructive-foreground transition-transform duration-300 hover:scale-105 active:scale-95"
                 >
                     <XCircle className="mr-2 h-4 w-4" /> Cancel
@@ -188,11 +202,11 @@ export default function ProfilePage() {
               <>
                 <div className="space-y-1">
                   <Label htmlFor="fitnessGoal" className="text-sm font-medium">Primary Fitness Goal</Label>
-                  <Textarea id="fitnessGoal" name="fitnessGoal" value={profileData.fitnessGoal} onChange={handleInputChange} rows={2} className="mt-1 bg-background/50 text-card-foreground" />
+                  <Textarea id="fitnessGoal" name="fitnessGoal" value={profileData.fitnessGoal} onChange={handleInputChange} rows={3} className="mt-1 bg-background/50 text-card-foreground" />
                 </div>
                 <div className="space-y-1">
-                  <Label htmlFor="workoutStyle" className="text-sm font-medium">Preferred Workout Style</Label>
-                  <Textarea id="workoutStyle" name="workoutStyle" value={profileData.workoutStyle} onChange={handleInputChange} rows={2} className="mt-1 bg-background/50 text-card-foreground" />
+                  <Label htmlFor="workoutStyle" className="text-sm font-medium">Preferred Workout Style & Frequency</Label>
+                  <Textarea id="workoutStyle" name="workoutStyle" value={profileData.workoutStyle} onChange={handleInputChange} rows={3} className="mt-1 bg-background/50 text-card-foreground" />
                 </div>
                 <div className="space-y-1">
                   <Label htmlFor="fitnessLevel" className="text-sm font-medium">Current Fitness Level</Label>
@@ -208,7 +222,7 @@ export default function ProfilePage() {
                   </Select>
                 </div>
                  <div className="space-y-1">
-                    <Label htmlFor="preferredLanguage" className="text-sm font-medium">Preferred Language (Coach)</Label>
+                    <Label htmlFor="preferredLanguage" className="text-sm font-medium">Preferred Language (AI Coach)</Label>
                     <Select name="preferredLanguage" value={profileData.preferredLanguage} onValueChange={handleSelectChange('preferredLanguage')}>
                         <SelectTrigger className="w-full bg-background/50 text-card-foreground mt-1">
                         <SelectValue placeholder="Select language" />
@@ -222,20 +236,20 @@ export default function ProfilePage() {
               </>
             ) : (
               <>
-                <div className="flex items-center justify-between p-3 rounded-lg bg-background/10">
-                    <span className="font-medium text-card-foreground">Primary Fitness Goal:</span>
-                    <span className="text-card-foreground/80 text-right">{profileData.fitnessGoal}</span>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 rounded-lg bg-background/10">
+                    <span className="font-medium text-card-foreground mb-1 sm:mb-0">Primary Fitness Goal:</span>
+                    <span className="text-card-foreground/80 text-left sm:text-right">{profileData.fitnessGoal}</span>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-lg bg-background/10">
-                    <span className="font-medium text-card-foreground">Preferred Workout Style:</span>
-                    <span className="text-card-foreground/80 text-right">{profileData.workoutStyle}</span>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 rounded-lg bg-background/10">
+                    <span className="font-medium text-card-foreground mb-1 sm:mb-0">Workout Style & Frequency:</span>
+                    <span className="text-card-foreground/80 text-left sm:text-right">{profileData.workoutStyle}</span>
                 </div>
                 <div className="flex items-center justify-between p-3 rounded-lg bg-background/10">
                     <span className="font-medium text-card-foreground">Current Fitness Level:</span>
                     <span className="text-card-foreground/80 capitalize text-right">{profileData.fitnessLevel}</span>
                 </div>
                 <div className="flex items-center justify-between p-3 rounded-lg bg-background/10">
-                    <span className="font-medium text-card-foreground">Preferred Language (Coach):</span>
+                    <span className="font-medium text-card-foreground">Preferred Language (AI Coach):</span>
                     <span className="text-card-foreground/80 text-right">{profileData.preferredLanguage}</span>
                 </div>
               </>
@@ -264,9 +278,9 @@ export default function ProfilePage() {
                     <CalendarClock className="mr-3 h-5 w-5 text-accent/80" />
                     <span className="font-medium text-card-foreground">Last Logged In:</span>
                 </div>
-                <span className="text-card-foreground/80">July 26, 2024, 10:30 AM (Simulated)</span>
+                <span className="text-card-foreground/80">July 29, 2024, 10:30 AM (Simulated)</span>
             </div>
-            <Button variant="outline" className="w-full sm:w-auto hover:bg-accent/10 hover:text-accent-foreground transition-transform duration-300 hover:scale-105 active:scale-95 mt-2">Change Password</Button>
+            <Button variant="outline" className="w-full sm:w-auto hover:bg-accent/10 hover:text-accent-foreground transition-transform duration-300 hover:scale-105 active:scale-95 mt-2 border-accent text-accent">Change Password</Button>
           </CardContent>
         </Card>
 

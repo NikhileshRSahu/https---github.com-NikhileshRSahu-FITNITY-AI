@@ -38,15 +38,15 @@ export default function NewsletterSignupSection() {
   return (
     <section id="newsletter" className="py-16 md:py-24">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl text-foreground mb-6">
+        <div className="max-w-xl md:max-w-2xl mx-auto text-center animate-fade-in-up">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-4 sm:mb-6">
             Join the Fitnity Community
           </h2>
-          <p className="text-lg text-foreground/80 mb-8">
+          <p className="text-lg text-foreground/80 mb-6 sm:mb-8">
             Stay updated with the latest news, features, and fitness tips from Fitnity AI.
           </p>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col sm:flex-row gap-4 items-start">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-start">
               <FormField
                 control={form.control}
                 name="email"
@@ -57,14 +57,14 @@ export default function NewsletterSignupSection() {
                         type="email"
                         placeholder="Enter your email"
                         {...field}
-                        className="h-14 text-lg bg-background/20 text-foreground placeholder:text-foreground/60 border-border focus:ring-accent focus:border-accent"
+                        className="h-12 sm:h-14 text-base sm:text-lg bg-background/20 text-foreground placeholder:text-foreground/60 border-border focus:ring-accent focus:border-accent"
                       />
                     </FormControl>
-                    <FormMessage className="text-left text-destructive" />
+                    <FormMessage className="text-left text-destructive text-sm" />
                   </FormItem>
                 )}
               />
-              <Button type="submit" size="lg" className="h-14 bg-accent hover:bg-accent/90 text-accent-foreground px-8 rounded-lg shadow-md transition-transform duration-300 hover:scale-105 text-lg w-full sm:w-auto">
+              <Button type="submit" size="lg" className="h-12 sm:h-14 bg-accent hover:bg-accent/90 text-accent-foreground px-6 sm:px-8 rounded-lg shadow-md transition-transform duration-300 hover:scale-105 text-base sm:text-lg w-full sm:w-auto cta-glow-pulse active:scale-95">
                 Join Community
               </Button>
             </form>

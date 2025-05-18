@@ -43,6 +43,7 @@ export default function SignInPage() {
     // Simulate successful login
     if (typeof window !== 'undefined') {
       localStorage.setItem('fitnityUserLoggedIn', 'true');
+      window.dispatchEvent(new Event('loginStateChange')); // Notify header to update
     }
 
     toast({
@@ -51,7 +52,6 @@ export default function SignInPage() {
     });
     setIsLoading(false);
     router.push('/dashboard'); // Redirect to dashboard
-    router.refresh(); // Force refresh to update header state
   }
 
   return (

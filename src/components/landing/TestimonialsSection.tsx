@@ -49,7 +49,7 @@ function RatingStars({ rating }: { rating: number }) {
       {[...Array(5)].map((_, i) => (
         <Star
           key={i}
-          className={`h-5 w-5 ${i < rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-400'}`} // text-gray-400 is fine for un-filled stars
+          className={`h-4 w-4 sm:h-5 sm:w-5 ${i < rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-400'}`}
         />
       ))}
     </div>
@@ -60,24 +60,24 @@ export default function TestimonialsSection() {
   return (
     <section id="testimonials" className="py-16 md:py-24">
       <div className="container mx-auto px-4 md:px-6">
-        <h2 className="text-3xl font-bold tracking-tight text-center sm:text-4xl md:text-5xl text-foreground mb-12">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-center text-foreground mb-12 md:mb-16 animate-fade-in-up">
           Loved by Users Like You
         </h2>
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {testimonials.map((testimonial) => (
-            <Card key={testimonial.name} className="glassmorphic-card p-6 flex flex-col justify-between hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-in-out">
+        <div className="grid gap-6 sm:gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          {testimonials.map((testimonial, index) => (
+            <Card key={testimonial.name} className="glassmorphic-card p-6 flex flex-col justify-between hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-in-out animate-fade-in-up" style={{ animationDelay: `${index * 0.1 + 0.2}s` }}>
               <div>
-                <div className="flex items-center gap-4 mb-4">
-                  <Avatar>
+                <div className="flex items-center gap-3 sm:gap-4 mb-4">
+                  <Avatar className="h-10 w-10 sm:h-12 sm:w-12">
                     <AvatarImage src={testimonial.avatarSrc} alt={testimonial.name} data-ai-hint={testimonial.avatarHint} />
                     <AvatarFallback>{testimonial.avatarFallback}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <h3 className="font-semibold text-lg">{testimonial.name}</h3> {/* Uses card-foreground */}
-                    <p className="text-sm text-card-foreground/70">{testimonial.role}</p>
+                    <h3 className="font-semibold text-base sm:text-lg">{testimonial.name}</h3>
+                    <p className="text-xs sm:text-sm text-card-foreground/70">{testimonial.role}</p>
                   </div>
                 </div>
-                <blockquote className="text-card-foreground/80 italic mb-4">
+                <blockquote className="text-sm sm:text-base text-card-foreground/80 italic mb-4">
                   "{testimonial.quote}"
                 </blockquote>
               </div>
