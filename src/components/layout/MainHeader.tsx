@@ -15,7 +15,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Zap, LogIn, UserPlus, LayoutDashboard, User as UserIcon, LogOut as LogOutIcon, ClipboardList, Bot, Apple as NutritionIcon, Camera, ShoppingCart } from 'lucide-react';
+import { Zap, LogIn, UserPlus, LayoutDashboard, User as UserIcon, LogOut as LogOutIcon, ClipboardList, Bot, Apple as NutritionIcon, Camera, ShoppingCart, Settings } from 'lucide-react'; // Added Settings
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useRouter, usePathname } from 'next/navigation';
@@ -30,17 +30,19 @@ interface NavItem {
 }
 
 export default function MainHeader() {
+  const { getItemCount } = useCart(); // Destructure getItemCount directly
   const [isScrolled, setIsScrolled] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [cartItemCount, setCartItemCount] = useState(0);
   const router = useRouter();
   const pathname = usePathname();
-  const { state, getItemCount } = useCart();
-  const [cartItemCount, setCartItemCount] = useState(0);
 
   useEffect(() => {
+    // This effect runs only on the client after mount
     if (typeof window !== 'undefined') {
       setMounted(true);
+
       const handleScroll = () => setIsScrolled(window.scrollY > 20);
       window.addEventListener('scroll', handleScroll);
 
@@ -68,13 +70,14 @@ export default function MainHeader() {
         window.removeEventListener('loginStateChange', handleLoginChange);
       };
     }
-  }, [pathname]);
+  }, [pathname]); // Only depends on pathname for re-checking login status on route changes
 
    useEffect(() => {
-    if (mounted && state) {
+    // This effect updates cartItemCount and should only run on the client when `mounted` is true
+    if (mounted) {
       setCartItemCount(getItemCount());
     }
-  }, [mounted, state, getItemCount, pathname]); // Added getItemCount and pathname
+  }, [mounted, getItemCount, pathname]); // Depends on getItemCount reference, which changes when cart state changes
 
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
@@ -100,10 +103,10 @@ export default function MainHeader() {
     { href: '/form-analysis', label: 'Form Check', icon: Camera },
     { href: '/ai-coach', label: 'AI Coach', icon: Bot },
     { href: '/shop', label: 'Shop', icon: ShoppingCart },
-    { href: '/profile', label: 'Profile', icon: UserIcon },
+    { href: '/profile', label: 'Profile', icon: UserIcon }, // Changed from Settings
   ];
 
-  if (!mounted && typeof window === 'undefined') { // Render minimal header during SSR
+  if (!mounted && typeof window === 'undefined') { 
     return (
        <header className={cn("sticky top-0 z-50 w-full glassmorphic-card transition-all duration-300 ease-in-out h-16 md:h-20", "shadow-xl shadow-accent/5 dark:shadow-accent/10")}>
          <div className={cn("container mx-auto flex items-center justify-between px-4 md:px-6 transition-all duration-300 ease-in-out h-full")}>
@@ -155,16 +158,16 @@ export default function MainHeader() {
                   <Link href={item.href} className="flex items-center">
                     <item.icon className={cn(navIconClasses, "mr-1 md:mr-1.5 h-4 w-4 sm:h-5 sm:w-5", "text-accent-foreground group-hover:text-accent-foreground group-focus-visible:text-accent-foreground")} />
                     <span className="hidden sm:inline">{item.label === 'Get Started' ? 'Sign Up' : item.label}</span>
-                    <span className="sm:hidden">{item.label === 'Get Started' ? 'Sign Up' : item.label}</span>
+                     <span className="sm:hidden text-xs">{item.label === 'Get Started' ? 'Sign Up' : (item.label === 'Login' ? 'Login' : item.label)}</span>
                   </Link>
                 </Button>
               ) : (
                 <Tooltip key={item.href}>
                   <TooltipTrigger asChild>
-                    <Button asChild variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground px-1 sm:px-2")}>
+                    <Button asChild variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground px-1 sm:px-2 hover:border-b-accent")}>
                       <Link href={item.href} className="flex flex-col items-center md:flex-row">
                         <item.icon className={cn(navIconClasses, "text-card-foreground group-hover:text-accent group-focus-visible:text-accent h-4 w-4 sm:h-5 sm:w-5" )} />
-                        <span className="hidden md:inline text-xs sm:text-sm ml-0 md:ml-1">{item.label}</span>
+                        <span className="hidden md:inline text-xs sm:text-sm ml-0 md:ml-1.5">{item.label}</span>
                         {item.label === 'AI Coach' && isLoggedIn && <span className="glowing-orb ml-0.5 md:ml-1.5 hidden md:inline-block"></span>}
                         {item.label === 'Shop' && isLoggedIn && cartItemCount > 0 && (
                           <span className="absolute top-0 right-0 -mt-1 -mr-1 md:mt-0 md:mr-0 flex h-3 w-3 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
@@ -185,9 +188,9 @@ export default function MainHeader() {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <AlertDialogTrigger asChild>
-                      <Button variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground px-1 sm:px-2")}>
+                      <Button variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground px-1 sm:px-2 hover:border-b-accent")}>
                         <LogOutIcon className={cn(navIconClasses, "text-card-foreground group-hover:text-accent group-focus-visible:text-accent h-4 w-4 sm:h-5 sm:w-5")} />
-                        <span className="hidden md:inline text-xs sm:text-sm ml-0 md:ml-1">Logout</span>
+                        <span className="hidden md:inline text-xs sm:text-sm ml-0 md:ml-1.5">Logout</span>
                       </Button>
                     </AlertDialogTrigger>
                   </TooltipTrigger>
@@ -217,4 +220,3 @@ export default function MainHeader() {
     </TooltipProvider>
   );
 }
-

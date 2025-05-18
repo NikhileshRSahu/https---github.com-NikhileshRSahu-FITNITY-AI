@@ -27,16 +27,9 @@ export default function AllProductsPage() {
   }, []);
   
   useEffect(() => {
-    // If category changes via URL, update state
     const categoryFromUrl = searchParams.get('category');
     if (categoryFromUrl && categoryFromUrl !== selectedCategory) {
       setSelectedCategory(categoryFromUrl);
-    }
-     // If no category in URL, default to "all" (or keep current selection if already set)
-    if (!categoryFromUrl && selectedCategory !== ALL_CATEGORIES_SLUG) {
-      // This might be too aggressive if user manually clears category then searches.
-      // Consider if this behavior is desired. For now, it ensures URL param drives initial state.
-      // setSelectedCategory(ALL_CATEGORIES_SLUG); 
     }
   }, [searchParams, selectedCategory]);
 
@@ -47,14 +40,14 @@ export default function AllProductsPage() {
       const matchesSearch = 
         searchTerm.trim() === '' ||
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchTerm.toLowerCase());
+        product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.category.toLowerCase().includes(searchTerm.toLowerCase());
       return matchesCategory && matchesSearch;
     });
   }, [products, selectedCategory, searchTerm]);
   
   const handleCategoryChange = (categorySlug: string) => {
     setSelectedCategory(categorySlug);
-    // Update URL without full page reload (optional, good for UX)
     const current = new URLSearchParams(Array.from(searchParams.entries()));
     if (categorySlug === ALL_CATEGORIES_SLUG) {
       current.delete('category');
@@ -62,61 +55,57 @@ export default function AllProductsPage() {
       current.set('category', categorySlug);
     }
     const query = current.toString();
-    // Using window.history.pushState for client-side URL update without navigation
-    // Next.js router.replace could also be used here.
     window.history.pushState({}, '', query ? `?${query}` : '/shop/products');
   };
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 animate-fade-in-up">
-      <header className="text-center mb-12 md:mb-16">
-        <LayoutGrid className="mx-auto h-16 w-16 text-accent mb-4" />
-        <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-3">
+      <header className="text-center mb-10 sm:mb-12 md:mb-16">
+        <LayoutGrid className="mx-auto h-12 w-12 sm:h-16 sm:w-16 text-accent mb-3 sm:mb-4" />
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-2 sm:mb-3">
           Our Gear & Nutrition
         </h1>
-        <p className="text-lg text-foreground/80 max-w-xl mx-auto">
+        <p className="text-base sm:text-lg text-foreground/80 max-w-lg sm:max-w-xl mx-auto">
           Everything you need to complement your Fitnity AI experience and achieve your fitness goals.
         </p>
       </header>
 
-      <Card className="mb-8 p-4 md:p-6 glassmorphic-card">
-        <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-center">
-          {/* Search Input */}
+      <Card className="mb-6 sm:mb-8 p-3 sm:p-4 md:p-6 glassmorphic-card">
+        <div className="flex flex-col md:flex-row gap-3 sm:gap-4 md:gap-6 items-center">
           <div className="relative w-full md:flex-grow">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
             <Input
               type="text"
-              placeholder="Search products..."
+              placeholder="Search products by name, description, or category..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-10 py-3 text-base bg-background/30 border-border/50 text-card-foreground placeholder:text-card-foreground/60 focus:ring-accent focus:border-accent"
+              className="pl-8 sm:pl-10 pr-8 sm:pr-10 py-2.5 sm:py-3 text-sm sm:text-base bg-background/30 border-border/50 text-card-foreground placeholder:text-card-foreground/60 focus:ring-accent focus:border-accent h-10 sm:h-12"
             />
             {searchTerm && (
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 text-muted-foreground hover:text-foreground"
+                className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 w-7 sm:h-8 sm:w-8 text-muted-foreground hover:text-foreground"
                 onClick={() => setSearchTerm('')}
               >
-                <XCircle className="h-5 w-5" />
+                <XCircle className="h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
             )}
           </div>
         </div>
 
-        {/* Category Filters */}
-        <div className="mt-4 md:mt-6">
-          <h3 className="text-lg font-semibold text-card-foreground mb-3 flex items-center">
-            <Filter className="mr-2 h-5 w-5 text-accent" /> Categories
+        <div className="mt-3 sm:mt-4 md:mt-6">
+          <h3 className="text-base sm:text-lg font-semibold text-card-foreground mb-2 sm:mb-3 flex items-center">
+            <Filter className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-accent" /> Categories
           </h3>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5 sm:gap-2">
             {uniqueCategories.map(categorySlug => (
               <Button
                 key={categorySlug}
                 variant={selectedCategory === categorySlug ? 'default' : 'outline'}
                 onClick={() => handleCategoryChange(categorySlug)}
                 className={cn(
-                  "capitalize text-sm px-4 py-2 h-auto transition-all duration-200",
+                  "capitalize text-xs sm:text-sm px-3 py-1.5 sm:px-4 sm:py-2 h-auto transition-all duration-200",
                   selectedCategory === categorySlug
                     ? "bg-accent hover:bg-accent/90 text-accent-foreground"
                     : "border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground"
@@ -130,15 +119,16 @@ export default function AllProductsPage() {
       </Card>
 
       {filteredProducts.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
           {filteredProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
       ) : (
-        <Alert className="glassmorphic-card text-center py-10">
-          <AlertTitle className="text-2xl font-semibold mb-2">No Products Found</AlertTitle>
-          <AlertDescription className="text-lg">
+        <Alert className="glassmorphic-card text-center py-8 sm:py-10">
+          <XCircle className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-destructive mb-3 sm:mb-4" />
+          <AlertTitle className="text-xl sm:text-2xl font-semibold mb-1 sm:mb-2">No Products Found</AlertTitle>
+          <AlertDescription className="text-base sm:text-lg">
             Try adjusting your search or category filters.
           </AlertDescription>
         </Alert>

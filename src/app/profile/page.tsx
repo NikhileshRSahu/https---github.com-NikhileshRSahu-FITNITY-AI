@@ -31,18 +31,17 @@ import { cn } from '@/lib/utils'
 
 export default function ProfilePage() {
   const { theme, setTheme, resolvedTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
+  const [uiMounted, setUiMounted] = useState(false); // Renamed to avoid conflict with CartContext's mounted
   const [isEditing, setIsEditing] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
 
-  // Placeholder data - in a real app, this would come from a user context or API
   const [profileData, setProfileData] = useState({
     fullName: 'Aarav Patel',
     email: 'aarav.patel@example.com',
-    fitnessGoal: 'Weight Loss & Endurance Improvement',
-    workoutStyle: 'Home workouts (HIIT, Bodyweight), 3-4 times per week, 30-45 min sessions',
+    fitnessGoal: 'Weight Loss & Endurance Improvement. Target: Run a 10k in under 50 minutes.',
+    workoutStyle: 'Home workouts (HIIT, Bodyweight), 3-4 times per week, 30-45 min sessions. Occasional weekend cycling.',
     fitnessLevel: 'intermediate',
     preferredLanguage: 'English',
   });
@@ -50,7 +49,7 @@ export default function ProfilePage() {
 
 
   useEffect(() => {
-    setMounted(true);
+    setUiMounted(true); // This component is now mounted on client
      if (typeof window !== 'undefined') {
       const loggedInStatus = localStorage.getItem('fitnityUserLoggedIn') === 'true';
       setIsLoggedIn(loggedInStatus);
@@ -71,7 +70,7 @@ export default function ProfilePage() {
 
   const handleSaveChanges = () => {
     console.log('Saving profile data (simulated):', profileData);
-    setInitialProfileData(profileData); // Update initial data to current edits
+    setInitialProfileData(profileData); 
     toast({
       title: 'Profile Updated (Simulated)',
       description: 'Your changes have been saved.',
@@ -80,42 +79,41 @@ export default function ProfilePage() {
   };
 
   const handleCancelEdit = () => {
-    setProfileData(initialProfileData); // Revert to last saved state
+    setProfileData(initialProfileData); 
     setIsEditing(false);
   }
 
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('fitnityUserLoggedIn');
-      window.dispatchEvent(new Event('loginStateChange')); // Notify header
+      window.dispatchEvent(new Event('loginStateChange')); 
     }
     router.push('/');
-    // router.refresh(); // May not be needed if storage event handles it
   };
 
-  if (!mounted || !isLoggedIn) { // Show skeleton if not mounted OR not logged in (before redirect)
+  if (!uiMounted || !isLoggedIn) { 
     return (
         <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 animate-fade-in-up">
-          <div className="max-w-3xl mx-auto space-y-8">
-            <div className="flex flex-col items-center space-y-4 mb-12">
-                <Skeleton className="h-24 w-24 rounded-full bg-muted/50" />
-                <Skeleton className="h-8 w-1/2 bg-muted/50" />
-                <Skeleton className="h-5 w-3/4 bg-muted/50" />
+          <div className="max-w-2xl sm:max-w-3xl mx-auto space-y-6 sm:space-y-8">
+            <div className="flex flex-col items-center space-y-3 sm:space-y-4 mb-8 sm:mb-12">
+                <Skeleton className="h-20 w-20 sm:h-24 sm:w-24 rounded-full bg-muted/50" />
+                <Skeleton className="h-7 w-1/2 sm:h-8 bg-muted/50" />
+                <Skeleton className="h-5 w-3/4 sm:h-5 bg-muted/50" />
             </div>
-            {[...Array(5)].map((_, i) => ( 
+            {[...Array(3)].map((_, i) => ( 
               <Card key={i} className="glassmorphic-card">
                 <CardHeader>
-                  <Skeleton className="h-7 w-1/3 mb-1 bg-muted/50" />
-                  <Skeleton className="h-4 w-2/3 bg-muted/50" />
+                  <Skeleton className="h-6 w-1/3 sm:h-7 mb-1 bg-muted/50" />
+                  <Skeleton className="h-4 w-2/3 sm:h-4 bg-muted/50" />
                 </CardHeader>
-                <CardContent className="space-y-4 pt-6">
+                <CardContent className="space-y-3 sm:space-y-4 pt-4 sm:pt-6">
                   <div className="space-y-1">
                     <Skeleton className="h-4 w-1/4 bg-muted/50" />
-                    <Skeleton className="h-10 w-full bg-muted/50" />
+                    <Skeleton className="h-9 w-full sm:h-10 bg-muted/50" />
                   </div>
                   <div className="space-y-1">
                     <Skeleton className="h-4 w-1/4 bg-muted/50" />
-                    <Skeleton className="h-10 w-full bg-muted/50" />
+                    <Skeleton className="h-9 w-full sm:h-10 bg-muted/50" />
                   </div>
                 </CardContent>
               </Card>
@@ -129,9 +127,9 @@ export default function ProfilePage() {
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 animate-fade-in-up">
-      <div className="max-w-3xl mx-auto space-y-10">
-        <div className="flex flex-col items-center text-center space-y-4 mb-12">
-            <Avatar className="h-24 w-24 ring-4 ring-accent/50 shadow-lg hover:opacity-80 transition-opacity duration-200 active:scale-95">
+      <div className="max-w-2xl sm:max-w-3xl mx-auto space-y-8 sm:space-y-10">
+        <div className="flex flex-col items-center text-center space-y-3 sm:space-y-4 mb-8 sm:mb-12">
+            <Avatar className="h-20 w-20 sm:h-24 sm:w-24 ring-4 ring-accent/50 shadow-lg hover:opacity-80 transition-opacity duration-200 active:scale-95">
                 <AvatarImage src="https://placehold.co/100x100.png" alt={profileData.fullName} data-ai-hint="user portrait" />
                 <AvatarFallback>{profileData.fullName.substring(0,2).toUpperCase()}</AvatarFallback>
             </Avatar>
@@ -140,10 +138,10 @@ export default function ProfilePage() {
                 name="fullName" 
                 value={profileData.fullName} 
                 onChange={handleInputChange} 
-                className="text-4xl font-bold text-foreground text-center bg-transparent border-0 ring-0 focus:ring-0 focus:border-0 shadow-none p-0"
+                className="text-3xl sm:text-4xl font-bold text-foreground text-center bg-transparent border-0 ring-0 focus:ring-0 focus:border-0 shadow-none p-0 h-auto"
               />
             ) : (
-              <h1 className="text-4xl font-bold text-foreground">{profileData.fullName}</h1>
+              <h1 className="text-3xl sm:text-4xl font-bold text-foreground">{profileData.fullName}</h1>
             )}
             {isEditing ? (
                <Input 
@@ -151,10 +149,10 @@ export default function ProfilePage() {
                 type="email" 
                 value={profileData.email} 
                 onChange={handleInputChange} 
-                className="text-lg text-foreground/80 text-center bg-transparent border-0 ring-0 focus:ring-0 focus:border-0 shadow-none p-0"
+                className="text-base sm:text-lg text-foreground/80 text-center bg-transparent border-0 ring-0 focus:ring-0 focus:border-0 shadow-none p-0 h-auto"
               />
             ) : (
-              <p className="text-lg text-foreground/80">{profileData.email}</p>
+              <p className="text-base sm:text-lg text-foreground/80">{profileData.email}</p>
             )}
             
             {!isEditing ? (
@@ -162,19 +160,19 @@ export default function ProfilePage() {
                 variant="outline" 
                 size="sm" 
                 onClick={() => {
-                  setInitialProfileData(profileData); // Store current state before editing
+                  setInitialProfileData(profileData); 
                   setIsEditing(true);
                 }}
-                className="border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground transition-transform duration-300 hover:scale-105 active:scale-95"
+                className="border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground transition-transform duration-300 hover:scale-105 active:scale-95 mt-2 px-4 py-2"
               >
                   <Edit3 className="mr-2 h-4 w-4" /> Edit Profile
               </Button>
             ) : (
-              <div className="flex gap-4 mt-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-4">
                 <Button 
                   size="sm" 
                   onClick={handleSaveChanges}
-                  className="bg-green-500 hover:bg-green-600 text-white transition-transform duration-300 hover:scale-105 active:scale-95"
+                  className="bg-green-500 hover:bg-green-600 text-white transition-transform duration-300 hover:scale-105 active:scale-95 px-4 py-2"
                 >
                     <Save className="mr-2 h-4 w-4" /> Save Changes
                 </Button>
@@ -182,7 +180,7 @@ export default function ProfilePage() {
                   variant="outline" 
                   size="sm" 
                   onClick={handleCancelEdit}
-                  className="border-destructive text-destructive hover:bg-destructive/10 hover:text-destructive-foreground transition-transform duration-300 hover:scale-105 active:scale-95"
+                  className="border-destructive text-destructive hover:bg-destructive/10 hover:text-destructive-foreground transition-transform duration-300 hover:scale-105 active:scale-95 px-4 py-2"
                 >
                     <XCircle className="mr-2 h-4 w-4" /> Cancel
                 </Button>
@@ -192,24 +190,24 @@ export default function ProfilePage() {
         
         <Card className="glassmorphic-card">
           <CardHeader>
-            <CardTitle className="text-xl font-bold flex items-center">
-              <Zap className="mr-3 h-6 w-6 text-accent" /> My Fitness Snapshot
+            <CardTitle className="text-lg sm:text-xl font-bold flex items-center">
+              <Zap className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> My Fitness Snapshot
             </CardTitle>
-            <CardDescription>Your current fitness goals and preferences.</CardDescription>
+            <CardDescription className="text-xs sm:text-sm">Your current fitness goals and preferences.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3 sm:space-y-4 text-sm sm:text-base">
              {isEditing ? (
               <>
                 <div className="space-y-1">
-                  <Label htmlFor="fitnessGoal" className="text-sm font-medium">Primary Fitness Goal</Label>
+                  <Label htmlFor="fitnessGoal" className="text-xs sm:text-sm font-medium">Primary Fitness Goal</Label>
                   <Textarea id="fitnessGoal" name="fitnessGoal" value={profileData.fitnessGoal} onChange={handleInputChange} rows={3} className="mt-1 bg-background/50 text-card-foreground" />
                 </div>
                 <div className="space-y-1">
-                  <Label htmlFor="workoutStyle" className="text-sm font-medium">Preferred Workout Style & Frequency</Label>
+                  <Label htmlFor="workoutStyle" className="text-xs sm:text-sm font-medium">Preferred Workout Style & Frequency</Label>
                   <Textarea id="workoutStyle" name="workoutStyle" value={profileData.workoutStyle} onChange={handleInputChange} rows={3} className="mt-1 bg-background/50 text-card-foreground" />
                 </div>
                 <div className="space-y-1">
-                  <Label htmlFor="fitnessLevel" className="text-sm font-medium">Current Fitness Level</Label>
+                  <Label htmlFor="fitnessLevel" className="text-xs sm:text-sm font-medium">Current Fitness Level</Label>
                   <Select name="fitnessLevel" value={profileData.fitnessLevel} onValueChange={handleSelectChange('fitnessLevel')}>
                     <SelectTrigger className="w-full bg-background/50 text-card-foreground mt-1">
                       <SelectValue placeholder="Select fitness level" />
@@ -222,7 +220,7 @@ export default function ProfilePage() {
                   </Select>
                 </div>
                  <div className="space-y-1">
-                    <Label htmlFor="preferredLanguage" className="text-sm font-medium">Preferred Language (AI Coach)</Label>
+                    <Label htmlFor="preferredLanguage" className="text-xs sm:text-sm font-medium">Preferred Language (AI Coach)</Label>
                     <Select name="preferredLanguage" value={profileData.preferredLanguage} onValueChange={handleSelectChange('preferredLanguage')}>
                         <SelectTrigger className="w-full bg-background/50 text-card-foreground mt-1">
                         <SelectValue placeholder="Select language" />
@@ -259,45 +257,45 @@ export default function ProfilePage() {
 
         <Card className="glassmorphic-card">
           <CardHeader>
-            <CardTitle className="text-xl font-bold flex items-center">
-              <UserIcon className="mr-3 h-6 w-6 text-accent" /> Account Settings
+            <CardTitle className="text-lg sm:text-xl font-bold flex items-center">
+              <UserIcon className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Account Settings
             </CardTitle>
-            <CardDescription>Manage your personal details.</CardDescription>
+            <CardDescription className="text-xs sm:text-sm">Manage your personal details.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3 sm:space-y-4 text-sm sm:text-base">
              <div>
-              <Label htmlFor="profileFullName" className="text-sm font-medium">Full Name</Label>
+              <Label htmlFor="profileFullName" className="text-xs sm:text-sm font-medium">Full Name</Label>
               <Input id="profileFullName" type="text" value={profileData.fullName} readOnly={!isEditing} onChange={handleInputChange} name="fullName" className={cn("mt-1", isEditing ? "bg-background/50 text-card-foreground" : "bg-background/20 text-card-foreground/70 border-transparent")} />
             </div>
             <div>
-              <Label htmlFor="profileEmail" className="text-sm font-medium">Email Address</Label>
+              <Label htmlFor="profileEmail" className="text-xs sm:text-sm font-medium">Email Address</Label>
               <Input id="profileEmail" type="email" value={profileData.email} readOnly={!isEditing} onChange={handleInputChange} name="email" className={cn("mt-1", isEditing ? "bg-background/50 text-card-foreground" : "bg-background/20 text-card-foreground/70 border-transparent")} />
             </div>
              <div className="flex items-center justify-between p-3 rounded-lg bg-background/10 mt-2">
                 <div className="flex items-center">
-                    <CalendarClock className="mr-3 h-5 w-5 text-accent/80" />
+                    <CalendarClock className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-accent/80" />
                     <span className="font-medium text-card-foreground">Last Logged In:</span>
                 </div>
-                <span className="text-card-foreground/80">July 29, 2024, 10:30 AM (Simulated)</span>
+                <span className="text-card-foreground/80 text-xs sm:text-sm">July 29, 2024, 10:30 AM (Simulated)</span>
             </div>
-            <Button variant="outline" className="w-full sm:w-auto hover:bg-accent/10 hover:text-accent-foreground transition-transform duration-300 hover:scale-105 active:scale-95 mt-2 border-accent text-accent">Change Password</Button>
+            <Button variant="outline" className="w-full sm:w-auto hover:bg-accent/10 hover:text-accent-foreground transition-transform duration-300 hover:scale-105 active:scale-95 mt-2 border-accent text-accent text-xs sm:text-sm px-4 py-2">Change Password</Button>
           </CardContent>
         </Card>
 
         <Card className="glassmorphic-card">
           <CardHeader>
-            <CardTitle className="text-xl font-bold flex items-center">
+            <CardTitle className="text-lg sm:text-xl font-bold flex items-center">
               {isDarkMode ? 
-                <Moon className="mr-3 h-6 w-6 text-accent" /> : 
-                <Sun className="mr-3 h-6 w-6 text-accent" />
+                <Moon className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> : 
+                <Sun className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" />
               }
               Appearance
             </CardTitle>
-            <CardDescription>Customize the look and feel of the application.</CardDescription>
+            <CardDescription className="text-xs sm:text-sm">Customize the look and feel of the application.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center justify-between p-4 rounded-lg bg-background/10 shadow-inner">
-              <Label htmlFor="theme-toggle" className="text-lg font-medium text-card-foreground">
+            <div className="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-background/10 shadow-inner">
+              <Label htmlFor="theme-toggle" className="text-base sm:text-lg font-medium text-card-foreground">
                 Mode: {isDarkMode ? "Dark" : "Light"}
               </Label>
               <Switch
@@ -312,12 +310,12 @@ export default function ProfilePage() {
 
         <Card className="glassmorphic-card">
           <CardHeader>
-            <CardTitle className="text-xl font-bold flex items-center">
-              <Bell className="mr-3 h-6 w-6 text-accent" /> Notification Preferences
+            <CardTitle className="text-lg sm:text-xl font-bold flex items-center">
+              <Bell className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Notification Preferences
             </CardTitle>
-            <CardDescription>Choose what updates you want to receive.</CardDescription>
+            <CardDescription className="text-xs sm:text-sm">Choose what updates you want to receive.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3 sm:space-y-4 text-sm sm:text-base">
             <div className="flex items-center justify-between p-3 rounded-lg bg-background/10">
               <Label htmlFor="workoutReminders" className="font-medium text-card-foreground">Workout Reminders</Label>
               <Switch id="workoutReminders" defaultChecked />
@@ -335,14 +333,14 @@ export default function ProfilePage() {
         
         <Card className="glassmorphic-card">
           <CardHeader>
-            <CardTitle className="text-xl font-bold flex items-center">
-              <Globe className="mr-3 h-6 w-6 text-accent" /> Language Preference
+            <CardTitle className="text-lg sm:text-xl font-bold flex items-center">
+              <Globe className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Language Preference
             </CardTitle>
-            <CardDescription>Select your preferred language for the app interface.</CardDescription>
+            <CardDescription className="text-xs sm:text-sm">Select your preferred language for the app interface.</CardDescription>
           </CardHeader>
           <CardContent>
              <Select defaultValue="English">
-                <SelectTrigger className="w-full bg-background/20 border-border focus:ring-accent focus:border-accent text-card-foreground">
+                <SelectTrigger className="w-full bg-background/20 border-border focus:ring-accent focus:border-accent text-card-foreground text-sm sm:text-base">
                   <SelectValue placeholder="Select language" />
                 </SelectTrigger>
                 <SelectContent>
@@ -355,32 +353,32 @@ export default function ProfilePage() {
 
         <Card className="glassmorphic-card">
           <CardHeader>
-            <CardTitle className="text-xl font-bold flex items-center">
-              <ShieldCheck className="mr-3 h-6 w-6 text-accent" /> Data & Privacy
+            <CardTitle className="text-lg sm:text-xl font-bold flex items-center">
+              <ShieldCheck className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Data & Privacy
             </CardTitle>
-            <CardDescription>Manage your data and review our policies.</CardDescription>
+            <CardDescription className="text-xs sm:text-sm">Manage your data and review our policies.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
-            <Button asChild variant="link" className="p-0 text-accent hover:underline h-auto transition-opacity hover:opacity-80">
+          <CardContent className="space-y-2 sm:space-y-3 text-sm sm:text-base">
+            <Button asChild variant="link" className="p-0 text-accent hover:underline h-auto transition-opacity hover:opacity-80 text-xs sm:text-sm">
               <Link href="/privacy-policy">View Privacy Policy</Link>
             </Button>
             <br />
-             <Button asChild variant="link" className="p-0 text-accent hover:underline h-auto transition-opacity hover:opacity-80">
+             <Button asChild variant="link" className="p-0 text-accent hover:underline h-auto transition-opacity hover:opacity-80 text-xs sm:text-sm">
               <Link href="/terms-of-service">View Terms of Service</Link>
             </Button>
              <br />
-            <Button variant="outline" className="text-destructive hover:text-destructive-foreground hover:bg-destructive/90 border-destructive hover:border-destructive/90 w-full sm:w-auto mt-2 transition-transform duration-300 hover:scale-105 active:scale-95">
+            <Button variant="outline" className="text-destructive hover:text-destructive-foreground hover:bg-destructive/90 border-destructive hover:border-destructive/90 w-full sm:w-auto mt-2 transition-transform duration-300 hover:scale-105 active:scale-95 text-xs sm:text-sm px-4 py-2">
               Download My Data
             </Button>
           </CardContent>
         </Card>
 
          <Card className="glassmorphic-card">
-            <CardContent className="pt-6">
+            <CardContent className="p-4 sm:pt-6">
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="destructive" className="w-full text-lg py-6 transition-transform duration-300 hover:scale-105 active:scale-95">
-                      <LogOutIcon className="mr-2 h-5 w-5" /> Logout
+                  <Button variant="destructive" className="w-full text-base sm:text-lg py-3 sm:py-6 transition-transform duration-300 hover:scale-105 active:scale-95">
+                      <LogOutIcon className="mr-2 h-4 w-4 sm:h-5 sm:w-5" /> Logout
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent className="glassmorphic-card">

@@ -31,8 +31,8 @@ export default function ProductDetailPage() {
       setProduct(foundProduct || null);
 
       if (foundProduct) {
-        const otherProducts = products.filter(p => p.id !== foundProduct.id);
-        setRelatedProducts(otherProducts.sort(() => 0.5 - Math.random()).slice(0, 3)); // Show 3 related products
+        const otherProducts = products.filter(p => p.id !== foundProduct.id && p.category === foundProduct.category);
+        setRelatedProducts(otherProducts.sort(() => 0.5 - Math.random()).slice(0, 3));
       }
     }
   }, [slug]);
@@ -57,35 +57,35 @@ export default function ProductDetailPage() {
     }, 2000);
   };
 
-  if (product === undefined) {
+  if (product === undefined) { // Initial loading state
     return (
       <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 animate-fade-in-up">
-        <div className="mb-8">
-          <Skeleton className="h-8 w-48" />
+        <div className="mb-6 sm:mb-8">
+          <Skeleton className="h-8 w-36 sm:w-48" />
         </div>
-        <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-start">
+        <div className="grid md:grid-cols-2 gap-6 md:gap-8 lg:gap-12 items-start">
           <div>
             <Skeleton className="w-full aspect-square rounded-xl" />
           </div>
-          <div className="space-y-6">
-            <Skeleton className="h-10 w-3/4" />
-            <Skeleton className="h-6 w-1/4" />
-            <Skeleton className="h-20 w-full" />
-            <div className="flex items-center gap-4">
-              <Skeleton className="h-10 w-32" />
-              <Skeleton className="h-10 w-24" />
+          <div className="space-y-4 sm:space-y-6">
+            <Skeleton className="h-8 sm:h-10 w-3/4" />
+            <Skeleton className="h-5 sm:h-6 w-1/4" />
+            <Skeleton className="h-16 sm:h-20 w-full" />
+            <div className="flex items-center gap-3 sm:gap-4">
+              <Skeleton className="h-9 sm:h-10 w-28 sm:w-32" />
+              <Skeleton className="h-9 sm:h-10 w-20 sm:w-24" />
             </div>
-            <Skeleton className="h-12 w-1/2" />
+            <Skeleton className="h-10 sm:h-12 w-1/2" />
           </div>
         </div>
-         <div className="mt-16">
-          <Skeleton className="h-8 w-1/3 mb-6" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+         <div className="mt-12 sm:mt-16">
+          <Skeleton className="h-7 sm:h-8 w-1/3 mb-4 sm:mb-6" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {[...Array(3)].map((_, i) => (
-              <Card key={i} className="glassmorphic-card p-4">
-                <Skeleton className="h-32 w-full mb-3 rounded-md" />
-                <Skeleton className="h-5 w-3/4 mb-1 rounded-md" />
-                <Skeleton className="h-5 w-1/2 rounded-md" />
+              <Card key={i} className="glassmorphic-card p-3 sm:p-4">
+                <Skeleton className="h-28 sm:h-32 w-full mb-2 sm:mb-3 rounded-md" />
+                <Skeleton className="h-4 sm:h-5 w-3/4 mb-1 rounded-md" />
+                <Skeleton className="h-4 sm:h-5 w-1/2 rounded-md" />
               </Card>
             ))}
           </div>
@@ -95,7 +95,7 @@ export default function ProductDetailPage() {
   }
 
   if (!product) {
-    notFound();
+    notFound(); // This will render the not-found.tsx or Next.js default 404
     return null;
   }
 
@@ -104,18 +104,18 @@ export default function ProductDetailPage() {
     : null;
 
   return (
-    <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 animate-fade-in-up">
-      <div className="mb-8">
-        <Button variant="outline" asChild className="border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground active:scale-95 transition-all duration-200">
+    <div className="container mx-auto px-4 md:px-6 py-8 sm:py-12 md:py-20 animate-fade-in-up">
+      <div className="mb-6 sm:mb-8">
+        <Button variant="outline" asChild className="border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground active:scale-95 transition-all duration-200 text-xs sm:text-sm px-3 py-1.5 sm:px-4 sm:py-2 h-auto">
           <Link href="/shop/products">
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <ArrowLeft className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
             Back to All Products
           </Link>
         </Button>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-start">
-        <Card className="glassmorphic-card overflow-hidden sticky top-24">
+      <div className="grid md:grid-cols-2 gap-6 md:gap-8 lg:gap-12 items-start">
+        <Card className="glassmorphic-card overflow-hidden sticky top-20 md:top-24">
           <div className="aspect-square relative">
             <Image
               src={product.imagePlaceholder}
@@ -128,42 +128,42 @@ export default function ProductDetailPage() {
           </div>
         </Card>
 
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <Card className="glassmorphic-card">
-            <CardHeader>
-              <Link href={`/shop/products?category=${product.category.toLowerCase()}`} className="text-sm text-accent hover:underline mb-1 flex items-center gap-1">
-                 <Tag className="h-4 w-4" /> {product.category}
+            <CardHeader className="pb-3 sm:pb-4">
+              <Link href={`/shop/products?category=${product.category.toLowerCase()}`} className="text-xs sm:text-sm text-accent hover:underline mb-1 flex items-center gap-1">
+                 <Tag className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> {product.category}
               </Link>
-              <CardTitle className="text-3xl md:text-4xl font-bold text-foreground">{product.name}</CardTitle>
+              <CardTitle className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">{product.name}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-foreground/80 leading-relaxed">{product.description}</p>
+              <p className="text-sm sm:text-base text-foreground/80 leading-relaxed">{product.description}</p>
             </CardContent>
           </Card>
           
           <Card className="glassmorphic-card">
-            <CardHeader>
-              <CardTitle className="text-xl font-semibold flex items-center text-foreground">
+            <CardHeader className="pb-2 sm:pb-3">
+              <CardTitle className="text-lg sm:text-xl font-semibold flex items-center text-foreground">
                 Pricing
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="flex items-baseline gap-2">
-                <span className="text-4xl font-bold text-accent">
-                  <IndianRupee className="inline h-6 w-6 -mt-1 mr-0.5" />{product.priceINR.toLocaleString()}
+            <CardContent className="space-y-1 sm:space-y-2">
+              <div className="flex items-baseline gap-1.5 sm:gap-2">
+                <span className="text-3xl sm:text-4xl font-bold text-accent">
+                  <IndianRupee className="inline h-5 w-5 sm:h-6 sm:w-6 -mt-1 mr-0.5" />{product.priceINR.toLocaleString()}
                 </span>
                 {product.originalPriceINR && (
-                  <span className="text-xl text-foreground/60 line-through">
+                  <span className="text-lg sm:text-xl text-foreground/60 line-through">
                     ₹{product.originalPriceINR.toLocaleString()}
                   </span>
                 )}
               </div>
               {discountPercentage && (
-                <div className="text-sm font-semibold text-green-500 bg-green-500/10 px-2 py-0.5 rounded-md inline-block">
+                <div className="text-xs sm:text-sm font-semibold text-green-500 bg-green-500/10 px-2 py-0.5 rounded-md inline-block">
                   {discountPercentage}% OFF
                 </div>
               )}
-              <p className="text-sm text-foreground/70 mt-1">
+              <p className="text-xs sm:text-sm text-foreground/70 mt-0.5 sm:mt-1">
                 (Approx. ${product.priceUSD.toLocaleString()})
               </p>
             </CardContent>
@@ -172,7 +172,7 @@ export default function ProductDetailPage() {
           <Button
             size="lg"
             className={cn(
-              "w-full text-lg py-3.5 text-accent-foreground cta-glow-pulse active:scale-95 transition-all duration-200",
+              "w-full text-base sm:text-lg py-3 sm:py-3.5 text-accent-foreground cta-glow-pulse active:scale-95 transition-all duration-200",
               isAddingToCart ? "bg-green-500 hover:bg-green-600" : "bg-accent hover:bg-accent/90"
             )}
             onClick={handleAddToCart}
@@ -180,19 +180,19 @@ export default function ProductDetailPage() {
           >
             {isAddingToCart ? (
               <>
-                <Check className="mr-2 h-5 w-5" /> Added to Cart!
+                <Check className="mr-1.5 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" /> Added to Cart!
               </>
             ) : (
               <>
-                <ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart
+                <ShoppingCart className="mr-1.5 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" /> Add to Cart
               </>
             )}
           </Button>
 
            <Card className="glassmorphic-card">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-2 text-sm text-foreground/70">
-                <Info className="h-5 w-5 text-accent"/> 
+            <CardContent className="pt-4 sm:pt-6">
+              <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-foreground/70">
+                <Info className="h-4 w-4 sm:h-5 sm:w-5 text-accent"/> 
                 <span>Delivery by Fitnity | Free Shipping | 30-Day Returns</span>
               </div>
             </CardContent>
@@ -201,9 +201,9 @@ export default function ProductDetailPage() {
       </div>
 
       {relatedProducts.length > 0 && (
-        <div className="mt-16">
-          <h3 className="text-2xl font-semibold text-foreground mb-6">You Might Also Like</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="mt-12 sm:mt-16">
+          <h3 className="text-xl sm:text-2xl font-semibold text-foreground mb-4 sm:mb-6">You Might Also Like</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {relatedProducts.map((relatedProduct) => (
               <ProductCard key={relatedProduct.id} product={relatedProduct} />
             ))}
