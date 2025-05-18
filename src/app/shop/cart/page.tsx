@@ -6,22 +6,22 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
 import Link from 'next/link';
-import { IndianRupee, PlusCircle, MinusCircle, Trash2, ShoppingCart, XCircle } from 'lucide-react';
-import { Input } from '@/components/ui/input'; // For quantity input
+import { IndianRupee, PlusCircle, MinusCircle, Trash2, ShoppingCart, XCircle, ArrowRight } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
 
 export default function CartPage() {
   const { state, removeItem, updateQuantity, getCartTotal, getItemCount } = useCart();
   const { toast } = useToast();
-  const router = useRouter(); // If you need navigation
+  const router = useRouter();
 
   const handleQuantityChange = (id: string, currentQuantity: number, change: number) => {
     const newQuantity = currentQuantity + change;
     if (newQuantity >= 1) {
       updateQuantity(id, newQuantity);
     } else if (newQuantity === 0) {
-      // Optionally confirm removal or just remove
       removeItem(id);
        toast({ title: "Item removed from cart", variant: "default" });
     }
@@ -32,20 +32,20 @@ export default function CartPage() {
     if (!isNaN(newQuantity) && newQuantity >= 1) {
       updateQuantity(id, newQuantity);
     } else if (value === '' || newQuantity === 0) {
-        // Allow temporary empty input or 0 to then remove or set to 1
-        // For simplicity, we'll just re-affirm 1 if they try to empty or 0 directly via input.
-        // Better UX might involve a "remove" confirmation if input is cleared.
-        updateQuantity(id, 1);
+        updateQuantity(id, 1); // Revert to 1 if input is cleared or invalid
     }
   };
   
   const handleProceedToCheckout = () => {
-    // In a real app, you'd navigate to the checkout page
-    toast({
-      title: "Redirecting to Checkout (Demo)",
-      description: "Checkout functionality is not yet implemented.",
-    });
-    // router.push('/shop/checkout'); // Uncomment when checkout page exists
+    if (getItemCount() > 0) {
+      router.push('/shop/checkout');
+    } else {
+      toast({
+        title: "Your cart is empty",
+        description: "Please add items to your cart before proceeding to checkout.",
+        variant: "destructive",
+      });
+    }
   };
 
 
@@ -105,6 +105,7 @@ export default function CartPage() {
                   type="number"
                   min="1"
                   value={item.quantity}
+                  onBlur={(e) => { if(e.target.value === '' || parseInt(e.target.value) === 0) handleInputChange(item.id, '1');}} // Revert to 1 if blurred empty
                   onChange={(e) => handleInputChange(item.id, e.target.value)}
                   className="h-9 w-14 text-center bg-background/30 border-border/50 focus:ring-accent"
                 />
@@ -123,7 +124,7 @@ export default function CartPage() {
         </div>
 
         <div className="lg:col-span-1">
-          <Card className="glassmorphic-card p-6 sticky top-24"> {/* Added sticky top for summary */}
+          <Card className="glassmorphic-card p-6 sticky top-24">
             <CardHeader className="p-0 mb-4">
               <CardTitle className="text-2xl font-semibold text-card-foreground">Order Summary</CardTitle>
             </CardHeader>
@@ -146,7 +147,7 @@ export default function CartPage() {
                 className="w-full mt-6 bg-accent hover:bg-accent/90 text-accent-foreground text-lg cta-glow-pulse active:scale-95"
                 onClick={handleProceedToCheckout}
               >
-                Proceed to Checkout
+                Proceed to Checkout <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </CardContent>
           </Card>
@@ -155,8 +156,3 @@ export default function CartPage() {
     </div>
   );
 }
-
-// Added this at the end of file as it was missing from the initial prompt image.
-// Usually `useRouter` is imported from `next/navigation`.
-import { useRouter } from 'next/navigation';
-
