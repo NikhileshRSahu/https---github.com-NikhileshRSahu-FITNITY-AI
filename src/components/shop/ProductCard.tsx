@@ -9,8 +9,9 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { ShoppingCart, Eye, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { useCart } from '@/contexts/CartContext'; // Import useCart
+import { useCart } from '@/contexts/CartContext';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface ProductCardProps {
   product: Product;
@@ -20,6 +21,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const { toast } = useToast();
   const { addItem } = useCart();
   const [isAdding, setIsAdding] = useState(false);
+  const router = useRouter();
 
   const handleAddToCart = () => {
     if (isAdding) return;
@@ -28,8 +30,13 @@ export default function ProductCard({ product }: ProductCardProps) {
     toast({
       title: `${product.name} added to cart!`,
       description: "You can view your cart or continue shopping.",
+      action: (
+        <Button variant="outline" size="sm" onClick={() => router.push('/shop/cart')}>
+          View Cart
+        </Button>
+      )
     });
-    setTimeout(() => setIsAdding(false), 1500); // Reset after 1.5s
+    setTimeout(() => setIsAdding(false), 1500);
   };
 
   return (

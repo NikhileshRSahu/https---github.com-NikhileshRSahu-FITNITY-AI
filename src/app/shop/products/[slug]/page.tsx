@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCart } from '@/contexts/CartContext';
-import ProductCard from '@/components/shop/ProductCard'; // Import ProductCard
+import ProductCard from '@/components/shop/ProductCard';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -31,9 +31,8 @@ export default function ProductDetailPage() {
       setProduct(foundProduct || null);
 
       if (foundProduct) {
-        // Simple logic to get a few "related" products (excluding the current one)
         const otherProducts = products.filter(p => p.id !== foundProduct.id);
-        setRelatedProducts(otherProducts.sort(() => 0.5 - Math.random()).slice(0, 4));
+        setRelatedProducts(otherProducts.sort(() => 0.5 - Math.random()).slice(0, 3)); // Show 3 related products
       }
     }
   }, [slug]);
@@ -81,8 +80,8 @@ export default function ProductDetailPage() {
         </div>
          <div className="mt-16">
           <Skeleton className="h-8 w-1/3 mb-6" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[...Array(4)].map((_, i) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(3)].map((_, i) => (
               <Card key={i} className="glassmorphic-card p-4">
                 <Skeleton className="h-32 w-full mb-3 rounded-md" />
                 <Skeleton className="h-5 w-3/4 mb-1 rounded-md" />
@@ -116,7 +115,6 @@ export default function ProductDetailPage() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-start">
-        {/* Product Image Section */}
         <Card className="glassmorphic-card overflow-hidden sticky top-24">
           <div className="aspect-square relative">
             <Image
@@ -130,7 +128,6 @@ export default function ProductDetailPage() {
           </div>
         </Card>
 
-        {/* Product Details Section */}
         <div className="space-y-6">
           <Card className="glassmorphic-card">
             <CardHeader>
@@ -147,13 +144,13 @@ export default function ProductDetailPage() {
           <Card className="glassmorphic-card">
             <CardHeader>
               <CardTitle className="text-xl font-semibold flex items-center text-foreground">
-                <IndianRupee className="mr-2 h-6 w-6 text-accent" /> Pricing
+                Pricing
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               <div className="flex items-baseline gap-2">
                 <span className="text-4xl font-bold text-accent">
-                  ₹{product.priceINR.toLocaleString()}
+                  <IndianRupee className="inline h-6 w-6 -mt-1 mr-0.5" />{product.priceINR.toLocaleString()}
                 </span>
                 {product.originalPriceINR && (
                   <span className="text-xl text-foreground/60 line-through">
@@ -192,7 +189,6 @@ export default function ProductDetailPage() {
             )}
           </Button>
 
-          {/* Placeholder for reviews or other info */}
            <Card className="glassmorphic-card">
             <CardContent className="pt-6">
               <div className="flex items-center gap-2 text-sm text-foreground/70">
@@ -204,11 +200,10 @@ export default function ProductDetailPage() {
         </div>
       </div>
 
-      {/* Related Products Section */}
       {relatedProducts.length > 0 && (
         <div className="mt-16">
           <h3 className="text-2xl font-semibold text-foreground mb-6">You Might Also Like</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {relatedProducts.map((relatedProduct) => (
               <ProductCard key={relatedProduct.id} product={relatedProduct} />
             ))}
