@@ -82,13 +82,13 @@ export default function WorkoutPlanPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 md:px-6 py-12 md:py-20">
+    <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 animate-fade-in-up">
       <Card className="max-w-2xl mx-auto glassmorphic-card">
         <CardHeader>
           <CardTitle className="text-3xl font-bold flex items-center">
             <ClipboardList className="mr-3 h-8 w-8 text-accent" /> Generate Your Workout Plan
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-base sm:text-lg">
             Fill in your details below, and our AI will create a personalized workout plan for you.
           </CardDescription>
         </CardHeader>
@@ -103,11 +103,14 @@ export default function WorkoutPlanPage() {
                     <FormLabel className="text-lg">Fitness Goals</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="e.g., lose 10 pounds, build muscle in arms and chest, run a 5k"
+                        placeholder="e.g., Achieve a 10k run, sculpt lean muscle, boost daily energy levels."
                         {...field}
                         rows={3}
                       />
                     </FormControl>
+                    <FormDescription>
+                      Describe what you want to achieve with your fitness routine.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -120,11 +123,14 @@ export default function WorkoutPlanPage() {
                     <FormLabel className="text-lg">Workout Preferences</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="e.g., 30-minute home workouts, no equipment, enjoy HIIT and yoga"
+                        placeholder="e.g., Prefer 45-min gym sessions with free weights, enjoy outdoor cycling, need low-impact options."
                         {...field}
                         rows={3}
                       />
                     </FormControl>
+                    <FormDescription>
+                      Tell us about your preferred workout styles, duration, location, and any equipment availability.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -142,9 +148,9 @@ export default function WorkoutPlanPage() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="beginner">Beginner</SelectItem>
-                        <SelectItem value="intermediate">Intermediate</SelectItem>
-                        <SelectItem value="advanced">Advanced</SelectItem>
+                        <SelectItem value="beginner">Beginner (New to exercise or returning after a long break)</SelectItem>
+                        <SelectItem value="intermediate">Intermediate (Exercise regularly, comfortable with moderate intensity)</SelectItem>
+                        <SelectItem value="advanced">Advanced (Very experienced, comfortable with high intensity and complex exercises)</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -165,34 +171,41 @@ export default function WorkoutPlanPage() {
         </CardContent>
       </Card>
 
-      {(workoutPlanResult || error) && (
+      {(isLoading || workoutPlanResult || error) && (
         <Card className="max-w-2xl mx-auto mt-12 glassmorphic-card result-card-animate">
           <CardHeader>
             <CardTitle className="text-2xl font-bold">
-              {error ? 'Error Generating Plan' : 'Your Personalized Workout Plan'}
+              {isLoading ? 'Generating Your Plan...' : (error ? 'Error Generating Plan' : 'Your Personalized Workout Plan')}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {error && (
+            {isLoading && (
+              <div className="flex flex-col items-center justify-center p-8 text-card-foreground">
+                <Loader2 className="h-12 w-12 text-accent animate-spin mb-4" />
+                <p className="text-lg">AI is crafting your personalized plan...</p>
+                <p className="text-sm text-card-foreground/70">This might take a few moments.</p>
+              </div>
+            )}
+            {error && !isLoading && (
               <Alert variant="destructive" className="mb-4">
                 <AlertTriangle className="h-5 w-5" />
                 <AlertTitle>Oops! Something went wrong.</AlertTitle>
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
-            {workoutPlanResult && !error && (
+            {workoutPlanResult && !isLoading && !error && (
               <div className="prose dark:prose-invert max-w-none text-card-foreground/90 whitespace-pre-wrap p-4 bg-background/20 rounded-md">
                 {workoutPlanResult}
               </div>
             )}
-             {!isLoading && !error && !workoutPlanResult && (
-              <Alert className="bg-background/30 border-border/50 text-card-foreground">
-                <AlertTriangle className="h-5 w-5 text-accent" />
-                <AlertTitle>No Plan Available</AlertTitle>
-                <AlertDescription>
-                  The AI did not return a workout plan. Please try again with different inputs.
-                </AlertDescription>
-              </Alert>
+            {!isLoading && !error && !workoutPlanResult && ( // Handles the case where AI returns no plan explicitly
+                <Alert variant="destructive" className="bg-background/30 border-border/50 text-card-foreground">
+                    <AlertTriangle className="h-5 w-5 text-accent" />
+                    <AlertTitle>No Plan Available</AlertTitle>
+                    <AlertDescription>
+                    The AI did not return a workout plan. Please try again with different inputs or refine your preferences.
+                    </AlertDescription>
+                </Alert>
             )}
           </CardContent>
         </Card>
