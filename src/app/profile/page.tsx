@@ -21,7 +21,17 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Moon, Sun, Bell, Globe, ShieldCheck, LogOut as LogOutIcon, Zap, Edit3, Save, XCircle, User as UserIcon, CalendarClock, Settings as SettingsIcon, Gem, Loader2 } from 'lucide-react'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Moon, Sun, Bell, Globe, ShieldCheck, LogOut as LogOutIcon, Zap, Edit3, Save, XCircle, User as UserIcon, CalendarClock, Settings as SettingsIcon, Gem, Loader2, KeyRound, Trash2 } from 'lucide-react'
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -29,6 +39,38 @@ import { useRouter } from 'next/navigation'
 import { useToast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
 import { useSubscription, type SubscriptionTier } from '@/contexts/SubscriptionContext';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+
+// Profile Data Structure
+interface ProfileData {
+  fullName: string;
+  email: string;
+  fitnessGoal: string;
+  workoutStyle: string;
+  fitnessLevel: 'beginner' | 'intermediate' | 'advanced';
+  preferredLanguage: 'English' | 'Hindi'; // For AI Coach
+}
+
+// Settings Data Structure (for localStorage simulation)
+interface UserSettings {
+  workoutReminders: boolean;
+  featureUpdates: boolean;
+  communityAlerts: boolean;
+  appLanguage: 'English' | 'Hindi'; // For App UI
+}
+
+// Zod schema for "Change Password" dialog
+const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1, { message: "Current password is required." }),
+  newPassword: z.string().min(8, { message: "New password must be at least 8 characters." }),
+  confirmNewPassword: z.string(),
+}).refine(data => data.newPassword === data.confirmNewPassword, {
+  message: "New passwords don't match.",
+  path: ["confirmNewPassword"],
+});
+type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>;
 
 
 export default function ProfilePage() {
@@ -40,72 +82,128 @@ export default function ProfilePage() {
   const { toast } = useToast();
   const { subscriptionTier, setSubscriptionTier, mounted: subscriptionMounted } = useSubscription();
 
-
-  const [profileData, setProfileData] = useState({
+  // Profile Data State
+  const [profileData, setProfileData] = useState<ProfileData>({
     fullName: 'Aarav Patel',
     email: 'aarav.patel@example.com',
     fitnessGoal: 'Weight Loss & Endurance Improvement. Target: Run a 10k in under 50 minutes.',
     workoutStyle: 'Home workouts (HIIT, Bodyweight), 3-4 times per week, 30-45 min sessions. Occasional weekend cycling.',
-    fitnessLevel: 'intermediate' as 'beginner' | 'intermediate' | 'advanced',
+    fitnessLevel: 'intermediate',
     preferredLanguage: 'English',
   });
-   const [initialProfileData, setInitialProfileData] = useState(profileData);
+  const [initialProfileData, setInitialProfileData] = useState<ProfileData>(profileData);
+
+  // Settings State
+  const [userSettings, setUserSettings] = useState<UserSettings>({
+    workoutReminders: true,
+    featureUpdates: false,
+    communityAlerts: true,
+    appLanguage: 'English',
+  });
+
+  const changePasswordForm = useForm<ChangePasswordFormValues>({
+    resolver: zodResolver(changePasswordSchema),
+    defaultValues: { currentPassword: "", newPassword: "", confirmNewPassword: "" },
+  });
 
 
   const checkLoginStatus = useCallback(() => {
     if (typeof window !== 'undefined') {
       const loggedInStatus = localStorage.getItem('fitnityUserLoggedIn') === 'true';
       setIsLoggedIn(loggedInStatus);
-      if (!loggedInStatus && uiMounted) { // Ensure uiMounted before redirecting
+      if (!loggedInStatus && uiMounted) {
         router.replace('/auth/sign-in');
       }
     }
   }, [router, uiMounted]);
 
+  // Load data from localStorage on mount
   useEffect(() => {
-    setUiMounted(true); 
-  }, []);
-
-  useEffect(() => {
-    if (uiMounted) {
+    setUiMounted(true);
+    if (typeof window !== 'undefined') {
       checkLoginStatus();
+
+      const storedProfileData = localStorage.getItem('fitnityUserProfile');
+      if (storedProfileData) {
+        try {
+          const parsedProfile = JSON.parse(storedProfileData);
+          setProfileData(parsedProfile);
+          setInitialProfileData(parsedProfile); // Keep initial in sync for cancel
+        } catch (e) { console.error("Failed to parse profile data from localStorage", e); }
+      }
+
+      const storedUserSettings = localStorage.getItem('fitnityUserSettings');
+      if (storedUserSettings) {
+        try {
+          setUserSettings(JSON.parse(storedUserSettings));
+        } catch (e) { console.error("Failed to parse user settings from localStorage", e); }
+      }
     }
-    // Add event listener for login state changes from other tabs/windows
+  }, [checkLoginStatus]); // checkLoginStatus added as dependency
+
+  // Add event listener for login state changes
+  useEffect(() => {
     const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === 'fitnityUserLoggedIn') {
-        checkLoginStatus();
+      if (event.key === 'fitnityUserLoggedIn') checkLoginStatus();
+      if (event.key === 'fitnityUserProfile') {
+        const storedProfileData = localStorage.getItem('fitnityUserProfile');
+        if (storedProfileData) setProfileData(JSON.parse(storedProfileData));
+      }
+      if (event.key === 'fitnityUserSettings') {
+        const storedSettings = localStorage.getItem('fitnityUserSettings');
+        if (storedSettings) setUserSettings(JSON.parse(storedSettings));
       }
     };
-    // Add event listener for login state changes triggered by the app itself
-    const handleLoginStateChange = () => {
-      checkLoginStatus();
-    };
+    const handleLoginStateChange = () => checkLoginStatus();
 
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('loginStateChange', handleLoginStateChange);
-
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('loginStateChange', handleLoginStateChange);
     };
-  }, [uiMounted, checkLoginStatus]);
+  }, [checkLoginStatus]);
 
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleProfileInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setProfileData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSelectChange = (name: keyof typeof profileData) => (value: string) => {
+  const handleProfileSelectChange = (name: keyof ProfileData) => (value: string) => {
     setProfileData(prev => ({ ...prev, [name]: value as any }));
   };
 
+  const handleSettingsSwitchChange = (name: keyof UserSettings) => (checked: boolean) => {
+    setUserSettings(prev => {
+      const newSettings = { ...prev, [name]: checked };
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('fitnityUserSettings', JSON.stringify(newSettings));
+      }
+      return newSettings;
+    });
+  };
+  
+  const handleAppLanguageChange = (value: string) => {
+     setUserSettings(prev => {
+      const newSettings = { ...prev, appLanguage: value as 'English' | 'Hindi' };
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('fitnityUserSettings', JSON.stringify(newSettings));
+      }
+      return newSettings;
+    });
+     toast({ title: "App Language Updated (Simulated)", description: `Interface language preference set to ${value}. A real app would re-render UI strings.` });
+  };
+
+
   const handleSaveChanges = () => {
-    console.log('Saving profile data (simulated):', profileData);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('fitnityUserProfile', JSON.stringify(profileData));
+    }
     setInitialProfileData(profileData); 
     toast({
-      title: 'Profile Updated (Simulated)',
-      description: 'Your changes have been saved.',
+      title: 'Profile Updated!',
+      description: 'Your changes have been saved (simulated).',
     });
     setIsEditing(false);
   };
@@ -118,10 +216,31 @@ export default function ProfilePage() {
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('fitnityUserLoggedIn');
+      localStorage.removeItem('fitnityUserProfile'); // Also clear profile on logout
+      localStorage.removeItem('fitnityUserSettings'); // Clear settings on logout
       window.dispatchEvent(new Event('loginStateChange')); 
     }
-    router.push('/'); // Redirect to homepage after logout
+    router.push('/'); 
   };
+  
+  const onSubmitChangePassword = (data: ChangePasswordFormValues) => {
+    console.log("Change Password Submitted (simulated):", data);
+    toast({
+      title: "Password Change Request Simulated",
+      description: "In a real app, further steps would be taken.",
+    });
+    changePasswordForm.reset();
+    // Close dialog manually if needed, or use DialogClose inside the form
+  };
+
+  const handleDeleteAccount = () => {
+    toast({
+      title: "Account Deletion Simulated",
+      description: "You have been logged out.",
+      variant: "destructive"
+    });
+    handleLogout(); // Simulate logout after deletion
+  }
 
   if (!uiMounted || !isLoggedIn || !subscriptionMounted) { 
     return (
@@ -133,24 +252,8 @@ export default function ProfilePage() {
                 <Skeleton className="h-5 w-3/4 bg-muted/50" />
                  <Skeleton className="h-9 w-32 bg-muted/50 mt-2" />
             </div>
-            {[...Array(3)].map((_, i) => ( 
-              <Card key={i} className="glassmorphic-card">
-                <CardHeader>
-                  <Skeleton className="h-7 w-1/3 mb-1 bg-muted/50" />
-                  <Skeleton className="h-4 w-2/3 bg-muted/50" />
-                </CardHeader>
-                <CardContent className="space-y-4 pt-6">
-                  <div className="space-y-1">
-                    <Skeleton className="h-4 w-1/4 bg-muted/50" />
-                    <Skeleton className="h-10 w-full bg-muted/50" />
-                  </div>
-                  <div className="space-y-1">
-                    <Skeleton className="h-4 w-1/4 bg-muted/50" />
-                    <Skeleton className="h-10 w-full bg-muted/50" />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+            <Card className="glassmorphic-card"><CardHeader><Skeleton className="h-7 w-1/3 mb-1 bg-muted/50" /><Skeleton className="h-4 w-2/3 bg-muted/50" /></CardHeader><CardContent className="space-y-4 pt-6"><Skeleton className="h-10 w-full bg-muted/50" /><Skeleton className="h-10 w-full bg-muted/50" /></CardContent></Card>
+            <Card className="glassmorphic-card"><CardHeader><Skeleton className="h-7 w-1/3 mb-1 bg-muted/50" /><Skeleton className="h-4 w-2/3 bg-muted/50" /></CardHeader><CardContent className="space-y-4 pt-6"><Skeleton className="h-10 w-full bg-muted/50" /><Skeleton className="h-10 w-full bg-muted/50" /></CardContent></Card>
           </div>
         </div>
       );
@@ -159,10 +262,10 @@ export default function ProfilePage() {
   const isDarkMode = resolvedTheme === 'dark';
 
   return (
-    <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 animate-fade-in-up">
+    <div className="container mx-auto px-4 md:px-6 py-12 md:py-20">
       <div className="max-w-2xl sm:max-w-3xl mx-auto space-y-8 sm:space-y-10">
         <div className="flex flex-col items-center text-center space-y-3 sm:space-y-4 mb-10 sm:mb-14 animate-fade-in-up">
-            <Avatar className="h-24 w-24 sm:h-28 sm:w-28 ring-4 ring-accent/50 shadow-lg hover:opacity-80 transition-opacity duration-200 active:scale-95">
+            <Avatar className="h-24 w-24 sm:h-28 sm:w-28 ring-4 ring-primary/50 dark:ring-accent/50 shadow-lg hover:opacity-80 transition-opacity duration-200 active:scale-95">
                 <AvatarImage src="https://placehold.co/100x100.png" alt={profileData.fullName} data-ai-hint="user portrait" />
                 <AvatarFallback>{profileData.fullName.substring(0,2).toUpperCase()}</AvatarFallback>
             </Avatar>
@@ -170,8 +273,8 @@ export default function ProfilePage() {
               <Input 
                 name="fullName" 
                 value={profileData.fullName} 
-                onChange={handleInputChange} 
-                className="text-3xl sm:text-4xl font-bold text-foreground text-center bg-background/50 border-border focus:ring-accent focus:border-accent shadow-sm p-1 h-auto"
+                onChange={handleProfileInputChange} 
+                className="text-3xl sm:text-4xl font-bold text-foreground text-center bg-background/50 border-border focus:ring-primary dark:focus:ring-accent focus:border-primary dark:focus:border-accent shadow-sm p-1 h-auto"
               />
             ) : (
               <h1 className="text-3xl sm:text-4xl font-bold text-foreground">{profileData.fullName}</h1>
@@ -181,8 +284,8 @@ export default function ProfilePage() {
                 name="email" 
                 type="email" 
                 value={profileData.email} 
-                onChange={handleInputChange} 
-                className="text-base sm:text-lg text-foreground/80 text-center bg-background/50 border-border focus:ring-accent focus:border-accent shadow-sm p-1 h-auto"
+                onChange={handleProfileInputChange} 
+                className="text-base sm:text-lg text-foreground/80 text-center bg-background/50 border-border focus:ring-primary dark:focus:ring-accent focus:border-primary dark:focus:border-accent shadow-sm p-1 h-auto"
               />
             ) : (
               <p className="text-base sm:text-lg text-foreground/80">{profileData.email}</p>
@@ -196,7 +299,7 @@ export default function ProfilePage() {
                   setInitialProfileData(profileData); 
                   setIsEditing(true);
                 }}
-                className="border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground transition-transform duration-300 hover:scale-105 active:scale-95 mt-2 px-4 py-2"
+                className="border-primary dark:border-accent text-primary dark:text-accent hover:bg-primary/10 dark:hover:bg-accent/10 hover:text-primary-foreground dark:hover:text-accent-foreground transition-transform duration-300 hover:scale-105 active:scale-95 mt-2 px-4 py-2"
               >
                   <Edit3 className="mr-2 h-4 w-4" /> Edit Profile
               </Button>
@@ -224,7 +327,7 @@ export default function ProfilePage() {
         <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.1s'}}>
           <CardHeader>
             <CardTitle className="text-xl font-bold flex items-center">
-              <Zap className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> My Fitness Snapshot
+              <Zap className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-primary dark:text-accent" /> My Fitness Snapshot
             </CardTitle>
             <CardDescription className="text-xs sm:text-sm text-card-foreground/70">Your current fitness goals and preferences.</CardDescription>
           </CardHeader>
@@ -233,16 +336,16 @@ export default function ProfilePage() {
               <>
                 <div className="space-y-1">
                   <Label htmlFor="fitnessGoal" className="text-sm sm:text-base font-medium">Primary Fitness Goal</Label>
-                  <Textarea id="fitnessGoal" name="fitnessGoal" value={profileData.fitnessGoal} onChange={handleInputChange} rows={3} className="mt-1 bg-background/50 text-card-foreground" />
+                  <Textarea id="fitnessGoal" name="fitnessGoal" value={profileData.fitnessGoal} onChange={handleProfileInputChange} rows={3} className={cn("mt-1 text-card-foreground", isEditing && "bg-background/50 dark:bg-background/50")} />
                 </div>
                 <div className="space-y-1">
                   <Label htmlFor="workoutStyle" className="text-sm sm:text-base font-medium">Preferred Workout Style & Frequency</Label>
-                  <Textarea id="workoutStyle" name="workoutStyle" value={profileData.workoutStyle} onChange={handleInputChange} rows={3} className="mt-1 bg-background/50 text-card-foreground" />
+                  <Textarea id="workoutStyle" name="workoutStyle" value={profileData.workoutStyle} onChange={handleProfileInputChange} rows={3} className={cn("mt-1 text-card-foreground", isEditing && "bg-background/50 dark:bg-background/50")} />
                 </div>
                 <div className="space-y-1">
                   <Label htmlFor="fitnessLevel" className="text-sm sm:text-base font-medium">Current Fitness Level</Label>
-                  <Select name="fitnessLevel" value={profileData.fitnessLevel} onValueChange={handleSelectChange('fitnessLevel')}>
-                    <SelectTrigger className="w-full bg-background/50 text-card-foreground mt-1 text-sm sm:text-base">
+                  <Select name="fitnessLevel" value={profileData.fitnessLevel} onValueChange={handleProfileSelectChange('fitnessLevel')}>
+                    <SelectTrigger className={cn("w-full text-card-foreground mt-1 text-sm sm:text-base", isEditing && "bg-background/50 dark:bg-background/50")}>
                       <SelectValue placeholder="Select fitness level" />
                     </SelectTrigger>
                     <SelectContent>
@@ -254,8 +357,8 @@ export default function ProfilePage() {
                 </div>
                  <div className="space-y-1">
                     <Label htmlFor="preferredLanguage" className="text-sm sm:text-base font-medium">Preferred Language (AI Coach)</Label>
-                    <Select name="preferredLanguage" value={profileData.preferredLanguage} onValueChange={handleSelectChange('preferredLanguage')}>
-                        <SelectTrigger className="w-full bg-background/50 text-card-foreground mt-1 text-sm sm:text-base">
+                    <Select name="preferredLanguage" value={profileData.preferredLanguage} onValueChange={handleProfileSelectChange('preferredLanguage')}>
+                        <SelectTrigger className={cn("w-full text-card-foreground mt-1 text-sm sm:text-base", isEditing && "bg-background/50 dark:bg-background/50")}>
                         <SelectValue placeholder="Select language" />
                         </SelectTrigger>
                         <SelectContent>
@@ -291,10 +394,10 @@ export default function ProfilePage() {
         <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.15s'}}>
           <CardHeader>
             <CardTitle className="text-xl font-bold flex items-center">
-              <Gem className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Subscription Simulator
+              <Gem className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-primary dark:text-accent" /> Subscription Simulator
             </CardTitle>
             <CardDescription className="text-xs sm:text-sm text-card-foreground/70">
-              Current Tier: <span className="font-semibold text-accent capitalize">{subscriptionTier}</span>. (For demo purposes only)
+              Current Tier: <span className="font-semibold text-primary dark:text-accent capitalize">{subscriptionTier}</span>. (For demo purposes only)
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col sm:flex-row gap-2 sm:gap-3">
@@ -306,8 +409,8 @@ export default function ProfilePage() {
                 className={cn(
                   "w-full sm:flex-1 capitalize",
                   subscriptionTier === tier 
-                    ? "bg-accent hover:bg-accent/90 text-accent-foreground" 
-                    : "border border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground"
+                    ? "bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90 text-primary-foreground dark:text-accent-foreground" 
+                    : "border border-primary dark:border-accent text-primary dark:text-accent hover:bg-primary/10 dark:hover:bg-accent/10 hover:text-primary-foreground dark:hover:text-accent-foreground"
                 )}
               >
                 Set to {tier}
@@ -320,35 +423,71 @@ export default function ProfilePage() {
         <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.2s'}}>
           <CardHeader>
             <CardTitle className="text-xl font-bold flex items-center">
-              <SettingsIcon className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Account Settings
+              <SettingsIcon className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-primary dark:text-accent" /> Account Settings
             </CardTitle>
             <CardDescription className="text-xs sm:text-sm text-card-foreground/70">Manage your personal details.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 sm:space-y-5 text-sm sm:text-base">
              <div>
-              <Label htmlFor="profileFullName" className="text-sm sm:text-base font-medium">Full Name</Label>
+              <Label htmlFor="profileFullNameView" className="text-sm sm:text-base font-medium">Full Name</Label>
               {isEditing ? (
-                <Input id="profileFullName" type="text" value={profileData.fullName} onChange={handleInputChange} name="fullName" className="mt-1 bg-background/50 text-card-foreground" />
+                <Input id="profileFullNameEdit" type="text" value={profileData.fullName} onChange={handleProfileInputChange} name="fullName" className={cn("mt-1 text-card-foreground", isEditing && "bg-background/50 dark:bg-background/50")} />
               ) : (
-                <p className="mt-1 p-3 rounded-md bg-background/20 text-card-foreground/80 border border-transparent text-sm sm:text-base">{profileData.fullName}</p>
+                <p id="profileFullNameView" className="mt-1 p-3 rounded-md bg-background/20 text-card-foreground/80 border border-transparent text-sm sm:text-base">{profileData.fullName}</p>
               )}
             </div>
             <div>
-              <Label htmlFor="profileEmail" className="text-sm sm:text-base font-medium">Email Address</Label>
+              <Label htmlFor="profileEmailView" className="text-sm sm:text-base font-medium">Email Address</Label>
               {isEditing ? (
-                <Input id="profileEmail" type="email" value={profileData.email} onChange={handleInputChange} name="email" className="mt-1 bg-background/50 text-card-foreground" />
+                <Input id="profileEmailEdit" type="email" value={profileData.email} onChange={handleProfileInputChange} name="email" className={cn("mt-1 text-card-foreground", isEditing && "bg-background/50 dark:bg-background/50")} />
               ) : (
-                 <p className="mt-1 p-3 rounded-md bg-background/20 text-card-foreground/80 border border-transparent text-sm sm:text-base">{profileData.email}</p>
+                 <p id="profileEmailView" className="mt-1 p-3 rounded-md bg-background/20 text-card-foreground/80 border border-transparent text-sm sm:text-base">{profileData.email}</p>
               )}
             </div>
              <div className="flex items-center justify-between p-3 rounded-lg bg-background/10 mt-2">
                 <div className="flex items-center">
-                    <CalendarClock className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-accent/80" />
+                    <CalendarClock className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-primary/80 dark:text-accent/80" />
                     <span className="font-medium text-card-foreground text-sm sm:text-base">Last Logged In:</span>
                 </div>
                 <span className="text-card-foreground/80 text-xs sm:text-sm">July 29, 2024, 10:30 AM (Simulated)</span>
             </div>
-            <Button variant="outline" className="w-full sm:w-auto hover:bg-accent/10 hover:text-accent-foreground transition-transform duration-300 hover:scale-105 active:scale-95 mt-2 border-accent text-accent text-sm sm:text-base px-4 py-2">Change Password</Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="w-full sm:w-auto hover:bg-primary/10 dark:hover:bg-accent/10 hover:text-primary-foreground dark:hover:text-accent-foreground transition-transform duration-300 hover:scale-105 active:scale-95 mt-2 border-primary dark:border-accent text-primary dark:text-accent text-sm sm:text-base px-4 py-2">
+                  <KeyRound className="mr-2 h-4 w-4"/> Change Password
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="glassmorphic-card sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center"><KeyRound className="mr-2 h-5 w-5 text-primary dark:text-accent"/>Change Password</DialogTitle>
+                  <DialogDescription>
+                    Enter your current and new password below.
+                  </DialogDescription>
+                </DialogHeader>
+                <Form {...changePasswordForm}>
+                  <form onSubmit={changePasswordForm.handleSubmit(onSubmitChangePassword)} className="space-y-4 py-4">
+                    <FormField control={changePasswordForm.control} name="currentPassword" render={({ field }) => (
+                      <FormItem><FormLabel>Current Password</FormLabel><FormControl><Input type="password" {...field} /></FormControl><FormMessage /></FormItem>
+                    )}/>
+                    <FormField control={changePasswordForm.control} name="newPassword" render={({ field }) => (
+                      <FormItem><FormLabel>New Password</FormLabel><FormControl><Input type="password" {...field} /></FormControl><FormMessage /></FormItem>
+                    )}/>
+                    <FormField control={changePasswordForm.control} name="confirmNewPassword" render={({ field }) => (
+                      <FormItem><FormLabel>Confirm New Password</FormLabel><FormControl><Input type="password" {...field} /></FormControl><FormMessage /></FormItem>
+                    )}/>
+                    <DialogFooter className="pt-4">
+                      <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
+                      <Button type="submit" disabled={changePasswordForm.formState.isSubmitting}
+                        className="light:bg-primary light:text-primary-foreground dark:bg-accent dark:text-accent-foreground"
+                      >
+                        {changePasswordForm.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Update Password
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
           </CardContent>
         </Card>
 
@@ -356,8 +495,8 @@ export default function ProfilePage() {
           <CardHeader>
             <CardTitle className="text-xl font-bold flex items-center">
               {isDarkMode ? 
-                <Moon className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> : 
-                <Sun className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" />
+                <Moon className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-primary dark:text-accent" /> : 
+                <Sun className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-primary dark:text-accent" />
               }
               Appearance
             </CardTitle>
@@ -381,22 +520,22 @@ export default function ProfilePage() {
         <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.4s'}}>
           <CardHeader>
             <CardTitle className="text-xl font-bold flex items-center">
-              <Bell className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Notification Preferences
+              <Bell className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-primary dark:text-accent" /> Notification Preferences
             </CardTitle>
             <CardDescription className="text-xs sm:text-sm text-card-foreground/70">Choose what updates you want to receive.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 sm:space-y-4 text-sm sm:text-base">
             <div className="flex items-center justify-between p-3 rounded-lg bg-background/10">
               <Label htmlFor="workoutReminders" className="font-medium text-card-foreground text-sm sm:text-base">Workout Reminders</Label>
-              <Switch id="workoutReminders" defaultChecked />
+              <Switch id="workoutReminders" checked={userSettings.workoutReminders} onCheckedChange={handleSettingsSwitchChange('workoutReminders')} />
             </div>
             <div className="flex items-center justify-between p-3 rounded-lg bg-background/10">
               <Label htmlFor="featureUpdates" className="font-medium text-card-foreground text-sm sm:text-base">New Feature Updates</Label>
-              <Switch id="featureUpdates" />
+              <Switch id="featureUpdates" checked={userSettings.featureUpdates} onCheckedChange={handleSettingsSwitchChange('featureUpdates')} />
             </div>
              <div className="flex items-center justify-between p-3 rounded-lg bg-background/10">
               <Label htmlFor="communityAlerts" className="font-medium text-card-foreground text-sm sm:text-base">Community Alerts</Label>
-              <Switch id="communityAlerts" defaultChecked />
+              <Switch id="communityAlerts" checked={userSettings.communityAlerts} onCheckedChange={handleSettingsSwitchChange('communityAlerts')} />
             </div>
           </CardContent>
         </Card>
@@ -404,13 +543,13 @@ export default function ProfilePage() {
         <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.5s'}}>
           <CardHeader>
             <CardTitle className="text-xl font-bold flex items-center">
-              <Globe className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Language Preference
+              <Globe className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-primary dark:text-accent" /> Language Preference
             </CardTitle>
             <CardDescription className="text-xs sm:text-sm text-card-foreground/70">Select your preferred language for the app interface.</CardDescription>
           </CardHeader>
           <CardContent>
-             <Select defaultValue="English">
-                <SelectTrigger className="w-full bg-background/20 border-border focus:ring-accent focus:border-accent text-card-foreground text-sm sm:text-base">
+             <Select value={userSettings.appLanguage} onValueChange={handleAppLanguageChange}>
+                <SelectTrigger className="w-full bg-background/20 border-border focus:ring-primary dark:focus:ring-accent focus:border-primary dark:focus:border-accent text-card-foreground text-sm sm:text-base">
                   <SelectValue placeholder="Select language" />
                 </SelectTrigger>
                 <SelectContent>
@@ -424,16 +563,16 @@ export default function ProfilePage() {
         <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.6s'}}>
           <CardHeader>
             <CardTitle className="text-xl font-bold flex items-center">
-              <ShieldCheck className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Data & Privacy
+              <ShieldCheck className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-primary dark:text-accent" /> Data & Privacy
             </CardTitle>
             <CardDescription className="text-xs sm:text-sm text-card-foreground/70">Manage your data and review our policies.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2 sm:space-y-3 text-sm sm:text-base">
-            <Button asChild variant="link" className="p-0 text-accent hover:underline h-auto transition-opacity hover:opacity-80 text-sm sm:text-base">
+            <Button asChild variant="link" className="p-0 text-primary dark:text-accent hover:underline h-auto transition-opacity hover:opacity-80 text-sm sm:text-base">
               <Link href="/privacy-policy">View Privacy Policy</Link>
             </Button>
             <br />
-             <Button asChild variant="link" className="p-0 text-accent hover:underline h-auto transition-opacity hover:opacity-80 text-sm sm:text-base">
+             <Button asChild variant="link" className="p-0 text-primary dark:text-accent hover:underline h-auto transition-opacity hover:opacity-80 text-sm sm:text-base">
               <Link href="/terms-of-service">View Terms of Service</Link>
             </Button>
              <br />
@@ -444,23 +583,55 @@ export default function ProfilePage() {
         </Card>
 
          <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.7s'}}>
+            <CardHeader>
+              <CardTitle className="text-xl font-bold flex items-center text-destructive">
+                <Trash2 className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6"/> Delete Account
+              </CardTitle>
+              <CardDescription className="text-xs sm:text-sm text-destructive/80">Permanently remove your Fitnity AI account and all associated data.</CardDescription>
+            </CardHeader>
+            <CardContent className="p-4 sm:pt-2">
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" className="w-full text-base sm:text-lg py-3 sm:py-2.5 transition-transform duration-300 hover:scale-105 active:scale-95">
+                      <Trash2 className="mr-2 h-5 w-5 sm:h-5 sm:w-5" /> Delete My Account
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="glassmorphic-card">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="flex items-center text-destructive"><AlertTriangle className="mr-2 h-5 w-5"/>Confirm Account Deletion</AlertDialogTitle>
+                    <AlertDialogDescription className="text-card-foreground/80">
+                       Are you absolutely sure you want to delete your account? This action is permanent and cannot be undone. All your data, including workout history, preferences, and any saved plans, will be irretrievably lost.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDeleteAccount} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">
+                      Yes, Delete My Account
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </CardContent>
+         </Card>
+
+         <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.8s'}}>
             <CardContent className="p-4 sm:pt-6">
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="destructive" className="w-full text-base sm:text-lg py-3 sm:py-6 transition-transform duration-300 hover:scale-105 active:scale-95">
+                  <Button variant="outline" className="w-full text-base sm:text-lg py-3 sm:py-2.5 transition-transform duration-300 hover:scale-105 active:scale-95 border-foreground/50 hover:bg-foreground/10 text-foreground/80">
                       <LogOutIcon className="mr-2 h-5 w-5 sm:h-5 sm:w-5" /> Logout
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent className="glassmorphic-card">
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Confirm Logout</AlertDialogTitle>
-                    <AlertDialogDescription>
+                    <AlertDialogTitle className="flex items-center"><LogOutIcon className="mr-2 h-5 w-5 text-primary dark:text-accent"/>Confirm Logout</AlertDialogTitle>
+                    <AlertDialogDescription className="text-card-foreground/80">
                        Are you sure you want to logout from Fitnity AI?
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleLogout} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">
+                    <AlertDialogAction onClick={handleLogout} className="bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90 text-primary-foreground dark:text-accent-foreground">
                       Logout
                     </AlertDialogAction>
                   </AlertDialogFooter>
@@ -473,4 +644,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-

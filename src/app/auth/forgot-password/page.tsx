@@ -7,50 +7,45 @@ import { z } from 'zod';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { LogIn, Mail, Lock, Loader2 } from 'lucide-react';
+import { KeyRound, Mail, Loader2, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-const signInSchema = z.object({
+const forgotPasswordSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
-  password: z.string().min(1, { message: 'Password is required.' }),
 });
 
-type SignInFormValues = z.infer<typeof signInSchema>;
+type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
 
-export default function SignInPage() {
+export default function ForgotPasswordPage() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const form = useForm<SignInFormValues>({
-    resolver: zodResolver(signInSchema),
+  const form = useForm<ForgotPasswordFormValues>({
+    resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
       email: '',
-      password: '',
     },
   });
 
-  async function onSubmit(data: SignInFormValues) {
+  async function onSubmit(data: ForgotPasswordFormValues) {
     setIsLoading(true);
-    console.log('Sign In submitted (simulated):', data);
+    console.log('Forgot password submitted (simulated):', data);
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('fitnityUserLoggedIn', 'true');
-      window.dispatchEvent(new Event('loginStateChange')); 
-    }
-
     toast({
-      title: 'Sign In Successful!',
-      description: 'Welcome back! You are now signed in.',
+      title: 'Password Reset Email Sent (Simulated)',
+      description: `If an account exists for ${data.email}, you will receive an email with instructions to reset your password.`,
     });
     setIsLoading(false);
-    router.push('/dashboard'); 
+    // Optionally redirect or clear form
+    // router.push('/auth/sign-in'); 
+    form.reset();
   }
 
   return (
@@ -58,10 +53,10 @@ export default function SignInPage() {
       <Card className="w-full max-w-md glassmorphic-card animate-fade-in-up">
         <CardHeader className="text-center">
           <div className="inline-flex justify-center items-center mb-4">
-            <LogIn className="h-10 w-10 text-primary dark:text-accent" />
+            <KeyRound className="h-10 w-10 text-primary dark:text-accent" />
           </div>
-          <CardTitle className="text-3xl font-bold">Welcome Back!</CardTitle>
-          <CardDescription>Sign in to access your Fitnity AI dashboard.</CardDescription>
+          <CardTitle className="text-3xl font-bold">Forgot Password?</CardTitle>
+          <CardDescription>Enter your email address below and we&apos;ll send you a link to reset your password.</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -82,27 +77,6 @@ export default function SignInPage() {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <div className="flex justify-between items-center">
-                      <FormLabel className="text-lg">Password</FormLabel>
-                      <Link href="/auth/forgot-password" className="text-sm text-primary dark:text-accent hover:underline">
-                        Forgot password?
-                      </Link>
-                    </div>
-                    <FormControl>
-                       <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                        <Input type="password" placeholder="••••••••" {...field} className="pl-10" />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
               <Button
                 type="submit"
                 disabled={isLoading}
@@ -112,14 +86,13 @@ export default function SignInPage() {
                            dark:bg-accent dark:text-accent-foreground dark:hover:bg-accent/90"
               >
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Sign In
+                Send Reset Link
               </Button>
             </form>
           </Form>
           <p className="mt-6 text-center text-sm text-muted-foreground">
-            Don&apos;t have an account?{' '}
-            <Link href="/auth/sign-up" className="font-medium text-primary dark:text-accent hover:underline">
-              Sign Up
+            <Link href="/auth/sign-in" className="font-medium text-primary dark:text-accent hover:underline flex items-center justify-center">
+              <ArrowLeft className="mr-1 h-4 w-4" /> Back to Sign In
             </Link>
           </p>
         </CardContent>

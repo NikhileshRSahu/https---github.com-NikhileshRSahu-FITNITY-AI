@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { LineChart, CartesianGrid, XAxis, YAxis, Line, ResponsiveContainer } from 'recharts';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Award, Flame, HeartPulse, TrendingUp, Scaling, Star, Droplets, Trophy, CalendarDays, BarChart4, Dumbbell, Zap, Activity, ShieldCheck, Sparkles, Lock } from 'lucide-react';
+import { Award, Flame, HeartPulse, TrendingUp, Scaling, Star, Droplets, Trophy, CalendarDays, BarChart4, Dumbbell, Zap, Activity, ShieldCheck, Sparkles, Lock, AlertTriangle } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -75,16 +75,16 @@ type TimeRange = 'weekly' | 'monthly' | 'allTime';
 interface LockedFeatureCardProps {
   title: string;
   description: string;
-  icon: React.ElementType; // Changed to Sparkles for premium indication
+  icon: React.ElementType;
 }
 
 function LockedFeatureCard({ title, description, icon: Icon }: LockedFeatureCardProps) {
   return (
     <Card className="glassmorphic-card hover:shadow-2xl transition-shadow duration-300 animate-fade-in-up flex flex-col items-center justify-center text-center p-6">
-      <Sparkles className="h-12 w-12 text-yellow-400 mb-4" />
+      <Lock className="h-12 w-12 text-primary dark:text-yellow-400 mb-4" />
       <CardTitle className="text-xl font-semibold text-foreground mb-2">{title}</CardTitle>
       <CardDescription className="text-foreground/70 mb-6 text-sm">{description}</CardDescription>
-      <Button asChild size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground cta-glow-pulse active:scale-95">
+      <Button asChild size="sm" className="bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90 text-primary-foreground dark:text-accent-foreground cta-glow-pulse active:scale-95">
         <Link href="/#pricing">View Pricing Plans</Link>
       </Button>
     </Card>
@@ -169,7 +169,7 @@ export default function DashboardPage() {
             <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                 <div>
                 <CardTitle className="flex items-center text-xl">
-                    <TrendingUp className="mr-3 h-6 w-6 text-accent" /> Workout Consistency
+                    <TrendingUp className="mr-3 h-6 w-6 text-primary dark:text-accent" /> Workout Consistency
                 </CardTitle>
                 <CardDescription className="text-sm sm:text-base text-card-foreground/80">Your workouts completed over time.</CardDescription>
                 </div>
@@ -183,8 +183,8 @@ export default function DashboardPage() {
                     className={cn(
                         "capitalize text-xs px-2 py-1 sm:px-3 h-auto",
                         selectedTimeRange === range
-                        ? "bg-accent hover:bg-accent/90 text-accent-foreground"
-                        : "border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground"
+                        ? "bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90 text-primary-foreground dark:text-accent-foreground"
+                        : "border-primary dark:border-accent text-primary dark:text-accent hover:bg-primary/10 dark:hover:bg-accent/10 hover:text-primary-foreground dark:hover:text-accent-foreground"
                     )}
                     >
                     {range === 'allTime' ? 'All Time' : range}
@@ -227,17 +227,18 @@ export default function DashboardPage() {
                         type="monotone"
                         dataKey="workouts"
                         strokeWidth={3}
-                        stroke="hsl(var(--accent))"
+                        stroke="hsl(var(--primary))"
+                        className="dark:stroke-primary" // Keep for dark theme if primary is different
                         dot={false}
-                        activeDot={{ r: 6, strokeWidth: 0, fill: "hsl(var(--accent))" }}
+                        activeDot={{ r: 6, strokeWidth: 0, fill: "hsl(var(--primary))" }}
                         isAnimationActive={true}
                         />
                     </LineChart>
                     </ResponsiveContainer>
                 </ChartContainer>
                 ) : (
-                <Alert className="bg-background/30 border-border/50 text-card-foreground">
-                    <BarChart4 className="h-5 w-5 text-accent" />
+                <Alert className="bg-background/30 border-border/50 text-card-foreground justify-center text-center">
+                    <BarChart4 className="h-5 w-5 text-primary dark:text-accent mx-auto mb-2" />
                     <AlertTitle>No Data Yet</AlertTitle>
                     <AlertDescription>
                     No workout data available for this period. Start logging your workouts to see your consistency!
@@ -250,7 +251,7 @@ export default function DashboardPage() {
             <LockedFeatureCard 
                 title="Unlock Workout Consistency"
                 description="Track your workout trends over time. This feature is available on Premium and Unlimited plans."
-                icon={TrendingUp} // Assuming TrendingUp icon is appropriate
+                icon={TrendingUp} 
             />
         )}
 
@@ -258,22 +259,22 @@ export default function DashboardPage() {
             <Card className="glassmorphic-card hover:shadow-2xl transition-shadow duration-300 animate-fade-in-up" style={{animationDelay: '0.2s'}}>
             <CardHeader>
                 <CardTitle className="flex items-center text-xl">
-                <Scaling className="mr-3 h-6 w-6 text-accent" /> Body Measurements
+                <Scaling className="mr-3 h-6 w-6 text-primary dark:text-accent" /> Body Measurements
                 </CardTitle>
                 <CardDescription className="text-sm sm:text-base text-card-foreground/80">Your current key body metrics.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 sm:space-y-4">
                 <div className="flex items-baseline justify-between p-3 rounded-lg bg-background/10">
                 <span className="font-medium text-sm sm:text-base text-card-foreground">Weight:</span>
-                <span className="text-xl sm:text-2xl font-semibold text-accent">{bodyMeasurementData.weight.value} <span className="text-xs sm:text-sm text-card-foreground/70">{bodyMeasurementData.weight.unit}</span></span>
+                <span className="text-xl sm:text-2xl font-semibold text-primary dark:text-accent">{bodyMeasurementData.weight.value} <span className="text-xs sm:text-sm text-card-foreground/70">{bodyMeasurementData.weight.unit}</span></span>
                 </div>
                 <div className="flex items-baseline justify-between p-3 rounded-lg bg-background/10">
                 <span className="font-medium text-sm sm:text-base text-card-foreground">Body Fat %:</span>
-                <span className="text-xl sm:text-2xl font-semibold text-accent">{bodyMeasurementData.bodyFat.value}<span className="text-xs sm:text-sm text-card-foreground/70">{bodyMeasurementData.bodyFat.unit}</span></span>
+                <span className="text-xl sm:text-2xl font-semibold text-primary dark:text-accent">{bodyMeasurementData.bodyFat.value}<span className="text-xs sm:text-sm text-card-foreground/70">{bodyMeasurementData.bodyFat.unit}</span></span>
                 </div>
                 <div className="flex items-baseline justify-between p-3 rounded-lg bg-background/10">
                 <span className="font-medium text-sm sm:text-base text-card-foreground">Muscle Mass:</span>
-                <span className="text-xl sm:text-2xl font-semibold text-accent">{bodyMeasurementData.muscleMass.value} <span className="text-xs sm:text-sm text-card-foreground/70">{bodyMeasurementData.muscleMass.unit}</span></span>
+                <span className="text-xl sm:text-2xl font-semibold text-primary dark:text-accent">{bodyMeasurementData.muscleMass.value} <span className="text-xs sm:text-sm text-card-foreground/70">{bodyMeasurementData.muscleMass.unit}</span></span>
                 </div>
             </CardContent>
             </Card>
@@ -289,7 +290,7 @@ export default function DashboardPage() {
             <Card className="glassmorphic-card hover:shadow-2xl transition-shadow duration-300 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
             <CardHeader>
                 <CardTitle className="flex items-center text-xl">
-                <Trophy className="mr-3 h-6 w-6 text-accent" /> Personal Records
+                <Trophy className="mr-3 h-6 w-6 text-primary dark:text-accent" /> Personal Records
                 </CardTitle>
                 <CardDescription className="text-sm sm:text-base text-card-foreground/80">Your noteworthy achievements.</CardDescription>
             </CardHeader>
@@ -298,15 +299,15 @@ export default function DashboardPage() {
                 personalRecordsData.map((pr, idx) => (
                     <div key={idx} className="flex items-center justify-between p-2.5 sm:p-3 rounded-lg bg-background/10 hover:bg-background/20 transition-colors">
                     <div className="flex items-center gap-2 sm:gap-3">
-                        <pr.icon className="h-4 w-4 sm:h-5 sm:w-5 text-accent/80 flex-shrink-0" />
+                        <pr.icon className="h-4 w-4 sm:h-5 sm:w-5 text-primary/80 dark:text-accent/80 flex-shrink-0" />
                         <span className="font-medium text-xs sm:text-sm text-card-foreground">{pr.name}:</span>
                     </div>
-                    <span className="text-xs sm:text-sm font-semibold text-accent">{pr.value}</span>
+                    <span className="text-xs sm:text-sm font-semibold text-primary dark:text-accent">{pr.value}</span>
                     </div>
                 ))
                 ) : (
                 <Alert className="bg-background/30 border-border/50 text-card-foreground flex flex-col items-center text-center">
-                    <Trophy className="h-5 w-5 sm:h-6 sm:w-6 text-accent mb-2" />
+                    <Trophy className="h-5 w-5 sm:h-6 sm:w-6 text-primary dark:text-accent mb-2" />
                     <AlertTitle className="mb-1 text-base sm:text-lg">No Records Yet</AlertTitle>
                     <AlertDescription className="text-xs sm:text-sm">
                     Achieve new milestones in your fitness journey and they'll appear here!
@@ -327,24 +328,24 @@ export default function DashboardPage() {
             <Card className="glassmorphic-card hover:shadow-2xl transition-shadow duration-300 animate-fade-in-up" style={{animationDelay: '0.4s'}}>
             <CardHeader>
                 <CardTitle className="flex items-center text-xl">
-                <Award className="mr-3 h-6 w-6 text-accent" /> Streaks & Badges
+                <Award className="mr-3 h-6 w-6 text-primary dark:text-accent" /> Streaks & Badges
                 </CardTitle>
                 <CardDescription className="text-sm sm:text-base text-card-foreground/80">Your accomplishments and consistency.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 sm:space-y-4">
                 <div className="flex items-center justify-between p-3 rounded-lg bg-background/10">
                 <span className="font-medium text-sm sm:text-base text-card-foreground">Current Workout Streak:</span>
-                <span className="text-lg sm:text-xl font-semibold text-accent">{streaksAndBadges.currentStreak} days</span>
+                <span className="text-lg sm:text-xl font-semibold text-primary dark:text-accent">{streaksAndBadges.currentStreak} days</span>
                 </div>
                 {streaksAndBadges.currentChallengeStreak && (
-                <div className="p-3 rounded-lg bg-accent/10 border border-accent/30 shadow-inner">
+                <div className="p-3 rounded-lg bg-primary/10 dark:bg-accent/10 border border-primary/30 dark:border-accent/30 shadow-inner">
                     <div className="flex items-center gap-2 mb-1">
-                    <streaksAndBadges.currentChallengeStreak.icon className="h-5 w-5 text-accent/90"/>
+                    <streaksAndBadges.currentChallengeStreak.icon className="h-5 w-5 text-primary/90 dark:text-accent/90"/>
                     <h4 className="font-semibold text-card-foreground text-sm sm:text-base">Current Challenge: {streaksAndBadges.currentChallengeStreak.name}</h4>
                     </div>
                     <Progress 
                     value={(streaksAndBadges.currentChallengeStreak.day / streaksAndBadges.currentChallengeStreak.totalDays) * 100} 
-                    className="h-2 bg-accent/20 [&>div]:bg-accent"
+                    className="h-2 bg-primary/20 dark:bg-accent/20 [&>div]:bg-primary dark:[&>div]:bg-accent"
                     />
                     <p className="text-xs text-card-foreground/70 text-right mt-1">
                     Day {streaksAndBadges.currentChallengeStreak.day} of {streaksAndBadges.currentChallengeStreak.totalDays}
@@ -353,14 +354,14 @@ export default function DashboardPage() {
                 )}
                 <div className="flex items-center justify-between p-3 rounded-lg bg-background/10">
                 <span className="font-medium text-sm sm:text-base text-card-foreground">Total Badges Unlocked:</span>
-                <span className="text-lg sm:text-xl font-semibold text-accent">{streaksAndBadges.totalBadges}</span>
+                <span className="text-lg sm:text-xl font-semibold text-primary dark:text-accent">{streaksAndBadges.totalBadges}</span>
                 </div>
                 <div>
                 <h4 className="font-medium text-card-foreground/90 mb-2 text-sm sm:text-base">Recent Badges:</h4>
                 <ul className="space-y-1.5 sm:space-y-2">
                     {streaksAndBadges.recentBadges.map((badge, idx) => (
                     <li key={idx} className="flex items-center gap-2 sm:gap-3 p-2 sm:p-2.5 rounded-lg bg-background/10 hover:bg-background/20 transition-colors">
-                        <badge.icon className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
+                        <badge.icon className="h-5 w-5 sm:h-6 sm:w-6 text-primary dark:text-accent" />
                         <div>
                         <p className="font-medium text-xs sm:text-sm text-card-foreground">{badge.name}</p>
                         <p className="text-xs text-card-foreground/70">Earned: {badge.date}</p>
@@ -383,7 +384,7 @@ export default function DashboardPage() {
             <Card className="glassmorphic-card lg:col-span-2 hover:shadow-2xl transition-shadow duration-300 animate-fade-in-up" style={{animationDelay: '0.5s'}}>
             <CardHeader>
                 <CardTitle className="flex items-center text-xl">
-                <HeartPulse className="mr-3 h-6 w-6 text-accent" /> Daily Health Snapshot
+                <HeartPulse className="mr-3 h-6 w-6 text-primary dark:text-accent" /> Daily Health Snapshot
                 </CardTitle>
                 <CardDescription className="text-sm sm:text-base text-card-foreground/80">Your recent sleep, hydration and activity.</CardDescription>
             </CardHeader>
@@ -391,21 +392,21 @@ export default function DashboardPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                     <div className="p-3 sm:p-4 rounded-lg bg-background/10 text-center">
                         <p className="text-xs sm:text-sm font-medium text-card-foreground/80 mb-1">Avg. Sleep (Last Wk)</p>
-                        <p className="text-xl sm:text-2xl font-semibold text-accent">{healthSnapshotData.sleep.avgLastWeek}</p>
+                        <p className="text-xl sm:text-2xl font-semibold text-primary dark:text-accent">{healthSnapshotData.sleep.avgLastWeek}</p>
                     </div>
                     <div className="p-3 sm:p-4 rounded-lg bg-background/10 text-center">
                         <p className="text-xs sm:text-sm font-medium text-card-foreground/80 mb-1">Today's Water Intake</p>
-                        <p className="text-xl sm:text-2xl font-semibold text-accent">{healthSnapshotData.waterIntake.current}{healthSnapshotData.waterIntake.unit} <span className="text-sm sm:text-base text-card-foreground/70">/ {healthSnapshotData.waterIntake.goal}{healthSnapshotData.waterIntake.unit}</span></p>
-                        <Progress value={(healthSnapshotData.waterIntake.current / healthSnapshotData.waterIntake.goal) * 100} className="h-1.5 sm:h-2 mt-2 bg-accent/20 [&>div]:bg-accent" />
+                        <p className="text-xl sm:text-2xl font-semibold text-primary dark:text-accent">{healthSnapshotData.waterIntake.current}{healthSnapshotData.waterIntake.unit} <span className="text-sm sm:text-base text-card-foreground/70">/ {healthSnapshotData.waterIntake.goal}{healthSnapshotData.waterIntake.unit}</span></p>
+                        <Progress value={(healthSnapshotData.waterIntake.current / healthSnapshotData.waterIntake.goal) * 100} className="h-1.5 sm:h-2 mt-2 bg-primary/20 dark:bg-accent/20 [&>div]:bg-primary dark:[&>div]:bg-accent" />
                     </div>
                     <div className="p-3 sm:p-4 rounded-lg bg-background/10 text-center">
                         <p className="text-xs sm:text-sm font-medium text-card-foreground/80 mb-1">Today's Steps</p>
-                        <p className="text-xl sm:text-2xl font-semibold text-accent">{healthSnapshotData.steps.current.toLocaleString()} <span className="text-sm sm:text-base text-card-foreground/70">/ {healthSnapshotData.steps.goal.toLocaleString()}</span></p>
-                        <Progress value={(healthSnapshotData.steps.current / healthSnapshotData.steps.goal) * 100} className="h-1.5 sm:h-2 mt-2 bg-accent/20 [&>div]:bg-accent" />
+                        <p className="text-xl sm:text-2xl font-semibold text-primary dark:text-accent">{healthSnapshotData.steps.current.toLocaleString()} <span className="text-sm sm:text-base text-card-foreground/70">/ {healthSnapshotData.steps.goal.toLocaleString()}</span></p>
+                        <Progress value={(healthSnapshotData.steps.current / healthSnapshotData.steps.goal) * 100} className="h-1.5 sm:h-2 mt-2 bg-primary/20 dark:bg-accent/20 [&>div]:bg-primary dark:[&>div]:bg-accent" />
                     </div>
                 </div>
                 <div className="mt-2 p-3 sm:p-4 rounded-lg bg-background/10">
-                    <h4 className="font-medium text-card-foreground mb-1.5 sm:mb-2 flex items-center text-sm sm:text-base"><Droplets className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-accent/80"/> Hydration Tip:</h4>
+                    <h4 className="font-medium text-card-foreground mb-1.5 sm:mb-2 flex items-center text-sm sm:text-base"><Droplets className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-primary/80 dark:text-accent/80"/> Hydration Tip:</h4>
                     <p className="text-xs sm:text-sm text-card-foreground/80 italic">Carry a reusable water bottle with you and sip throughout the day. Aim for consistent intake rather than large amounts at once for optimal hydration.</p>
                 </div>
             </CardContent>
@@ -421,4 +422,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
