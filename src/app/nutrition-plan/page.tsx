@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -272,7 +271,7 @@ export default function NutritionPlanPage() {
                       </SelectContent>
                     </Select>
                     <FormDescription>
-                      Your mood can influence food choices and appetite.
+                      Your mood can influence food choices and appetite. This helps the AI suggest suitable options.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -292,7 +291,7 @@ export default function NutritionPlanPage() {
                       />
                     </FormControl>
                     <FormDescription>
-                      Any details about your daily routine or habits that impact your eating patterns.
+                      Any details about your daily routine (work, meal times, cooking habits) that might affect your eating patterns.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -356,4 +355,3 @@ export default function NutritionPlanPage() {
     </div>
   );
 }
-

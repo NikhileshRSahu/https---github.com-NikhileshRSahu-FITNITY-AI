@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, Suspense } from 'react';
@@ -27,6 +26,7 @@ function ProductsPageContent() {
   const [sortBy, setSortBy] = useState('relevance'); // 'relevance', 'price-asc', 'price-desc', 'newest'
 
   const uniqueCategories = useMemo(() => {
+    if (!products || products.length === 0) return [ALL_CATEGORIES_SLUG];
     const categories = new Set(products.map(p => p.category.toLowerCase()));
     return [ALL_CATEGORIES_SLUG, ...Array.from(categories)];
   }, []);
@@ -43,7 +43,7 @@ function ProductsPageContent() {
   }, [searchParams, selectedCategory, searchTerm]);
 
   const filteredAndSortedProducts = useMemo(() => {
-    if (products.length === 0) {
+    if (!products || products.length === 0) {
       return [];
     }
     let tempProducts = products.filter(product => {
@@ -110,19 +110,17 @@ function ProductsPageContent() {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
-
-  if (products.length === 0) {
+  if (!products || products.length === 0) {
     return (
       <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 flex flex-col items-center justify-center text-center min-h-[calc(100vh-10rem)] animate-fade-in-up">
         <ShoppingBag className="h-20 w-20 sm:h-24 sm:w-24 text-muted-foreground mb-6 sm:mb-8" />
         <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4 sm:mb-5">Our Shop is Currently Empty</h1>
         <p className="text-foreground/70 mb-8 sm:mb-10 max-w-md text-base sm:text-lg">
-          We're working on stocking up with amazing fitness gear. Please check back soon!
+          We&apos;re working on stocking up with amazing fitness gear. Please check back soon!
         </p>
       </div>
     );
   }
-
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 animate-fade-in-up">

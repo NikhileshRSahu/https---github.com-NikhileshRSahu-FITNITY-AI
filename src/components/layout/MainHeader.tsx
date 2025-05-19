@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -15,7 +14,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Zap, LogIn, UserPlus, LayoutDashboard, User as UserIcon, LogOut as LogOutIcon, ClipboardList, Bot, Apple as NutritionIcon, Camera, ShoppingCart, PlayCircle, Settings, Lock, Sparkles, Menu } from 'lucide-react';
+import { Zap, LogIn, UserPlus, LayoutDashboard, User as UserIcon, LogOut as LogOutIcon, ClipboardList, Bot, Apple as NutritionIcon, Camera, ShoppingCart, PlayCircle, Settings, Lock, Sparkles, Menu, Loader2 } from 'lucide-react';
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { useRouter, usePathname } from 'next/navigation';
@@ -89,7 +88,7 @@ export default function MainHeader() {
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
-    await new Promise(resolve => setTimeout(resolve, 700)); // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 700)); 
 
     if (typeof window !== 'undefined' && mounted) {
       localStorage.removeItem('fitnityUserLoggedIn');
@@ -133,15 +132,15 @@ export default function MainHeader() {
   if (!mounted) {
     return (
        <header className={cn(baseHeaderClasses, "h-20 shadow-none dark:shadow-none light:border-b light:border-transparent")}>
-         <div className={cn(baseContainerClasses, "px-2 sm:px-4 md:px-6")}>
+         <div className={cn(baseContainerClasses, "px-2 sm:px-4 md:px-3 lg:px-6")}>
             <Link href="/" className="flex items-center gap-2 flex-shrink-0" prefetch={false}>
               <Zap className="h-7 w-7 md:h-8 md:w-8 text-primary dark:text-accent logo-pulse" />
               <span className="text-xl md:text-2xl font-bold text-card-foreground">Fitnity AI</span>
             </Link>
-            <nav className="flex items-center gap-0.5 md:gap-1">
-              <div className="h-9 w-10 bg-transparent md:w-20"></div>
-              <div className="h-9 w-10 bg-transparent md:w-20"></div>
-              <div className="h-9 w-10 bg-transparent md:w-28"></div>
+            <nav className="flex items-center gap-0.5 md:gap-0.5 lg:gap-1">
+              <div className="h-9 w-10 bg-transparent md:w-20"></div> {/* Placeholder */}
+              <div className="h-9 w-10 bg-transparent md:w-20"></div> {/* Placeholder */}
+              <div className="h-9 w-10 bg-transparent md:w-28"></div> {/* Placeholder for CTA */}
             </nav>
          </div>
        </header>
@@ -165,25 +164,25 @@ export default function MainHeader() {
           </Link>
           <nav className="flex items-center gap-0.5 md:gap-0.5 lg:gap-1">
             {itemsToDisplay.map(item => {
-              const accessible = item.featureKey ? isFeatureAccessible(item.featureKey) : true;
-              const showLockIcon = item.isPremium && !accessible && isLoggedIn;
+              const accessible = item.featureKey && mounted && isLoggedIn ? isFeatureAccessible(item.featureKey) : true;
+              const showLockIcon = item.isPremium && !accessible && mounted && isLoggedIn;
               
               const navButtonContent = (
                 <div className="flex flex-col items-center md:flex-row">
-                    <item.icon className={cn(navIconClasses, showLockIcon && !accessible && "opacity-50", item.isCTA && "text-inherit group-hover:text-inherit group-focus-visible:text-inherit") } />
+                    <item.icon className={cn(navIconClasses, showLockIcon && "opacity-50", item.isCTA && "text-inherit group-hover:text-inherit group-focus-visible:text-inherit") } />
                     <span className={cn(
                       "hidden text-sm ml-0 md:ml-1.5",
                       item.showTextAtBreakpoint === 'md' && 'md:inline',
                       item.showTextAtBreakpoint === 'lg' && 'lg:inline',
-                       (!item.showTextAtBreakpoint && item.label !== 'Login' && item.label !== 'Sign Up' && item.label !== 'Features' && item.label !== 'Pricing') && 'md:inline',
+                       (!item.showTextAtBreakpoint && !(item.label === 'Login' || item.label === 'Sign Up' || item.label === 'Features' || item.label === 'Pricing')) && 'md:inline',
                        (item.label === 'Login' || item.label === 'Sign Up' || item.label === 'Features' || item.label === 'Pricing') && 'md:inline',
-                       showLockIcon && !accessible && "opacity-50",
+                       showLockIcon && "opacity-50",
                        item.isCTA && "text-xs sm:text-sm sm:inline"
                     )}>
                       {item.label}
                     </span>
-                    {item.label === 'Coach' && isLoggedIn && <span className="glowing-orb ml-0.5 md:ml-1.5 hidden md:inline-block"></span>}
-                    {item.label === 'Shop' && isLoggedIn && cartItemCount > 0 && (
+                    {item.label === 'Coach' && mounted && isLoggedIn && <span className="glowing-orb ml-0.5 md:ml-1.5 hidden md:inline-block"></span>}
+                    {item.label === 'Shop' && mounted && isLoggedIn && cartItemCount > 0 && (
                       <span className="absolute top-0 right-0 -mt-1 -mr-0.5 md:mt-0 md:mr-0 flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
                         {cartItemCount > 9 ? '9+' : cartItemCount}
                       </span>
@@ -197,16 +196,15 @@ export default function MainHeader() {
                 className: cn(
                   navLinkBaseClasses, 
                   "text-card-foreground px-1.5 sm:px-2 py-1 sm:py-1.5 h-auto hover:border-b-accent",
-                   accessible ? navLinkHoverClasses : "cursor-not-allowed",
+                   accessible ? navLinkHoverClasses : "cursor-default", // Changed cursor-not-allowed to cursor-default
                    showLockIcon && "opacity-70 hover:opacity-80"
                 ),
-                disabled: showLockIcon,
                 "aria-label": item.ariaLabel || item.label,
               };
 
               const buttonWrapper = (
-                 <Button {...buttonProps} asChild={accessible}>
-                    {accessible ? <Link href={item.href}>{navButtonContent}</Link> : <div>{navButtonContent}</div>}
+                 <Button {...buttonProps} asChild={accessible && !showLockIcon}>
+                    {(accessible && !showLockIcon) ? <Link href={item.href}>{navButtonContent}</Link> : <div>{navButtonContent}</div>}
                   </Button>
               );
 
@@ -225,7 +223,7 @@ export default function MainHeader() {
                   <Link href={item.href} className="flex items-center">
                     <item.icon className={cn(navIconClasses, "mr-1 md:mr-1.5 h-4 w-4 sm:h-4.5 sm:w-4.5", "text-inherit group-hover:text-inherit group-focus-visible:text-inherit")} />
                     <span className={cn(item.label === 'Sign Up' ? "sm:hidden md:inline" : "hidden sm:inline")}>{item.label}</span>
-                     <span className={cn(item.label === 'Sign Up' ? "inline md:hidden" : "sm:hidden")}>{item.label}</span> {/* Ensure Sign Up text is visible on mobile */}
+                     <span className={cn(item.label === 'Sign Up' ? "inline md:hidden" : "sm:hidden")}>{item.label}</span>
                   </Link>
                 </Button>
               ) : (
@@ -294,7 +292,7 @@ export default function MainHeader() {
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleLogout} disabled={isLoggingOut} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">
+                    <AlertDialogAction onClick={handleLogout} disabled={isLoggingOut} className="bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90 text-primary-foreground dark:text-accent-foreground active:scale-95">
                       {isLoggingOut ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                       Logout
                     </AlertDialogAction>
@@ -308,4 +306,3 @@ export default function MainHeader() {
     </TooltipProvider>
   );
 }
-    

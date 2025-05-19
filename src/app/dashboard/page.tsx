@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -75,7 +74,7 @@ type TimeRange = 'weekly' | 'monthly' | 'allTime';
 interface LockedFeatureCardProps {
   title: string;
   description: string;
-  icon: React.ElementType;
+  icon: React.ElementType; // Use a more generic type for icon
 }
 
 function LockedFeatureCard({ title, description, icon: Icon }: LockedFeatureCardProps) {
@@ -274,7 +273,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex items-baseline justify-between p-3 rounded-lg bg-background/10">
                 <span className="font-medium text-sm sm:text-base text-card-foreground">Body Fat %:</span>
-                <span className="text-xl sm:text-2xl font-semibold text-primary dark:text-accent">{bodyMeasurementData.bodyFat.value}<span className="text-xs sm:text-sm text-card-foreground/70">{bodyMeasurementData.bodyFat.unit}</span></span>
+                <span className="text-xl sm:text-2xl font-semibold text-primary dark:text-accent">{bodyMeasurementData.bodyFat.value}<span className="text-xs sm:text-sm text-card-foreground/70">{bodyFatMeasurementData.bodyFat.unit}</span></span>
                 </div>
                 <div className="flex items-baseline justify-between p-3 rounded-lg bg-background/10">
                 <span className="font-medium text-sm sm:text-base text-card-foreground">Muscle Mass:</span>
@@ -426,4 +425,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-

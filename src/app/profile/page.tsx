@@ -1,4 +1,3 @@
-
 'use client'
 
 import { useTheme } from 'next-themes'
@@ -630,7 +629,7 @@ export default function ProfilePage() {
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteAccount} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">
+                    <AlertDialogAction onClick={handleDeleteAccount} disabled={isPasswordSubmitting} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">
                       {isPasswordSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Yes, Delete My Account"}
                     </AlertDialogAction>
                   </AlertDialogFooter>
@@ -656,8 +655,8 @@ export default function ProfilePage() {
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleLogout} className="bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90 text-primary-foreground dark:text-accent-foreground">
-                      {isPasswordSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Logout"}
+                    <AlertDialogAction onClick={handleLogout} disabled={isLoggingOut} className="bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90 text-primary-foreground dark:text-accent-foreground">
+                      {isLoggingOut ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Logout"}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -669,4 +668,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-

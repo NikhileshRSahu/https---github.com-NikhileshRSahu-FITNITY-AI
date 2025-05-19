@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, Suspense } from 'react';
@@ -36,11 +35,12 @@ function VideosPageContent() {
   }, [searchParams, selectedCategory, searchTerm]);
 
   const normalizedCategories = useMemo(() => {
+    if (!videos || videos.length === 0) return [ALL_CATEGORIES_SLUG];
     return [ALL_CATEGORIES_SLUG, ...videoCategories.map(cat => cat.toLowerCase())];
   }, []);
 
   const filteredVideos = useMemo(() => {
-    if (videos.length === 0) {
+    if (!videos || videos.length === 0) {
       return [];
     }
     return videos.filter(video => {
@@ -98,13 +98,13 @@ function VideosPageContent() {
   };
 
 
-  if (videos.length === 0) {
+  if (!videos || videos.length === 0) {
     return (
       <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 flex flex-col items-center justify-center text-center min-h-[calc(100vh-10rem)] animate-fade-in-up">
         <Film className="h-20 w-20 sm:h-24 sm:w-24 text-muted-foreground mb-6 sm:mb-8" />
-        <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4 sm:mb-5">Our Video Library is Empty</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4 sm:mb-5">Our Video Library is Currently Empty</h1>
         <p className="text-foreground/70 mb-8 sm:mb-10 max-w-md text-base sm:text-lg">
-          We're preparing amazing workout videos and guides. Please check back soon!
+          We&apos;re preparing amazing workout videos and guides. Please check back soon!
         </p>
       </div>
     );
