@@ -84,7 +84,11 @@ function LockedFeatureCard({ title, description, icon: Icon }: LockedFeatureCard
       <Lock className="h-12 w-12 text-primary dark:text-yellow-400 mb-4" />
       <CardTitle className="text-xl font-semibold text-foreground mb-2">{title}</CardTitle>
       <CardDescription className="text-foreground/70 mb-6 text-sm">{description}</CardDescription>
-      <Button asChild size="sm" className="bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90 text-primary-foreground dark:text-accent-foreground cta-glow-pulse active:scale-95">
+      <Button asChild size="sm" 
+        className="bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90 text-primary-foreground dark:text-accent-foreground cta-glow-pulse active:scale-95
+                   light:bg-primary light:text-primary-foreground light:hover:bg-gradient-to-r light:hover:from-primary light:hover:to-accent
+                   dark:bg-accent dark:text-accent-foreground dark:hover:bg-accent/90"
+      >
         <Link href="/#pricing">View Pricing Plans</Link>
       </Button>
     </Card>
@@ -228,7 +232,7 @@ export default function DashboardPage() {
                         dataKey="workouts"
                         strokeWidth={3}
                         stroke="hsl(var(--primary))"
-                        className="dark:stroke-primary" // Keep for dark theme if primary is different
+                        className="dark:stroke-primary" 
                         dot={false}
                         activeDot={{ r: 6, strokeWidth: 0, fill: "hsl(var(--primary))" }}
                         isAnimationActive={true}
@@ -248,9 +252,9 @@ export default function DashboardPage() {
             </CardContent>
             </Card>
         ) : (
-            <LockedFeatureCard 
+             <LockedFeatureCard 
                 title="Unlock Workout Consistency"
-                description="Track your workout trends over time. This feature is available on Premium and Unlimited plans."
+                description="Track your workout trends. This feature is available on Premium and Unlimited plans."
                 icon={TrendingUp} 
             />
         )}
@@ -281,7 +285,7 @@ export default function DashboardPage() {
         ) : (
              <LockedFeatureCard 
                 title="Unlock Body Measurements"
-                description="Track your weight, body fat, and muscle mass. This feature is available with our Premium plans."
+                description="Track weight, body fat, and muscle mass. This feature is available with our Premium plans."
                 icon={Scaling}
             />
         )}
@@ -375,7 +379,7 @@ export default function DashboardPage() {
         ) : (
             <LockedFeatureCard 
                 title="Unlock Streaks & Badges"
-                description="Stay motivated with streaks and unlock achievement badges. This feature is available with our Premium plans."
+                description="Stay motivated with streaks and unlock badges. This feature is available with Premium plans."
                 icon={Award}
             />
         )}
@@ -414,7 +418,7 @@ export default function DashboardPage() {
          ) : (
             <LockedFeatureCard 
                 title="Unlock Daily Health Snapshot"
-                description="Keep an eye on your daily health metrics like sleep, hydration, and steps. This feature is available with our Premium plans."
+                description="Monitor daily health metrics. This feature is available with Premium plans."
                 icon={HeartPulse}
             />
         )}
@@ -422,3 +426,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+

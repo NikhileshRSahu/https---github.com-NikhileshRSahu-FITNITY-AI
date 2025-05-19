@@ -15,13 +15,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Zap, LogIn, UserPlus, LayoutDashboard, User as UserIcon, LogOut as LogOutIcon, ClipboardList, Bot, Apple as NutritionIcon, Camera, ShoppingCart, PlayCircle, Settings, Lock, Sparkles } from 'lucide-react';
-import { useEffect, useState, useCallback } from 'react';
+import { Zap, LogIn, UserPlus, LayoutDashboard, User as UserIcon, LogOut as LogOutIcon, ClipboardList, Bot, Apple as NutritionIcon, Camera, ShoppingCart, PlayCircle, Settings, Lock, Sparkles, Menu } from 'lucide-react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { useRouter, usePathname } from 'next/navigation';
 import { useCart } from '@/contexts/CartContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
-import { useToast } from '@/hooks/use-toast'; // Ensure this import is present
+import { useToast } from '@/hooks/use-toast'; 
 
 interface NavItem {
   href: string;
@@ -37,11 +37,14 @@ interface NavItem {
 
 export default function MainHeader() {
   const { getItemCount } = useCart();
-  const { isFeatureAccessible, subscriptionTier } = useSubscription(); // Removed 'mounted' from here, use local mounted state
+  const { isFeatureAccessible, mounted: subscriptionMounted } = useSubscription();
+  const { toast } = useToast();
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [cartItemCount, setCartItemCount] = useState(0);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -54,17 +57,13 @@ export default function MainHeader() {
 
   useEffect(() => {
     setMounted(true);
-    checkLoginStatus(); // Initial check
+    checkLoginStatus();
 
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === 'fitnityUserLoggedIn') {
-        checkLoginStatus();
-      }
+      if (event.key === 'fitnityUserLoggedIn') checkLoginStatus();
     };
-    const handleLoginStateChange = () => {
-      checkLoginStatus();
-    };
+    const handleLoginStateChange = () => checkLoginStatus();
     
     if (typeof window !== 'undefined') {
       window.addEventListener('scroll', handleScroll);
@@ -82,20 +81,22 @@ export default function MainHeader() {
   }, [pathname, checkLoginStatus]);
 
   useEffect(() => {
-    if (mounted) { // Only update cart count if component is mounted
+    if (mounted) {
       setCartItemCount(getItemCount());
     }
-  }, [mounted, getItemCount, pathname]); // Rerun when getItemCount, pathname, or mounted status changes
+  }, [mounted, getItemCount, pathname]);
 
 
-  const { toast } = useToast();
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    await new Promise(resolve => setTimeout(resolve, 700)); // Simulate API call
 
-  const handleLogout = () => {
     if (typeof window !== 'undefined' && mounted) {
       localStorage.removeItem('fitnityUserLoggedIn');
       window.dispatchEvent(new Event('loginStateChange'));
     }
     toast({ title: "Logged Out", description: "You have been successfully logged out." });
+    setIsLoggingOut(false);
     router.push('/');
   };
   
@@ -114,14 +115,14 @@ export default function MainHeader() {
   ];
 
   const authenticatedNavItems: NavItem[] = [
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, tooltipText: 'View your progress', showTextAtBreakpoint: 'md', featureKey: 'dashboard', ariaLabel: 'View your progress dashboard'},
-    { href: '/workout-plan', label: 'Workout', icon: ClipboardList, tooltipText: 'Generate workout plans', showTextAtBreakpoint: 'lg', featureKey: 'workoutPlan', ariaLabel: 'Generate workout plans' },
+    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, tooltipText: 'View your progress', showTextAtBreakpoint: 'md', ariaLabel: 'View your progress dashboard'},
+    { href: '/workout-plan', label: 'Workout', icon: ClipboardList, tooltipText: 'Generate workout plans', showTextAtBreakpoint: 'lg', ariaLabel: 'Generate workout plans' },
     { href: '/nutrition-plan', label: 'Nutrition', icon: NutritionIcon, tooltipText: 'Get nutrition advice', showTextAtBreakpoint: 'lg', featureKey: 'nutritionPlan', isPremium: true, ariaLabel: 'Get nutrition advice' },
-    { href: '/videos', label: 'Videos', icon: PlayCircle, tooltipText: 'Watch fitness videos', showTextAtBreakpoint: 'lg', featureKey: 'videos', ariaLabel: 'Watch fitness videos' },
+    { href: '/videos', label: 'Videos', icon: PlayCircle, tooltipText: 'Watch fitness videos', showTextAtBreakpoint: 'lg', ariaLabel: 'Watch fitness videos' },
     { href: '/form-analysis', label: 'Form Check', icon: Camera, tooltipText: 'Analyze your exercise form', showTextAtBreakpoint: 'lg', featureKey: 'formAnalysis', isPremium: true, ariaLabel: 'Analyze your exercise form' },
-    { href: '/ai-coach', label: 'Coach', icon: Bot, tooltipText: 'Chat with your AI Coach', showTextAtBreakpoint: 'lg', featureKey: 'aiCoach', ariaLabel: 'Chat with your AI Coach' },
-    { href: '/shop', label: 'Shop', icon: ShoppingCart, tooltipText: 'Browse fitness gear', showTextAtBreakpoint: 'md', featureKey: 'shop', ariaLabel: 'Browse fitness gear' },
-    { href: '/profile', label: 'Profile', icon: UserIcon, tooltipText: 'Manage your profile', showTextAtBreakpoint: 'md', featureKey: 'profile', ariaLabel: 'Manage your profile' },
+    { href: '/ai-coach', label: 'Coach', icon: Bot, tooltipText: 'Chat with your AI Coach', showTextAtBreakpoint: 'lg', ariaLabel: 'Chat with your AI Coach' },
+    { href: '/shop', label: 'Shop', icon: ShoppingCart, tooltipText: 'Browse fitness gear', showTextAtBreakpoint: 'md', ariaLabel: 'Browse fitness gear' },
+    { href: '/profile', label: 'Profile', icon: UserIcon, tooltipText: 'Manage your profile', showTextAtBreakpoint: 'md', ariaLabel: 'Manage your profile' },
   ];
 
   const itemsToDisplay = mounted && isLoggedIn ? authenticatedNavItems : unauthenticatedNavItems;
@@ -138,7 +139,6 @@ export default function MainHeader() {
               <span className="text-xl md:text-2xl font-bold text-card-foreground">Fitnity AI</span>
             </Link>
             <nav className="flex items-center gap-0.5 md:gap-1">
-              {/* Placeholder for buttons to maintain structure */}
               <div className="h-9 w-10 bg-transparent md:w-20"></div>
               <div className="h-9 w-10 bg-transparent md:w-20"></div>
               <div className="h-9 w-10 bg-transparent md:w-28"></div>
@@ -170,14 +170,15 @@ export default function MainHeader() {
               
               const navButtonContent = (
                 <div className="flex flex-col items-center md:flex-row">
-                    <item.icon className={cn(navIconClasses, showLockIcon && !accessible && "opacity-50") } />
+                    <item.icon className={cn(navIconClasses, showLockIcon && !accessible && "opacity-50", item.isCTA && "text-inherit group-hover:text-inherit group-focus-visible:text-inherit") } />
                     <span className={cn(
                       "hidden text-sm ml-0 md:ml-1.5",
                       item.showTextAtBreakpoint === 'md' && 'md:inline',
                       item.showTextAtBreakpoint === 'lg' && 'lg:inline',
                        (!item.showTextAtBreakpoint && item.label !== 'Login' && item.label !== 'Sign Up' && item.label !== 'Features' && item.label !== 'Pricing') && 'md:inline',
                        (item.label === 'Login' || item.label === 'Sign Up' || item.label === 'Features' || item.label === 'Pricing') && 'md:inline',
-                       showLockIcon && !accessible && "opacity-50"
+                       showLockIcon && !accessible && "opacity-50",
+                       item.isCTA && "text-xs sm:text-sm sm:inline"
                     )}>
                       {item.label}
                     </span>
@@ -195,7 +196,7 @@ export default function MainHeader() {
                 variant: "ghost" as const,
                 className: cn(
                   navLinkBaseClasses, 
-                  "text-card-foreground px-1.5 sm:px-2 py-1 sm:py-1.5 h-auto",
+                  "text-card-foreground px-1.5 sm:px-2 py-1 sm:py-1.5 h-auto hover:border-b-accent",
                    accessible ? navLinkHoverClasses : "cursor-not-allowed",
                    showLockIcon && "opacity-70 hover:opacity-80"
                 ),
@@ -223,8 +224,8 @@ export default function MainHeader() {
                 >
                   <Link href={item.href} className="flex items-center">
                     <item.icon className={cn(navIconClasses, "mr-1 md:mr-1.5 h-4 w-4 sm:h-4.5 sm:w-4.5", "text-inherit group-hover:text-inherit group-focus-visible:text-inherit")} />
-                    <span className="hidden sm:inline">{item.label}</span>
-                     <span className="sm:hidden text-xs">{item.label}</span>
+                    <span className={cn(item.label === 'Sign Up' ? "sm:hidden md:inline" : "hidden sm:inline")}>{item.label}</span>
+                     <span className={cn(item.label === 'Sign Up' ? "inline md:hidden" : "sm:hidden")}>{item.label}</span> {/* Ensure Sign Up text is visible on mobile */}
                   </Link>
                 </Button>
               ) : (
@@ -268,7 +269,7 @@ export default function MainHeader() {
                   <TooltipTrigger asChild>
                     <AlertDialogTrigger asChild>
                       <Button variant="ghost" className={cn(navLinkBaseClasses, 
-                        "text-card-foreground px-1.5 sm:px-2 py-1 sm:py-1.5 h-auto",
+                        "text-card-foreground px-1.5 sm:px-2 py-1 sm:py-1.5 h-auto hover:border-b-accent",
                         navLinkHoverClasses
                         )}
                         aria-label="Logout"
@@ -293,7 +294,8 @@ export default function MainHeader() {
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleLogout} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">
+                    <AlertDialogAction onClick={handleLogout} disabled={isLoggingOut} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">
+                      {isLoggingOut ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                       Logout
                     </AlertDialogAction>
                   </AlertDialogFooter>
@@ -306,5 +308,4 @@ export default function MainHeader() {
     </TooltipProvider>
   );
 }
-
     

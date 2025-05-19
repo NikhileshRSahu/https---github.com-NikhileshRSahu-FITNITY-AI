@@ -13,13 +13,14 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { provideFormAnalysis, type ProvideFormAnalysisInput, type ProvideFormAnalysisOutput } from '@/ai/flows/provide-form-analysis-flow';
-import { Loader2, Camera, AlertTriangle, FileText, Info, ShieldAlert, Sparkles } from 'lucide-react';
+import { Loader2, Camera, AlertTriangle, FileText, Info, ShieldAlert, Sparkles, Lock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useRouter } from 'next/navigation';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 
 const formAnalysisSchema = z.object({
@@ -95,7 +96,7 @@ export default function FormAnalysisPage() {
       }
     };
 
-    if(isFeatureAccessible('formAnalysis')){ // Only request camera if feature is accessible
+    if(isFeatureAccessible('formAnalysis')){
       getCameraPermission();
     }
 
@@ -107,20 +108,6 @@ export default function FormAnalysisPage() {
       }
     };
   }, [toast, pageMounted, subscriptionMounted, isFeatureAccessible]);
-
-  const handleAnalyzeForm = () => {
-     if (!isFeatureAccessible('formAnalysis')) {
-       // This should ideally be handled by the AlertDialog, but good to have a backup
-        toast({
-            title: 'Premium Feature Locked',
-            description: 'Form Analysis requires a Premium or Unlimited subscription. Please upgrade your plan.',
-            variant: 'destructive',
-            action: <Button asChild variant="outline" size="sm"><Link href="/#pricing">View Plans</Link></Button>,
-        });
-        return;
-    }
-    form.handleSubmit(onSubmit)(); // Manually trigger form submission
-  }
 
 
   async function onSubmit(data: FormAnalysisValues) {    
@@ -223,7 +210,7 @@ export default function FormAnalysisPage() {
     );
   }
 
-  if (!isFeatureAccessible('formAnalysis') && pageMounted && subscriptionMounted) {
+  if (!isFeatureAccessible('formAnalysis')) {
     return (
       <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 flex flex-col items-center justify-center text-center min-h-[calc(100vh-10rem)] animate-fade-in-up">
         <Card className="w-full max-w-md glassmorphic-card p-8">
@@ -282,7 +269,7 @@ export default function FormAnalysisPage() {
             </Alert>
           )}
           
-          {hasCameraPermission === null && isFeatureAccessible('formAnalysis') && (
+          {hasCameraPermission === null && (
              <Alert>
               <Loader2 className="h-4 w-4 animate-spin" />
               <AlertTitle>Initializing Camera...</AlertTitle>
@@ -292,118 +279,84 @@ export default function FormAnalysisPage() {
             </Alert>
           )}
 
-          {(hasCameraPermission || !isFeatureAccessible('formAnalysis')) && ( // Show form if permission granted OR if feature is locked (to allow preview)
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                <FormField
-                  control={form.control}
-                  name="exerciseName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-lg font-semibold">Exercise Name</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="e.g., Squat, Push-up, Lunge"
-                          {...field}
-                          disabled={analysisStatus === 'capturing' || analysisStatus === 'analyzing'}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                 <FormField
-                  control={form.control}
-                  name="focusArea"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-lg font-semibold">Focus Area (Optional)</FormLabel>
-                      <Select 
-                        onValueChange={field.onChange} 
-                        defaultValue={field.value}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <FormField
+                control={form.control}
+                name="exerciseName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-lg font-semibold">Exercise Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="e.g., Squat, Push-up, Lunge"
+                        {...field}
                         disabled={analysisStatus === 'capturing' || analysisStatus === 'analyzing'}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select an area to focus on" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {focusAreaOptions.map(opt => (
-                            <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormDescription>Help the AI prioritize a specific part of your form.</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="notes"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-lg font-semibold">Your Notes/Concerns (Optional)</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="e.g., 'Feeling a pinch in my left shoulder', 'Is my squat depth okay?', 'Trying to keep my back straight.'"
-                          {...field}
-                          rows={3}
-                          disabled={analysisStatus === 'capturing' || analysisStatus === 'analyzing'}
-                        />
-                      </FormControl>
-                      <FormDescription>Share any specific issues, questions, or things you are working on (max 300 characters).</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                 {isFeatureAccessible('formAnalysis') ? (
-                    <Button 
-                      type="submit" 
-                      disabled={analysisStatus === 'capturing' || analysisStatus === 'analyzing' || !hasCameraPermission || hasCameraPermission === null} 
-                      size="lg" 
-                      className="w-full text-lg transition-transform duration-300 hover:scale-105 active:scale-95 active:brightness-90
-                                 light:bg-primary light:text-primary-foreground light:hover:bg-gradient-to-r light:hover:from-primary light:hover:to-accent
-                                 dark:bg-accent dark:text-accent-foreground dark:hover:bg-accent/90 dark:cta-glow-pulse"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="focusArea"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-lg font-semibold">Focus Area (Optional)</FormLabel>
+                    <Select 
+                      onValueChange={field.onChange} 
+                      defaultValue={field.value}
+                      disabled={analysisStatus === 'capturing' || analysisStatus === 'analyzing'}
                     >
-                      {(analysisStatus === 'capturing' || analysisStatus === 'analyzing') && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      {getButtonText()}
-                    </Button>
-                 ) : (
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                            <Button 
-                              type="button" // Important: type="button" to prevent form submission
-                              size="lg" 
-                              className="w-full text-lg transition-transform duration-300 hover:scale-105 active:scale-95 active:brightness-90
-                                         light:bg-primary light:text-primary-foreground light:hover:bg-gradient-to-r light:hover:from-primary light:hover:to-accent
-                                         dark:bg-accent dark:text-accent-foreground dark:hover:bg-accent/90 dark:cta-glow-pulse"
-                            >
-                                <Lock className="mr-2 h-5 w-5" /> Analyze My Form (Upgrade to Use)
-                            </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent className="glassmorphic-card">
-                            <AlertDialogHeader>
-                                <AlertDialogTitle className="flex items-center gap-2">
-                                    <Sparkles className="h-6 w-6 text-primary dark:text-yellow-400"/> Premium Feature Locked
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    Real-time Form Analysis requires a Premium or Unlimited subscription. Upgrade your plan to get instant feedback on your exercise form!
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction asChild className="bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90 text-primary-foreground dark:text-accent-foreground">
-                                    <Link href="/#pricing">View Plans</Link>
-                                </AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
-                 )}
-              </form>
-            </Form>
-          )}
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select an area to focus on" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {focusAreaOptions.map(opt => (
+                          <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>Help the AI prioritize a specific part of your form.</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="notes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-lg font-semibold">Your Notes/Concerns (Optional)</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="e.g., 'Feeling a pinch in my left shoulder', 'Is my squat depth okay?', 'Trying to keep my back straight.'"
+                        {...field}
+                        rows={3}
+                        disabled={analysisStatus === 'capturing' || analysisStatus === 'analyzing'}
+                      />
+                    </FormControl>
+                    <FormDescription>Share any specific issues, questions, or things you are working on (max 300 characters).</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button 
+                type="submit" 
+                disabled={analysisStatus === 'capturing' || analysisStatus === 'analyzing' || !hasCameraPermission || hasCameraPermission === null} 
+                size="lg" 
+                className="w-full text-lg transition-transform duration-300 hover:scale-105 active:scale-95 active:brightness-90
+                           light:bg-primary light:text-primary-foreground light:hover:bg-gradient-to-r light:hover:from-primary light:hover:to-accent
+                           dark:bg-accent dark:text-accent-foreground dark:hover:bg-accent/90 dark:cta-glow-pulse"
+              >
+                {(analysisStatus === 'capturing' || analysisStatus === 'analyzing') && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {getButtonText()}
+              </Button>
+            </form>
+          </Form>
         </CardContent>
         <CardFooter>
             <Alert variant="default" className="border-primary/30 dark:border-accent/30 bg-primary/5 dark:bg-accent/5 text-primary/80 dark:text-accent-foreground/80 text-xs">
@@ -416,7 +369,7 @@ export default function FormAnalysisPage() {
         </CardFooter>
       </Card>
 
-      {(analysisStatus === 'done' || analysisStatus === 'error' || analysisStatus === 'analyzing') && isFeatureAccessible('formAnalysis') && (
+      {(analysisStatus === 'done' || analysisStatus === 'error' || analysisStatus === 'analyzing') && (
         <Card className="max-w-2xl mx-auto mt-12 glassmorphic-card result-card-animate">
           <CardHeader>
             <CardTitle className="text-2xl font-bold flex items-center">
@@ -471,3 +424,4 @@ export default function FormAnalysisPage() {
     </div>
   );
 }
+

@@ -13,11 +13,12 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { generateNutritionPlan, type GenerateNutritionPlanInput } from '@/ai/flows/generate-nutrition-plan';
-import { Loader2, Apple as NutritionIcon, AlertTriangle, Smile, Briefcase, Sparkles } from 'lucide-react';
+import { Loader2, Apple as NutritionIcon, AlertTriangle, Smile, Briefcase, Sparkles, Lock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 const nutritionPlanFormSchema = z.object({
   dietaryPreferences: z.string().min(10, { message: 'Dietary preferences must be at least 10 characters.' }),
@@ -40,7 +41,7 @@ export default function NutritionPlanPage() {
   const { toast } = useToast();
   const { isFeatureAccessible, mounted: subscriptionMounted } = useSubscription();
   const [pageMounted, setPageMounted] = useState(false);
-  const router = useRouter(); // Added router
+  const router = useRouter(); 
 
   useEffect(() => {
     setPageMounted(true);
@@ -58,15 +59,6 @@ export default function NutritionPlanPage() {
   });
 
   async function onSubmit(data: NutritionPlanFormValues) {
-    if (!isFeatureAccessible('nutritionPlan')) { 
-      toast({
-        title: 'Premium Feature',
-        description: 'Please upgrade to a Premium or Unlimited plan to generate nutrition plans.',
-        variant: 'destructive',
-        action: <Button asChild variant="outline" size="sm"><Link href="/#pricing">View Plans</Link></Button>
-      });
-      return;
-    }
     setIsLoading(true);
     setNutritionPlanResult(null);
     setError(null);
@@ -124,7 +116,7 @@ export default function NutritionPlanPage() {
     return (
       <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 flex flex-col items-center justify-center text-center min-h-[calc(100vh-10rem)] animate-fade-in-up">
         <Card className="w-full max-w-md glassmorphic-card p-8">
-          <Sparkles className="h-16 w-16 text-yellow-400 mx-auto mb-6" />
+          <Sparkles className="h-16 w-16 text-primary dark:text-yellow-400 mx-auto mb-6" />
           <CardTitle className="text-2xl sm:text-3xl font-bold text-foreground mb-4">Unlock AI Nutrition Planner</CardTitle>
           <CardDescription className="text-foreground/80 mb-8 text-base sm:text-lg">
             Get personalized meal plans and dietary advice tailored to your goals. This is a Premium feature.
@@ -364,3 +356,4 @@ export default function NutritionPlanPage() {
     </div>
   );
 }
+

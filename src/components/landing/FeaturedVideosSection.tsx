@@ -8,11 +8,10 @@ import { videos } from '@/lib/video-data';
 import { ListChecks, Youtube } from 'lucide-react';
 
 export default function FeaturedVideosSection() {
-  // Select first 3-4 videos as featured
   const featuredVideos = videos.slice(0, 3); 
 
   if (featuredVideos.length === 0) {
-    return null; // Don't render the section if there are no videos to feature
+    return null; 
   }
 
   return (
@@ -44,8 +43,9 @@ export default function FeaturedVideosSection() {
           <Button 
             asChild 
             size="lg" 
-            className="bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90 text-primary-foreground dark:text-accent-foreground transition-transform duration-300 hover:scale-105 active:scale-95 cta-glow-pulse text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-3.5
-                       light:hover:bg-gradient-to-r light:hover:from-primary light:hover:to-accent"
+            className="text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-3.5 transition-transform duration-300 hover:scale-105 active:scale-95 active:brightness-90
+                       light:bg-primary light:text-primary-foreground light:hover:bg-gradient-to-r light:hover:from-primary light:hover:to-accent
+                       dark:bg-accent dark:text-accent-foreground dark:hover:bg-accent/90 dark:cta-glow-pulse"
           >
             <Link href="/videos">
               View All Videos <ListChecks className="ml-2 h-4 w-4 sm:h-5 sm:w-5"/>
