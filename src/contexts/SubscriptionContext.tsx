@@ -10,20 +10,29 @@ export interface FeatureAccessConfig {
   workoutPlan: SubscriptionTier[];
   formAnalysis: SubscriptionTier[];
   aiCoach: SubscriptionTier[];
-  dashboard: SubscriptionTier[];
+  dashboard: SubscriptionTier[]; // General dashboard access
+  dashboardWorkoutConsistency: SubscriptionTier[];
+  dashboardHealthSnapshot: SubscriptionTier[];
+  dashboardBodyMeasurements: SubscriptionTier[];
+  dashboardPersonalRecords: SubscriptionTier[];
+  dashboardStreaksAndBadges: SubscriptionTier[];
   nutritionPlan: SubscriptionTier[];
   videos: SubscriptionTier[];
   shop: SubscriptionTier[];
   profile: SubscriptionTier[];
-  // Add other specific features as needed
 }
 
 const featureAccess: FeatureAccessConfig = {
   workoutPlan: ['free', 'premium', 'unlimited'],
-  formAnalysis: ['premium', 'unlimited'], // Premium feature
+  formAnalysis: ['premium', 'unlimited'],
   aiCoach: ['free', 'premium', 'unlimited'],
   dashboard: ['free', 'premium', 'unlimited'],
-  nutritionPlan: ['premium', 'unlimited'], // Premium feature
+  dashboardWorkoutConsistency: ['free', 'premium', 'unlimited'],
+  dashboardHealthSnapshot: ['free', 'premium', 'unlimited'],
+  dashboardBodyMeasurements: ['premium', 'unlimited'],
+  dashboardPersonalRecords: ['premium', 'unlimited'],
+  dashboardStreaksAndBadges: ['premium', 'unlimited'],
+  nutritionPlan: ['premium', 'unlimited'],
   videos: ['free', 'premium', 'unlimited'],
   shop: ['free', 'premium', 'unlimited'],
   profile: ['free', 'premium', 'unlimited'],
@@ -33,15 +42,13 @@ type SubscriptionContextType = {
   subscriptionTier: SubscriptionTier;
   setSubscriptionTier: Dispatch<SetStateAction<SubscriptionTier>>;
   isFeatureAccessible: (featureKey: keyof FeatureAccessConfig) => boolean;
-  mounted: boolean; // Expose mounted state for consumers if needed
+  mounted: boolean;
 };
 
-// Define a default context value that matches the type
 const initialSubscriptionContextValue: SubscriptionContextType = {
   subscriptionTier: 'free',
-  setSubscriptionTier: () => {}, // No-op function for default
+  setSubscriptionTier: () => {},
   isFeatureAccessible: (featureKey: keyof FeatureAccessConfig) => {
-    // Default behavior: only allow features accessible to 'free' tier
     const accessibleTiers = featureAccess[featureKey];
     return accessibleTiers.includes('free');
   },
@@ -61,6 +68,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
       if (storedTier && ['free', 'premium', 'unlimited'].includes(storedTier)) {
         setSubscriptionTier(storedTier);
       } else {
+        // Default to 'free' if nothing stored or invalid
         localStorage.setItem('fitnitySubscriptionTier', 'free');
         setSubscriptionTier('free');
       }
@@ -76,7 +84,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
   const isFeatureAccessible = useCallback(
     (featureKey: keyof FeatureAccessConfig): boolean => {
       if (!mounted) {
-        // Default behavior for SSR or pre-hydration
+        // SSR or pre-hydration: default to 'free' access for the given feature
         const accessibleTiersForFeature = featureAccess[featureKey];
         return accessibleTiersForFeature.includes('free');
       }
@@ -85,7 +93,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
     },
     [subscriptionTier, mounted]
   );
-
+  
   const contextValue = React.useMemo(() => ({
     subscriptionTier,
     setSubscriptionTier,
@@ -102,6 +110,10 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
 
 export const useSubscription = () => {
   const context = useContext(SubscriptionContext);
-  // The default value provided to createContext ensures context is never undefined
+  if (context === undefined) {
+    // This error should ideally not be hit if using the default value in createContext
+    // and ensuring provider wraps the app.
+    throw new Error('useSubscription must be used within a SubscriptionProvider');
+  }
   return context;
 };
