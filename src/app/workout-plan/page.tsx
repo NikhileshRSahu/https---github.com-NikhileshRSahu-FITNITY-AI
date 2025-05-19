@@ -62,7 +62,7 @@ export default function WorkoutPlanPage() {
           description: 'Your personalized workout plan is ready.',
         });
       } else {
-        setError('The AI did not return a workout plan. Please try again with different inputs.');
+        setError('The AI did not return a workout plan. Please try again with different inputs or refine your preferences.');
         toast({
           variant: 'destructive',
           title: 'No Plan Generated',
@@ -114,7 +114,7 @@ export default function WorkoutPlanPage() {
                       />
                     </FormControl>
                     <FormDescription>
-                      Describe what you want to achieve with your fitness routine. (min. 10 characters)
+                      Describe what you want to achieve with your fitness routine (min. 10 characters).
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -128,13 +128,13 @@ export default function WorkoutPlanPage() {
                     <FormLabel className="text-lg font-semibold">Workout Preferences</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="e.g., Prefer 45-min gym sessions with free weights, enjoy outdoor cycling, need low-impact options."
+                        placeholder="e.g., Prefer 45-min gym sessions with free weights, enjoy outdoor cycling, need low-impact options for recovery days."
                         {...field}
                         rows={3}
                       />
                     </FormControl>
                     <FormDescription>
-                      Tell us about your preferred workout styles, duration, location, and any equipment availability. (min. 10 characters)
+                      Tell us about your preferred workout styles, duration, location, and any equipment availability (min. 10 characters).
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -252,7 +252,7 @@ export default function WorkoutPlanPage() {
                 {workoutPlanResult}
               </div>
             )}
-            {!isLoading && !error && !workoutPlanResult && ( 
+            {!isLoading && !error && !workoutPlanResult && !isLoading && ( 
                 <Alert variant="destructive" className="bg-destructive/20 border-destructive/50 text-destructive-foreground">
                     <AlertTriangle className="h-5 w-5 text-destructive" />
                     <AlertTitle>No Plan Available</AlertTitle>

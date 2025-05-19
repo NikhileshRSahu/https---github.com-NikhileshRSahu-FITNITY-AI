@@ -47,13 +47,21 @@ export default function FormAnalysisPage() {
   const { isFeatureAccessible, mounted: subscriptionMounted } = useSubscription();
   const [pageMounted, setPageMounted] = useState(false);
 
+  const form = useForm<FormAnalysisValues>({
+    resolver: zodResolver(formAnalysisSchema),
+    defaultValues: {
+      exerciseName: '',
+      notes: '',
+    },
+  });
+  
   useEffect(() => {
     setPageMounted(true);
   }, []);
 
   useEffect(() => {
     if (!pageMounted || !subscriptionMounted || !isFeatureAccessible('formAnalysis')) {
-      return; // Don't initialize camera if feature not accessible or not mounted
+      return; 
     }
 
     const getCameraPermission = async () => {
@@ -123,7 +131,7 @@ export default function FormAnalysisPage() {
     setAnalysisStatus('capturing');
     setAnalysisResult(null);
     setError(null);
-    setCapturedFrameDataUri(null);
+    setCapturedFrameDataUri(null); // Clear previous frame
 
     const canvas = document.createElement('canvas');
     canvas.width = videoRef.current.videoWidth;
@@ -139,7 +147,7 @@ export default function FormAnalysisPage() {
 
     ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
     const frameDataUri = canvas.toDataURL('image/jpeg'); 
-    setCapturedFrameDataUri(frameDataUri);
+    setCapturedFrameDataUri(frameDataUri); // Set captured frame for display
     setAnalysisStatus('analyzing');
 
     try {
@@ -156,7 +164,7 @@ export default function FormAnalysisPage() {
         toast({ title: 'Analysis Complete!', description: 'Your form analysis is ready.' });
       } else {
         setError('The AI could not provide feedback for this exercise. Please try again or rephrase your input.');
-        setAnalysisResult(null);
+        setAnalysisResult(null); // Ensure result is cleared on incomplete analysis
         setAnalysisStatus('error');
         toast({ variant: 'destructive', title: 'Analysis Incomplete', description: 'The AI could not provide feedback for this exercise.' });
       }

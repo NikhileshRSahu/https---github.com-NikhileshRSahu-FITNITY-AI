@@ -31,16 +31,20 @@ export default function ProductDetailPage() {
       setProduct(foundProduct || null);
 
       if (foundProduct) {
-        const otherProductsInCategory = products.filter(p => p.id !== foundProduct.id && p.category === foundProduct.category);
-        let recommendations = otherProductsInCategory.sort(() => 0.5 - Math.random()).slice(0, 3);
+        let recommendations: Product[] = products
+          .filter(p => p.id !== foundProduct.id && p.category === foundProduct.category)
+          .sort(() => 0.5 - Math.random()); // Shuffle same category products
         
         if (recommendations.length < 3) {
-          const otherRandomProducts = products.filter(p => p.id !== foundProduct.id && p.category !== foundProduct.category)
-                                           .sort(() => 0.5 - Math.random())
-                                           .slice(0, 3 - recommendations.length);
+          const otherRandomProducts = products
+            .filter(p => p.id !== foundProduct.id && p.category !== foundProduct.category)
+            .sort(() => 0.5 - Math.random())
+            .slice(0, 3 - recommendations.length);
           recommendations = [...recommendations, ...otherRandomProducts];
         }
         setRelatedProducts(recommendations.slice(0, 3)); // Ensure max 3
+      } else {
+        setRelatedProducts([]);
       }
     }
   }, [slug]);
@@ -103,8 +107,6 @@ export default function ProductDetailPage() {
   }
 
   if (!product) {
-    // This should ideally be caught by Next.js's notFound() for a better UX
-    // but as a fallback:
     return (
         <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 text-center animate-fade-in-up">
             <h1 className="text-2xl sm:text-3xl font-bold text-destructive mb-4">Product Not Found</h1>
@@ -232,5 +234,3 @@ export default function ProductDetailPage() {
     </div>
   );
 }
-
-    

@@ -56,7 +56,7 @@ export default function NutritionPlanPage() {
   });
 
   async function onSubmit(data: NutritionPlanFormValues) {
-    if (!isFeatureAccessible('nutritionPlan')) { // This check might be redundant due to page-level lock
+    if (!isFeatureAccessible('nutritionPlan')) { 
       toast({
         title: 'Premium Feature',
         description: 'Please upgrade to a Premium or Unlimited plan to generate nutrition plans.',
@@ -85,7 +85,7 @@ export default function NutritionPlanPage() {
           description: 'Your personalized nutrition plan is ready.',
         });
       } else {
-        setError('The AI did not return a nutrition plan. Please try again with different inputs.');
+        setError('The AI did not return a nutrition plan. Please try again with different inputs or refine your preferences.');
         toast({
           variant: 'destructive',
           title: 'No Plan Generated',

@@ -39,7 +39,7 @@ export default function ChatMessage({ message }: ChatMessageProps) {
           isUser
             ? 'bg-accent text-accent-foreground rounded-br-none'
             : message.isError 
-              ? 'bg-destructive/20 text-destructive-foreground rounded-bl-none' // More pronounced error style
+              ? 'bg-destructive/20 text-destructive-foreground rounded-bl-none'
               : 'bg-primary-foreground/20 text-card-foreground rounded-bl-none' 
         )}
       >
