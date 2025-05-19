@@ -17,6 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import { IndianRupee, MapPin, CreditCard, Package, Loader2, AlertTriangle, WalletCards, Milestone } from 'lucide-react';
 import Image from 'next/image';
 import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 
 const shippingSchema = z.object({
   fullName: z.string().min(3, { message: 'Full name must be at least 3 characters.' }),
@@ -34,11 +35,17 @@ const cardPaymentSchema = z.object({
   cardNumber: z.string().length(16, { message: 'Card number must be 16 digits.' }).regex(/^\d{16}$/, { message: 'Enter a valid 16-digit card number.' }),
   expiryDate: z.string().length(5, { message: 'Expiry date must be MM/YY.' }).regex(/^(0[1-9]|1[0-2])\/?([0-9]{2})$/, { message: 'Enter a valid MM/YY expiry date.' }),
   cvv: z.string().min(3, { message: 'CVV must be 3 or 4 digits.' }).max(4).regex(/^\d{3,4}$/, { message: 'Enter a valid CVV (3 or 4 digits).' }),
+  upiId: z.string().optional(), // Make UPI ID optional when card is selected
 });
 
 const upiPaymentSchema = z.object({
   paymentMethod: z.literal('upi'),
   upiId: z.string().min(5, { message: 'UPI ID must be at least 5 characters.' }).regex(/^[a-zA-Z0-9.\-_@]+$/, {message: 'Enter a valid UPI ID (e.g., yourname@bank).' }),
+  // Make card fields optional when UPI is selected
+  cardholderName: z.string().optional(),
+  cardNumber: z.string().optional(),
+  expiryDate: z.string().optional(),
+  cvv: z.string().optional(),
 });
 
 const checkoutSchema = z.intersection(
@@ -96,7 +103,20 @@ export default function CheckoutPage() {
 
   const onSubmit: SubmitHandler<CheckoutFormValues> = async (data) => {
     setIsProcessing(true);
-    console.log('Checkout data (simulated):', data);
+    console.log('Checkout data (simulated):', JSON.stringify(data, null, 2));
+
+    // Clear fields not relevant to the chosen payment method before "sending"
+    let processedData: any = { ...data };
+    if (data.paymentMethod === 'card') {
+      delete processedData.upiId;
+    } else if (data.paymentMethod === 'upi') {
+      delete processedData.cardholderName;
+      delete processedData.cardNumber;
+      delete processedData.expiryDate;
+      delete processedData.cvv;
+    }
+    console.log('Processed data for submission:', JSON.stringify(processedData, null, 2));
+
 
     await new Promise(resolve => setTimeout(resolve, 2000));
 
@@ -135,6 +155,7 @@ export default function CheckoutPage() {
   }
   
   if (getItemCount() === 0 && !isLoadingCart) {
+    // This state should ideally be caught by the useEffect, but as a fallback:
     return (
       <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 flex flex-col items-center justify-center text-center min-h-[calc(100vh-10rem)]">
         <AlertTriangle className="h-16 w-16 sm:h-20 sm:w-20 text-destructive mb-4 sm:mb-6" />
@@ -192,7 +213,7 @@ export default function CheckoutPage() {
                     <FormItem>
                       <FormLabel className="text-sm sm:text-base">Postal Code</FormLabel>
                       <FormControl><Input placeholder="400001" {...field} /></FormControl>
-                      <FormDescription className="text-xs">E.g., 12345 or 123456</FormDescription>
+                      <FormDescription className="text-xs text-card-foreground/70">E.g., 12345 or 123456</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )} />
@@ -215,7 +236,7 @@ export default function CheckoutPage() {
                   <FormItem>
                     <FormLabel className="text-sm sm:text-base">Phone Number</FormLabel>
                     <FormControl><Input type="tel" placeholder="+91 98765 43210" {...field} /></FormControl>
-                    <FormDescription className="text-xs">For delivery updates.</FormDescription>
+                    <FormDescription className="text-xs text-card-foreground/70">For delivery updates.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )} />
@@ -235,26 +256,26 @@ export default function CheckoutPage() {
                   name="paymentMethod"
                   render={({ field }) => (
                     <FormItem className="space-y-2.5">
-                      <FormLabel className="text-sm sm:text-base">Choose Payment Method</FormLabel>
+                      <FormLabel className="text-sm sm:text-base font-medium text-card-foreground">Choose Payment Method</FormLabel>
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                           className="flex flex-col sm:flex-row gap-3 sm:gap-4"
                         >
-                          <FormItem className={`flex items-center space-x-2 p-3 rounded-md bg-background/20 border  flex-1 transition-all duration-200 ${paymentMethod === 'card' ? 'border-accent ring-2 ring-accent shadow-md' : 'border-border/30 hover:border-accent/70'}`}>
+                          <FormItem className={cn("flex items-center space-x-2 p-3 rounded-md bg-background/20 border  flex-1 transition-all duration-200 cursor-pointer", paymentMethod === 'card' ? 'border-accent ring-2 ring-accent shadow-md' : 'border-border/30 hover:border-accent/70')}>
                             <FormControl>
-                              <RadioGroupItem value="card" id="card" />
+                              <RadioGroupItem value="card" id="card-payment" />
                             </FormControl>
-                            <FormLabel htmlFor="card" className="font-normal flex items-center gap-2 cursor-pointer text-sm sm:text-base">
+                            <FormLabel htmlFor="card-payment" className="font-normal flex items-center gap-2 cursor-pointer text-sm sm:text-base text-card-foreground">
                               <WalletCards className="h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Credit/Debit Card
                             </FormLabel>
                           </FormItem>
-                          <FormItem className={`flex items-center space-x-2 p-3 rounded-md bg-background/20 border flex-1 transition-all duration-200 ${paymentMethod === 'upi' ? 'border-accent ring-2 ring-accent shadow-md' : 'border-border/30 hover:border-accent/70'}`}>
+                          <FormItem className={cn("flex items-center space-x-2 p-3 rounded-md bg-background/20 border flex-1 transition-all duration-200 cursor-pointer", paymentMethod === 'upi' ? 'border-accent ring-2 ring-accent shadow-md' : 'border-border/30 hover:border-accent/70')}>
                             <FormControl>
-                              <RadioGroupItem value="upi" id="upi" />
+                              <RadioGroupItem value="upi" id="upi-payment" />
                             </FormControl>
-                            <FormLabel htmlFor="upi" className="font-normal flex items-center gap-2 cursor-pointer text-sm sm:text-base">
+                            <FormLabel htmlFor="upi-payment" className="font-normal flex items-center gap-2 cursor-pointer text-sm sm:text-base text-card-foreground">
                               <Milestone className="h-5 w-5 sm:h-6 sm:w-6 text-accent" /> UPI
                             </FormLabel>
                           </FormItem>
@@ -266,7 +287,7 @@ export default function CheckoutPage() {
                 />
 
                 {paymentMethod === 'card' && (
-                  <>
+                  <div className="space-y-4 sm:space-y-5 pt-2">
                     <FormField name="cardholderName" control={form.control} render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-sm sm:text-base">Cardholder Name</FormLabel>
@@ -284,8 +305,9 @@ export default function CheckoutPage() {
                     <div className="grid sm:grid-cols-2 gap-4 sm:gap-5">
                       <FormField name="expiryDate" control={form.control} render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm sm:text-base">Expiry Date (MM/YY)</FormLabel>
+                          <FormLabel className="text-sm sm:text-base">Expiry Date</FormLabel>
                           <FormControl><Input placeholder="MM/YY" {...field} /></FormControl>
+                           <FormDescription className="text-xs text-card-foreground/70">Enter in MM/YY format.</FormDescription>
                           <FormMessage />
                         </FormItem>
                       )} />
@@ -293,22 +315,25 @@ export default function CheckoutPage() {
                         <FormItem>
                           <FormLabel className="text-sm sm:text-base">CVV</FormLabel>
                           <FormControl><Input placeholder="123" {...field} /></FormControl>
+                          <FormDescription className="text-xs text-card-foreground/70">3 or 4 digit code.</FormDescription>
                           <FormMessage />
                         </FormItem>
                       )} />
                     </div>
-                  </>
+                  </div>
                 )}
 
                 {paymentMethod === 'upi' && (
-                  <FormField name="upiId" control={form.control} render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm sm:text-base">UPI ID</FormLabel>
-                      <FormControl><Input placeholder="yourname@bank" {...field} /></FormControl>
-                      <FormDescription className="text-xs">Enter your UPI ID to receive a payment request.</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
+                  <div className="space-y-4 sm:space-y-5 pt-2">
+                    <FormField name="upiId" control={form.control} render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm sm:text-base">UPI ID</FormLabel>
+                        <FormControl><Input placeholder="yourname@bank" {...field} /></FormControl>
+                        <FormDescription className="text-xs text-card-foreground/70">You'll receive a payment request on your UPI app.</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                  </div>
                 )}
               </CardContent>
             </Card>
