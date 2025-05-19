@@ -10,10 +10,11 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { IndianRupee, MapPin, CreditCard, Package, Loader2, AlertTriangle } from 'lucide-react';
+import { IndianRupee, MapPin, CreditCard, Package, Loader2, AlertTriangle, WalletCards, Milestone } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -28,14 +29,27 @@ const shippingSchema = z.object({
   phone: z.string().min(10, { message: 'Valid phone number is required.' }).regex(/^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/, { message: 'Enter a valid phone number.' }),
 });
 
-const paymentSchema = z.object({
+const cardPaymentSchema = z.object({
+  paymentMethod: z.literal('card'),
   cardholderName: z.string().min(3, { message: 'Cardholder name is required.' }),
   cardNumber: z.string().length(16, { message: 'Card number must be 16 digits.' }).regex(/^\d{16}$/, { message: 'Enter a valid 16-digit card number.' }),
   expiryDate: z.string().length(5, { message: 'Expiry date must be MM/YY.' }).regex(/^(0[1-9]|1[0-2])\/?([0-9]{2})$/, { message: 'Enter a valid MM/YY expiry date.' }),
   cvv: z.string().min(3, { message: 'CVV must be 3 or 4 digits.' }).max(4).regex(/^\d{3,4}$/, { message: 'Enter a valid CVV (3 or 4 digits).' }),
 });
 
-const checkoutSchema = shippingSchema.merge(paymentSchema);
+const upiPaymentSchema = z.object({
+  paymentMethod: z.literal('upi'),
+  upiId: z.string().min(5, { message: 'UPI ID must be at least 5 characters.' }).regex(/^[a-zA-Z0-9.\-_@]+$/, {message: 'Enter a valid UPI ID (e.g., yourname@bank).' }),
+});
+
+const checkoutSchema = z.intersection(
+  shippingSchema,
+  z.discriminatedUnion('paymentMethod', [
+    cardPaymentSchema,
+    upiPaymentSchema,
+  ])
+);
+
 type CheckoutFormValues = z.infer<typeof checkoutSchema>;
 
 export default function CheckoutPage() {
@@ -49,8 +63,23 @@ export default function CheckoutPage() {
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
       country: 'India',
+      paymentMethod: 'card', // Default to card
+      // Initialize other fields to prevent uncontrolled to controlled error
+      fullName: '',
+      addressLine1: '',
+      addressLine2: '',
+      city: '',
+      postalCode: '',
+      phone: '',
+      cardholderName: '',
+      cardNumber: '',
+      expiryDate: '',
+      cvv: '',
+      upiId: '',
     },
   });
+
+  const paymentMethod = form.watch('paymentMethod');
 
   useEffect(() => {
     if (state.items !== undefined) {
@@ -196,41 +225,91 @@ export default function CheckoutPage() {
             <Card className="glassmorphic-card">
               <CardHeader>
                 <CardTitle className="text-xl sm:text-2xl font-semibold flex items-center">
-                  <CreditCard className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Payment Details
+                  <CreditCard className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Payment Method
                 </CardTitle>
                 <CardDescription className="text-xs sm:text-sm text-card-foreground/70">Payment processing is simulated for this demo.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3 sm:space-y-4">
-                <FormField name="cardholderName" control={form.control} render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm sm:text-base">Cardholder Name</FormLabel>
-                    <FormControl><Input placeholder="Aarav Patel" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField name="cardNumber" control={form.control} render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm sm:text-base">Card Number</FormLabel>
-                    <FormControl><Input placeholder="•••• •••• •••• ••••" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
-                  <FormField name="expiryDate" control={form.control} render={({ field }) => (
+                <FormField
+                  control={form.control}
+                  name="paymentMethod"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <FormLabel className="text-sm sm:text-base">Choose Payment Method</FormLabel>
+                      <FormControl>
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          className="flex flex-col sm:flex-row gap-2 sm:gap-4"
+                        >
+                          <FormItem className="flex items-center space-x-2 p-3 rounded-md bg-background/20 border border-border/30 flex-1">
+                            <FormControl>
+                              <RadioGroupItem value="card" id="card" />
+                            </FormControl>
+                            <FormLabel htmlFor="card" className="font-normal flex items-center gap-2 cursor-pointer text-sm sm:text-base">
+                              <WalletCards className="h-4 w-4 sm:h-5 sm:w-5 text-accent" /> Credit/Debit Card
+                            </FormLabel>
+                          </FormItem>
+                          <FormItem className="flex items-center space-x-2 p-3 rounded-md bg-background/20 border border-border/30 flex-1">
+                            <FormControl>
+                              <RadioGroupItem value="upi" id="upi" />
+                            </FormControl>
+                            <FormLabel htmlFor="upi" className="font-normal flex items-center gap-2 cursor-pointer text-sm sm:text-base">
+                              <Milestone className="h-4 w-4 sm:h-5 sm:w-5 text-accent" /> UPI
+                            </FormLabel>
+                          </FormItem>
+                        </RadioGroup>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {paymentMethod === 'card' && (
+                  <>
+                    <FormField name="cardholderName" control={form.control} render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm sm:text-base">Cardholder Name</FormLabel>
+                        <FormControl><Input placeholder="Aarav Patel" {...field} /></FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                    <FormField name="cardNumber" control={form.control} render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm sm:text-base">Card Number</FormLabel>
+                        <FormControl><Input placeholder="•••• •••• •••• ••••" {...field} /></FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                    <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
+                      <FormField name="expiryDate" control={form.control} render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm sm:text-base">Expiry Date (MM/YY)</FormLabel>
+                          <FormControl><Input placeholder="MM/YY" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField name="cvv" control={form.control} render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm sm:text-base">CVV</FormLabel>
+                          <FormControl><Input placeholder="123" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                    </div>
+                  </>
+                )}
+
+                {paymentMethod === 'upi' && (
+                  <FormField name="upiId" control={form.control} render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm sm:text-base">Expiry Date (MM/YY)</FormLabel>
-                      <FormControl><Input placeholder="MM/YY" {...field} /></FormControl>
+                      <FormLabel className="text-sm sm:text-base">UPI ID</FormLabel>
+                      <FormControl><Input placeholder="yourname@bank" {...field} /></FormControl>
+                      <FormDescription className="text-xs">Enter your UPI ID to receive a payment request.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )} />
-                  <FormField name="cvv" control={form.control} render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm sm:text-base">CVV</FormLabel>
-                      <FormControl><Input placeholder="123" {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -294,3 +373,6 @@ export default function CheckoutPage() {
     </div>
   );
 }
+
+
+    
