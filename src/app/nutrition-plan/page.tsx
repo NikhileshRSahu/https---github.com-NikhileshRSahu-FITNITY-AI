@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -13,8 +13,10 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { generateNutritionPlan, type GenerateNutritionPlanInput } from '@/ai/flows/generate-nutrition-plan';
-import { Loader2, Apple as NutritionIcon, AlertTriangle, Smile, Briefcase } from 'lucide-react';
+import { Loader2, Apple as NutritionIcon, AlertTriangle, Smile, Briefcase, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import Link from 'next/link';
 
 const nutritionPlanFormSchema = z.object({
   dietaryPreferences: z.string().min(10, { message: 'Dietary preferences must be at least 10 characters.' }),
@@ -35,6 +37,12 @@ export default function NutritionPlanPage() {
   const [nutritionPlanResult, setNutritionPlanResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const { isFeatureAccessible, mounted: subscriptionMounted } = useSubscription();
+  const [pageMounted, setPageMounted] = useState(false);
+
+  useEffect(() => {
+    setPageMounted(true);
+  }, []);
 
   const form = useForm<NutritionPlanFormValues>({
     resolver: zodResolver(nutritionPlanFormSchema),
@@ -48,6 +56,14 @@ export default function NutritionPlanPage() {
   });
 
   async function onSubmit(data: NutritionPlanFormValues) {
+    if (!isFeatureAccessible('nutritionPlan')) { // This check might be redundant due to page-level lock
+      toast({
+        title: 'Premium Feature',
+        description: 'Please upgrade to a Premium or Unlimited plan to generate nutrition plans.',
+        variant: 'destructive'
+      });
+      return;
+    }
     setIsLoading(true);
     setNutritionPlanResult(null);
     setError(null);
@@ -92,6 +108,31 @@ export default function NutritionPlanPage() {
       setIsLoading(false);
     }
   }
+  
+  if (!pageMounted || !subscriptionMounted) {
+    return (
+      <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 flex items-center justify-center min-h-[calc(100vh-10rem)]">
+        <Loader2 className="h-12 w-12 text-accent animate-spin" />
+      </div>
+    );
+  }
+
+  if (!isFeatureAccessible('nutritionPlan')) {
+    return (
+      <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 flex flex-col items-center justify-center text-center min-h-[calc(100vh-10rem)] animate-fade-in-up">
+        <Card className="w-full max-w-md glassmorphic-card p-8">
+          <Sparkles className="h-16 w-16 text-yellow-400 mx-auto mb-6" />
+          <CardTitle className="text-2xl sm:text-3xl font-bold text-foreground mb-4">Unlock AI Nutrition Planner</CardTitle>
+          <CardDescription className="text-foreground/80 mb-8 text-base sm:text-lg">
+            Get personalized meal plans and dietary advice tailored to your goals. This is a Premium feature.
+          </CardDescription>
+          <Button asChild size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground cta-glow-pulse text-lg active:scale-95">
+            <Link href="/#pricing">View Pricing Plans</Link>
+          </Button>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 animate-fade-in-up">
@@ -121,7 +162,7 @@ export default function NutritionPlanPage() {
                       />
                     </FormControl>
                      <FormDescription>
-                      Describe your food choices, likes, dislikes, and any dietary restrictions. (min. 10 characters)
+                      Describe your food choices, likes, dislikes, and any dietary restrictions (min. 10 characters).
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

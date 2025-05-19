@@ -13,10 +13,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { provideFormAnalysis, type ProvideFormAnalysisInput, type ProvideFormAnalysisOutput } from '@/ai/flows/provide-form-analysis-flow';
-import { Loader2, Camera, AlertTriangle, FileText, Info, ShieldAlert } from 'lucide-react';
+import { Loader2, Camera, AlertTriangle, FileText, Info, ShieldAlert, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
+import Link from 'next/link';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 
 const formAnalysisSchema = z.object({
   exerciseName: z.string().min(3, { message: 'Please enter the exercise name (min. 3 characters).' }),
@@ -42,17 +44,18 @@ export default function FormAnalysisPage() {
   const [capturedFrameDataUri, setCapturedFrameDataUri] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
-
-  const form = useForm<FormAnalysisValues>({
-    resolver: zodResolver(formAnalysisSchema),
-    defaultValues: {
-      exerciseName: '',
-      focusArea: 'overall',
-      notes: '',
-    },
-  });
+  const { isFeatureAccessible, mounted: subscriptionMounted } = useSubscription();
+  const [pageMounted, setPageMounted] = useState(false);
 
   useEffect(() => {
+    setPageMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!pageMounted || !subscriptionMounted || !isFeatureAccessible('formAnalysis')) {
+      return; // Don't initialize camera if feature not accessible or not mounted
+    }
+
     const getCameraPermission = async () => {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         toast({
@@ -89,7 +92,7 @@ export default function FormAnalysisPage() {
         stream.getTracks().forEach(track => track.stop());
       }
     };
-  }, [toast]);
+  }, [toast, pageMounted, subscriptionMounted, isFeatureAccessible]);
 
   async function onSubmit(data: FormAnalysisValues) {
     if (!hasCameraPermission || !videoRef.current || !videoRef.current.srcObject) {
@@ -120,7 +123,7 @@ export default function FormAnalysisPage() {
     setAnalysisStatus('capturing');
     setAnalysisResult(null);
     setError(null);
-    setCapturedFrameDataUri(null); // Clear previous frame
+    setCapturedFrameDataUri(null);
 
     const canvas = document.createElement('canvas');
     canvas.width = videoRef.current.videoWidth;
@@ -136,7 +139,7 @@ export default function FormAnalysisPage() {
 
     ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
     const frameDataUri = canvas.toDataURL('image/jpeg'); 
-    setCapturedFrameDataUri(frameDataUri); // Set captured frame for display
+    setCapturedFrameDataUri(frameDataUri);
     setAnalysisStatus('analyzing');
 
     try {
@@ -153,15 +156,15 @@ export default function FormAnalysisPage() {
         toast({ title: 'Analysis Complete!', description: 'Your form analysis is ready.' });
       } else {
         setError('The AI could not provide feedback for this exercise. Please try again or rephrase your input.');
-        setAnalysisResult(null); // Ensure no old result is shown
-        setAnalysisStatus('error'); // Set to error if no feedback is provided
+        setAnalysisResult(null);
+        setAnalysisStatus('error');
         toast({ variant: 'destructive', title: 'Analysis Incomplete', description: 'The AI could not provide feedback for this exercise.' });
       }
     } catch (err) {
       console.error('Error analyzing form:', err);
       let errorMessage = (err instanceof Error && err.message) ? `Error: ${err.message}` : 'Failed to analyze form due to an unexpected issue. Please try again.';
       setError(errorMessage);
-      setAnalysisResult(null); // Ensure no old result is shown
+      setAnalysisResult(null);
       setAnalysisStatus('error');
       toast({ variant: 'destructive', title: 'Analysis Error', description: errorMessage });
     }
@@ -181,6 +184,32 @@ export default function FormAnalysisPage() {
     { value: 'core_engagement', label: 'Core Engagement' },
     { value: 'foot_placement', label: 'Foot Placement' },
   ];
+
+  if (!pageMounted || !subscriptionMounted) {
+    return (
+      <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 flex items-center justify-center min-h-[calc(100vh-10rem)]">
+        <Loader2 className="h-12 w-12 text-accent animate-spin" />
+      </div>
+    );
+  }
+
+  if (!isFeatureAccessible('formAnalysis')) {
+    return (
+      <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 flex flex-col items-center justify-center text-center min-h-[calc(100vh-10rem)] animate-fade-in-up">
+        <Card className="w-full max-w-md glassmorphic-card p-8">
+          <Sparkles className="h-16 w-16 text-yellow-400 mx-auto mb-6" />
+          <CardTitle className="text-2xl sm:text-3xl font-bold text-foreground mb-4">Unlock Real-Time Form Analysis</CardTitle>
+          <CardDescription className="text-foreground/80 mb-8 text-base sm:text-lg">
+            This premium feature provides instant feedback on your exercise form using your webcam.
+          </CardDescription>
+          <Button asChild size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground cta-glow-pulse text-lg active:scale-95">
+            <Link href="/#pricing">View Pricing Plans</Link>
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-12 md:py-20">

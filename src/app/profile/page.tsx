@@ -21,13 +21,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Moon, Sun, Bell, Globe, ShieldCheck, LogOut as LogOutIcon, Zap, Edit3, Save, XCircle, User as UserIcon, CalendarClock, Settings as SettingsIcon } from 'lucide-react'
+import { Moon, Sun, Bell, Globe, ShieldCheck, LogOut as LogOutIcon, Zap, Edit3, Save, XCircle, User as UserIcon, CalendarClock, Settings as SettingsIcon, Gem } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
+import { useSubscription, type SubscriptionTier } from '@/contexts/SubscriptionContext';
+
 
 export default function ProfilePage() {
   const { theme, setTheme, resolvedTheme } = useTheme()
@@ -36,13 +38,15 @@ export default function ProfilePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const { subscriptionTier, setSubscriptionTier } = useSubscription();
+
 
   const [profileData, setProfileData] = useState({
     fullName: 'Aarav Patel',
     email: 'aarav.patel@example.com',
     fitnessGoal: 'Weight Loss & Endurance Improvement. Target: Run a 10k in under 50 minutes.',
     workoutStyle: 'Home workouts (HIIT, Bodyweight), 3-4 times per week, 30-45 min sessions. Occasional weekend cycling.',
-    fitnessLevel: 'intermediate',
+    fitnessLevel: 'intermediate' as 'beginner' | 'intermediate' | 'advanced',
     preferredLanguage: 'English',
   });
    const [initialProfileData, setInitialProfileData] = useState(profileData);
@@ -64,8 +68,8 @@ export default function ProfilePage() {
     setProfileData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSelectChange = (name: string) => (value: string) => {
-    setProfileData(prev => ({ ...prev, [name]: value }));
+  const handleSelectChange = (name: keyof typeof profileData) => (value: string) => {
+    setProfileData(prev => ({ ...prev, [name]: value as any }));
   };
 
   const handleSaveChanges = () => {
@@ -234,19 +238,19 @@ export default function ProfilePage() {
               </>
             ) : (
               <>
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between p-3 rounded-lg bg-background/10">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between p-3 rounded-lg bg-background/10 hover:bg-background/20 transition-colors">
                     <span className="font-medium text-card-foreground/90 mb-1 sm:mb-0 text-sm sm:text-base">Primary Fitness Goal:</span>
                     <span className="text-card-foreground/80 text-left sm:text-right text-sm sm:text-base">{profileData.fitnessGoal}</span>
                 </div>
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between p-3 rounded-lg bg-background/10">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between p-3 rounded-lg bg-background/10 hover:bg-background/20 transition-colors">
                     <span className="font-medium text-card-foreground/90 mb-1 sm:mb-0 text-sm sm:text-base">Workout Style & Frequency:</span>
                     <span className="text-card-foreground/80 text-left sm:text-right text-sm sm:text-base">{profileData.workoutStyle}</span>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-lg bg-background/10">
+                <div className="flex items-center justify-between p-3 rounded-lg bg-background/10 hover:bg-background/20 transition-colors">
                     <span className="font-medium text-card-foreground/90 text-sm sm:text-base">Current Fitness Level:</span>
                     <span className="text-card-foreground/80 capitalize text-right text-sm sm:text-base">{profileData.fitnessLevel}</span>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-lg bg-background/10">
+                <div className="flex items-center justify-between p-3 rounded-lg bg-background/10 hover:bg-background/20 transition-colors">
                     <span className="font-medium text-card-foreground/90 text-sm sm:text-base">Preferred Language (AI Coach):</span>
                     <span className="text-card-foreground/80 text-right text-sm sm:text-base">{profileData.preferredLanguage}</span>
                 </div>
@@ -254,6 +258,34 @@ export default function ProfilePage() {
             )}
           </CardContent>
         </Card>
+
+        {/* Subscription Simulator Card - NEW */}
+        <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.15s'}}>
+          <CardHeader>
+            <CardTitle className="text-lg sm:text-xl font-bold flex items-center">
+              <Gem className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Subscription Simulator
+            </CardTitle>
+            <CardDescription className="text-xs sm:text-sm">
+              Current Tier: <span className="font-semibold text-accent capitalize">{subscriptionTier}</span>. (For demo purposes only)
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+            {(['free', 'premium', 'unlimited'] as SubscriptionTier[]).map(tier => (
+              <Button
+                key={tier}
+                variant={subscriptionTier === tier ? "default" : "outline"}
+                onClick={() => setSubscriptionTier(tier)}
+                className={cn(
+                  "w-full sm:flex-1 capitalize",
+                  subscriptionTier === tier ? "bg-accent hover:bg-accent/90 text-accent-foreground" : "border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground"
+                )}
+              >
+                Set to {tier}
+              </Button>
+            ))}
+          </CardContent>
+        </Card>
+
 
         <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.2s'}}>
           <CardHeader>
@@ -268,7 +300,7 @@ export default function ProfilePage() {
               {isEditing ? (
                 <Input id="profileFullName" type="text" value={profileData.fullName} onChange={handleInputChange} name="fullName" className="mt-1 bg-background/50 text-card-foreground" />
               ) : (
-                <p className="mt-1 p-3 rounded-md bg-background/20 text-card-foreground/80 border border-transparent text-sm sm:text-base">{profileData.fullName}</p>
+                <p className="mt-1 p-3 rounded-md bg-background/10 text-card-foreground/80 border border-transparent text-sm sm:text-base">{profileData.fullName}</p>
               )}
             </div>
             <div>
@@ -276,7 +308,7 @@ export default function ProfilePage() {
               {isEditing ? (
                 <Input id="profileEmail" type="email" value={profileData.email} onChange={handleInputChange} name="email" className="mt-1 bg-background/50 text-card-foreground" />
               ) : (
-                 <p className="mt-1 p-3 rounded-md bg-background/20 text-card-foreground/80 border border-transparent text-sm sm:text-base">{profileData.email}</p>
+                 <p className="mt-1 p-3 rounded-md bg-background/10 text-card-foreground/80 border border-transparent text-sm sm:text-base">{profileData.email}</p>
               )}
             </div>
              <div className="flex items-center justify-between p-3 rounded-lg bg-background/10 mt-2">
@@ -411,5 +443,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-
-    
