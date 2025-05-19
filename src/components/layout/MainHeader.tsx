@@ -15,8 +15,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Zap, LogIn, UserPlus, LayoutDashboard, User as UserIcon, LogOut as LogOutIcon, ClipboardList, Bot, Apple as NutritionIcon, Camera, ShoppingCart, Settings } from 'lucide-react'; // Added Settings
-import { useEffect, useState } from 'react';
+import { Zap, LogIn, UserPlus, LayoutDashboard, User as UserIcon, LogOut as LogOutIcon, ClipboardList, Bot, Apple as NutritionIcon, Camera, ShoppingCart } from 'lucide-react';
+import { useEffect, useState, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { useRouter, usePathname } from 'next/navigation';
 import { useCart } from '@/contexts/CartContext';
@@ -30,7 +30,7 @@ interface NavItem {
 }
 
 export default function MainHeader() {
-  const { getItemCount } = useCart(); // Destructure getItemCount directly
+  const { getItemCount } = useCart();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -38,57 +38,60 @@ export default function MainHeader() {
   const router = useRouter();
   const pathname = usePathname();
 
-  useEffect(() => {
-    // This effect runs only on the client after mount
+  // Callback to check login status, memoized to prevent re-creation
+  const checkLoginStatus = useCallback(() => {
     if (typeof window !== 'undefined') {
-      setMounted(true);
+      const loggedInStatus = localStorage.getItem('fitnityUserLoggedIn') === 'true';
+      setIsLoggedIn(loggedInStatus);
+    }
+  }, []);
 
-      const handleScroll = () => setIsScrolled(window.scrollY > 20);
-      window.addEventListener('scroll', handleScroll);
+  useEffect(() => {
+    setMounted(true); // Component is now mounted on the client
 
-      const checkLoginStatus = () => {
-        const loggedInStatus = localStorage.getItem('fitnityUserLoggedIn') === 'true';
-        setIsLoggedIn(loggedInStatus);
-      };
-      checkLoginStatus(); 
+    checkLoginStatus(); // Initial check
 
-      const handleStorageChange = (event: StorageEvent) => {
-        if (event.key === 'fitnityUserLoggedIn') {
-          checkLoginStatus();
-        }
-      };
-      window.addEventListener('storage', handleStorageChange);
-      
-      const handleLoginChange = () => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'fitnityUserLoggedIn') {
         checkLoginStatus();
-      };
-      window.addEventListener('loginStateChange', handleLoginChange);
+      }
+    };
+    const handleLoginStateChange = () => {
+      checkLoginStatus();
+    };
 
-      return () => {
+    if (typeof window !== 'undefined') {
+      window.addEventListener('scroll', handleScroll);
+      window.addEventListener('storage', handleStorageChange);
+      window.addEventListener('loginStateChange', handleLoginStateChange);
+    }
+
+    return () => {
+      if (typeof window !== 'undefined') {
         window.removeEventListener('scroll', handleScroll);
         window.removeEventListener('storage', handleStorageChange);
-        window.removeEventListener('loginStateChange', handleLoginChange);
-      };
-    }
-  }, [pathname]); // Only depends on pathname for re-checking login status on route changes
+        window.removeEventListener('loginStateChange', handleLoginStateChange);
+      }
+    };
+  }, [pathname, checkLoginStatus]); // Only re-run if pathname or checkLoginStatus (stable ref) changes
 
-   useEffect(() => {
-    // This effect updates cartItemCount and should only run on the client when `mounted` is true
-    if (mounted) {
+  useEffect(() => {
+    if (mounted) { // Ensure this runs only on client after mount
       setCartItemCount(getItemCount());
     }
-  }, [mounted, getItemCount, pathname]); // Depends on getItemCount reference, which changes when cart state changes
+  }, [mounted, getItemCount, pathname]); // getItemCount reference stability is important here
 
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('fitnityUserLoggedIn');
-      window.dispatchEvent(new Event('loginStateChange')); 
+      window.dispatchEvent(new Event('loginStateChange'));
     }
     router.push('/');
   };
   
   const navLinkBaseClasses = "relative flex items-center justify-center md:justify-start gap-1 px-1.5 py-1.5 md:px-2 md:py-2 rounded-lg text-sm transition-all duration-300 ease-in-out group border-b-2 border-transparent hover:border-accent focus-visible:border-accent";
-  const navLinkHoverClasses = "hover:translate-y-[-2px] hover:text-accent hover:drop-shadow-[0_0_6px_hsl(var(--accent))] focus-visible:text-accent focus-visible:drop-shadow-[0_0_6px_hsl(var(--accent))] hover:bg-transparent focus-visible:bg-accent/10";
+  const navLinkHoverClasses = "hover:translate-y-[-2px] hover:text-accent hover:drop-shadow-[0_0_8px_hsl(var(--accent))] focus-visible:text-accent focus-visible:drop-shadow-[0_0_8px_hsl(var(--accent))] hover:bg-transparent focus-visible:bg-accent/10";
   const navIconClasses = "h-5 w-5 flex-shrink-0 group-hover:text-accent group-focus-visible:text-accent transition-colors duration-300";
 
   const unauthenticatedNavItems: NavItem[] = [
@@ -103,21 +106,23 @@ export default function MainHeader() {
     { href: '/form-analysis', label: 'Form Check', icon: Camera },
     { href: '/ai-coach', label: 'AI Coach', icon: Bot },
     { href: '/shop', label: 'Shop', icon: ShoppingCart },
-    { href: '/profile', label: 'Profile', icon: UserIcon }, // Changed from Settings
+    { href: '/profile', label: 'Profile', icon: UserIcon },
   ];
 
-  if (!mounted && typeof window === 'undefined') { 
+  // Render a minimal header during SSR or before client-side mount
+  if (!mounted) { 
     return (
-       <header className={cn("sticky top-0 z-50 w-full glassmorphic-card transition-all duration-300 ease-in-out h-16 md:h-20", "shadow-xl shadow-accent/5 dark:shadow-accent/10")}>
+       <header className={cn("sticky top-0 z-50 w-full glassmorphic-card transition-all duration-300 ease-in-out h-20", "shadow-xl shadow-accent/5 dark:shadow-accent/10")}>
          <div className={cn("container mx-auto flex items-center justify-between px-4 md:px-6 transition-all duration-300 ease-in-out h-full")}>
-            <Link href="/" className="flex items-center gap-2 logo-pulse" prefetch={false}>
+            <Link href="/" className="flex items-center gap-2 logo-pulse flex-shrink-0" prefetch={false}>
               <Zap className="h-7 w-7 md:h-8 md:w-8 text-accent" />
               <span className="text-xl md:text-2xl font-bold text-card-foreground">Fitnity AI</span>
             </Link>
-            <div className="flex items-center gap-1 md:gap-2">
-              <div className="h-8 w-20 bg-muted/30 rounded-md animate-pulse"></div>
-              <div className="h-8 w-24 bg-muted/30 rounded-md animate-pulse"></div>
-            </div>
+            <nav className="flex items-center gap-0.5 md:gap-1">
+              {/* Placeholder for buttons to maintain layout consistency if needed */}
+              <div className="h-9 w-20 bg-muted/20 rounded-md"></div>
+              <div className="h-9 w-28 bg-muted/20 rounded-md"></div>
+            </nav>
          </div>
        </header>
     );
@@ -148,15 +153,14 @@ export default function MainHeader() {
                 <Button
                   key={item.href}
                   asChild
-                  variant="default"
                   size="sm"
                   className={cn(
-                    "ml-1 md:ml-2 px-3 py-2 md:px-4 md:py-2 rounded-lg shadow-md transition-all duration-300 ease-in-out text-xs sm:text-sm text-accent-foreground active:scale-95",
+                    "ml-1 md:ml-2 px-3 py-2 md:px-4 md:py-2.5 rounded-lg shadow-md transition-all duration-300 ease-in-out text-xs sm:text-sm text-accent-foreground active:scale-95 h-auto",
                     "bg-gradient-to-r from-[hsl(var(--accent)_/_0.9)] via-[hsl(var(--primary)_/_0.9)] to-[hsl(var(--accent)_/_0.9)] hover:shadow-[0_0_15px_3px_hsl(var(--accent)_/_0.7)] hover:scale-105 cta-glow-pulse"
                   )}
                 >
                   <Link href={item.href} className="flex items-center">
-                    <item.icon className={cn(navIconClasses, "mr-1 md:mr-1.5 h-4 w-4 sm:h-5 sm:w-5", "text-accent-foreground group-hover:text-accent-foreground group-focus-visible:text-accent-foreground")} />
+                    <item.icon className={cn(navIconClasses, "mr-1 md:mr-1.5 h-4 w-4 sm:h-4.5 sm:w-4.5", "text-accent-foreground group-hover:text-accent-foreground group-focus-visible:text-accent-foreground")} />
                     <span className="hidden sm:inline">{item.label === 'Get Started' ? 'Sign Up' : item.label}</span>
                      <span className="sm:hidden text-xs">{item.label === 'Get Started' ? 'Sign Up' : (item.label === 'Login' ? 'Login' : item.label)}</span>
                   </Link>
@@ -164,13 +168,13 @@ export default function MainHeader() {
               ) : (
                 <Tooltip key={item.href}>
                   <TooltipTrigger asChild>
-                    <Button asChild variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground px-1 sm:px-2 hover:border-b-accent")}>
+                    <Button asChild variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground px-1.5 sm:px-2 py-1 sm:py-1.5 hover:border-b-accent h-auto")}>
                       <Link href={item.href} className="flex flex-col items-center md:flex-row">
-                        <item.icon className={cn(navIconClasses, "text-card-foreground group-hover:text-accent group-focus-visible:text-accent h-4 w-4 sm:h-5 sm:w-5" )} />
+                        <item.icon className={cn(navIconClasses, "text-card-foreground group-hover:text-accent group-focus-visible:text-accent h-4.5 w-4.5 sm:h-5 sm:w-5" )} />
                         <span className="hidden md:inline text-xs sm:text-sm ml-0 md:ml-1.5">{item.label}</span>
                         {item.label === 'AI Coach' && isLoggedIn && <span className="glowing-orb ml-0.5 md:ml-1.5 hidden md:inline-block"></span>}
                         {item.label === 'Shop' && isLoggedIn && cartItemCount > 0 && (
-                          <span className="absolute top-0 right-0 -mt-1 -mr-1 md:mt-0 md:mr-0 flex h-3 w-3 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
+                          <span className="absolute top-0 right-0 -mt-1 -mr-0.5 md:mt-0 md:mr-0 flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
                             {cartItemCount > 9 ? '9+' : cartItemCount}
                           </span>
                         )}
@@ -188,8 +192,8 @@ export default function MainHeader() {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <AlertDialogTrigger asChild>
-                      <Button variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground px-1 sm:px-2 hover:border-b-accent")}>
-                        <LogOutIcon className={cn(navIconClasses, "text-card-foreground group-hover:text-accent group-focus-visible:text-accent h-4 w-4 sm:h-5 sm:w-5")} />
+                      <Button variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground px-1.5 sm:px-2 py-1 sm:py-1.5 hover:border-b-accent h-auto")}>
+                        <LogOutIcon className={cn(navIconClasses, "text-card-foreground group-hover:text-accent group-focus-visible:text-accent h-4.5 w-4.5 sm:h-5 sm:w-5")} />
                         <span className="hidden md:inline text-xs sm:text-sm ml-0 md:ml-1.5">Logout</span>
                       </Button>
                     </AlertDialogTrigger>
@@ -220,3 +224,5 @@ export default function MainHeader() {
     </TooltipProvider>
   );
 }
+
+    

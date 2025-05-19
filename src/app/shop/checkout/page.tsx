@@ -16,7 +16,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { IndianRupee, MapPin, CreditCard, Package, Loader2, AlertTriangle, WalletCards, Milestone } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const shippingSchema = z.object({
@@ -63,8 +62,7 @@ export default function CheckoutPage() {
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
       country: 'India',
-      paymentMethod: 'card', // Default to card
-      // Initialize other fields to prevent uncontrolled to controlled error
+      paymentMethod: 'card',
       fullName: '',
       addressLine1: '',
       addressLine2: '',
@@ -149,7 +147,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-8 sm:py-12 md:py-20 animate-fade-in-up">
-      <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-8 sm:mb-10 text-center">Checkout</h1>
+      <h1 className="text-3xl sm:text-4xl md:text-4xl font-bold text-foreground mb-8 sm:mb-10 text-center">Checkout</h1>
       
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="grid md:grid-cols-3 gap-6 md:gap-8 lg:gap-12 items-start">
@@ -157,10 +155,10 @@ export default function CheckoutPage() {
             <Card className="glassmorphic-card">
               <CardHeader>
                 <CardTitle className="text-xl sm:text-2xl font-semibold flex items-center">
-                  <MapPin className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Shipping Address
+                  <MapPin className="mr-2 sm:mr-3 h-6 w-6 sm:h-7 sm:w-7 text-accent" /> Shipping Address
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3 sm:space-y-4">
+              <CardContent className="space-y-4 sm:space-y-5">
                 <FormField name="fullName" control={form.control} render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm sm:text-base">Full Name</FormLabel>
@@ -182,7 +180,7 @@ export default function CheckoutPage() {
                     <FormMessage />
                   </FormItem>
                 )} />
-                <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
+                <div className="grid sm:grid-cols-2 gap-4 sm:gap-5">
                   <FormField name="city" control={form.control} render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm sm:text-base">City</FormLabel>
@@ -194,6 +192,7 @@ export default function CheckoutPage() {
                     <FormItem>
                       <FormLabel className="text-sm sm:text-base">Postal Code</FormLabel>
                       <FormControl><Input placeholder="400001" {...field} /></FormControl>
+                      <FormDescription className="text-xs">E.g., 12345 or 123456</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )} />
@@ -216,6 +215,7 @@ export default function CheckoutPage() {
                   <FormItem>
                     <FormLabel className="text-sm sm:text-base">Phone Number</FormLabel>
                     <FormControl><Input type="tel" placeholder="+91 98765 43210" {...field} /></FormControl>
+                    <FormDescription className="text-xs">For delivery updates.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )} />
@@ -225,37 +225,37 @@ export default function CheckoutPage() {
             <Card className="glassmorphic-card">
               <CardHeader>
                 <CardTitle className="text-xl sm:text-2xl font-semibold flex items-center">
-                  <CreditCard className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Payment Method
+                  <CreditCard className="mr-2 sm:mr-3 h-6 w-6 sm:h-7 sm:w-7 text-accent" /> Payment Method
                 </CardTitle>
                 <CardDescription className="text-xs sm:text-sm text-card-foreground/70">Payment processing is simulated for this demo.</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-3 sm:space-y-4">
+              <CardContent className="space-y-4 sm:space-y-5">
                 <FormField
                   control={form.control}
                   name="paymentMethod"
                   render={({ field }) => (
-                    <FormItem className="space-y-2">
+                    <FormItem className="space-y-2.5">
                       <FormLabel className="text-sm sm:text-base">Choose Payment Method</FormLabel>
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
                           defaultValue={field.value}
-                          className="flex flex-col sm:flex-row gap-2 sm:gap-4"
+                          className="flex flex-col sm:flex-row gap-3 sm:gap-4"
                         >
-                          <FormItem className="flex items-center space-x-2 p-3 rounded-md bg-background/20 border border-border/30 flex-1">
+                          <FormItem className={`flex items-center space-x-2 p-3 rounded-md bg-background/20 border  flex-1 transition-all duration-200 ${paymentMethod === 'card' ? 'border-accent ring-2 ring-accent shadow-md' : 'border-border/30 hover:border-accent/70'}`}>
                             <FormControl>
                               <RadioGroupItem value="card" id="card" />
                             </FormControl>
                             <FormLabel htmlFor="card" className="font-normal flex items-center gap-2 cursor-pointer text-sm sm:text-base">
-                              <WalletCards className="h-4 w-4 sm:h-5 sm:w-5 text-accent" /> Credit/Debit Card
+                              <WalletCards className="h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Credit/Debit Card
                             </FormLabel>
                           </FormItem>
-                          <FormItem className="flex items-center space-x-2 p-3 rounded-md bg-background/20 border border-border/30 flex-1">
+                          <FormItem className={`flex items-center space-x-2 p-3 rounded-md bg-background/20 border flex-1 transition-all duration-200 ${paymentMethod === 'upi' ? 'border-accent ring-2 ring-accent shadow-md' : 'border-border/30 hover:border-accent/70'}`}>
                             <FormControl>
                               <RadioGroupItem value="upi" id="upi" />
                             </FormControl>
                             <FormLabel htmlFor="upi" className="font-normal flex items-center gap-2 cursor-pointer text-sm sm:text-base">
-                              <Milestone className="h-4 w-4 sm:h-5 sm:w-5 text-accent" /> UPI
+                              <Milestone className="h-5 w-5 sm:h-6 sm:w-6 text-accent" /> UPI
                             </FormLabel>
                           </FormItem>
                         </RadioGroup>
@@ -281,7 +281,7 @@ export default function CheckoutPage() {
                         <FormMessage />
                       </FormItem>
                     )} />
-                    <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div className="grid sm:grid-cols-2 gap-4 sm:gap-5">
                       <FormField name="expiryDate" control={form.control} render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-sm sm:text-base">Expiry Date (MM/YY)</FormLabel>
@@ -318,51 +318,51 @@ export default function CheckoutPage() {
             <Card className="glassmorphic-card p-4 sm:p-6 sticky top-20 md:top-24">
               <CardHeader className="p-0 mb-4 sm:mb-6">
                 <CardTitle className="text-xl sm:text-2xl font-semibold flex items-center">
-                  <Package className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Order Summary
+                  <Package className="mr-2 sm:mr-3 h-6 w-6 sm:h-7 sm:w-7 text-accent" /> Order Summary
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0 space-y-3 sm:space-y-4">
                 {state.items.map(item => (
-                  <div key={item.id} className="flex justify-between items-center gap-2 sm:gap-3 border-b border-border/20 pb-2 sm:pb-3 last:border-b-0">
-                    <div className="relative h-12 w-12 sm:h-14 sm:w-14 rounded-md overflow-hidden flex-shrink-0 border border-border/20">
+                  <div key={item.id} className="flex justify-between items-center gap-2 sm:gap-3 border-b border-border/20 pb-2.5 sm:pb-3 last:border-b-0">
+                    <div className="relative h-14 w-14 sm:h-16 sm:w-16 rounded-md overflow-hidden flex-shrink-0 border border-border/20">
                         <Image src={item.imagePlaceholder} alt={item.name} fill className="object-cover" data-ai-hint={item.aiHint} />
                     </div>
                     <div className="flex-grow">
-                      <p className="text-xs sm:text-sm font-medium text-card-foreground truncate">{item.name}</p>
+                      <p className="text-sm sm:text-base font-medium text-card-foreground truncate pr-2">{item.name}</p>
                       <p className="text-xs text-card-foreground/70">Qty: {item.quantity}</p>
                     </div>
-                    <p className="text-xs sm:text-sm font-semibold text-card-foreground">
-                      <IndianRupee className="inline h-3 w-3 sm:h-3.5 sm:w-3.5 -mt-0.5" />
+                    <p className="text-sm sm:text-base font-semibold text-card-foreground">
+                      <IndianRupee className="inline h-3.5 w-3.5 sm:h-4 sm:w-4 -mt-0.5" />
                       {(item.priceINR * item.quantity).toLocaleString()}
                     </p>
                   </div>
                 ))}
                 <div className="pt-3 sm:pt-4 space-y-1.5 sm:space-y-2 text-sm sm:text-base">
                   <div className="flex justify-between text-card-foreground/80">
-                    <span>Subtotal</span>
-                    <span><IndianRupee className="inline h-3.5 w-3.5 sm:h-4 sm:w-4 -mt-0.5" />{getCartTotal().toLocaleString()}</span>
+                    <span className="font-medium">Subtotal</span>
+                    <span className="font-semibold"><IndianRupee className="inline h-3.5 w-3.5 sm:h-4 sm:w-4 -mt-0.5" />{getCartTotal().toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between text-card-foreground/80">
-                    <span>Shipping</span>
-                    <span className="text-green-500 font-medium">FREE</span>
+                    <span className="font-medium">Shipping</span>
+                    <span className="text-green-400 font-semibold">FREE</span>
                   </div>
                   <div className="flex justify-between text-card-foreground/80">
-                    <span>Estimated Taxes</span>
+                    <span className="font-medium">Estimated Taxes</span>
                     <span className="text-card-foreground/70">Calculated at next step</span>
                   </div>
-                  <hr className="my-1.5 sm:my-2 border-border/30" />
+                  <hr className="my-2 sm:my-3 border-border/30" />
                   <div className="flex justify-between text-lg sm:text-xl font-bold text-card-foreground">
                     <span>Total</span>
-                    <span><IndianRupee className="inline h-4 w-4 sm:h-4 sm:w-4 -mt-0.5" />{getCartTotal().toLocaleString()}</span>
+                    <span><IndianRupee className="inline h-4 w-4 sm:h-5 sm:w-5 -mt-0.5" />{getCartTotal().toLocaleString()}</span>
                   </div>
                 </div>
                 <Button 
                   type="submit" 
                   size="lg" 
-                  className="w-full mt-4 sm:mt-6 bg-accent hover:bg-accent/90 text-accent-foreground text-base sm:text-lg cta-glow-pulse active:scale-95 px-6 py-3"
+                  className="w-full mt-5 sm:mt-6 bg-accent hover:bg-accent/90 text-accent-foreground text-lg sm:text-xl cta-glow-pulse active:scale-95 px-6 py-3 sm:h-14"
                   disabled={isProcessing || (!form.formState.isValid && form.formState.isSubmitted)}
                 >
-                  {isProcessing ? <Loader2 className="mr-2 h-4 w-4 sm:h-5 sm:w-5 animate-spin" /> : null}
+                  {isProcessing ? <Loader2 className="mr-2 h-5 w-5 sm:h-6 sm:w-6 animate-spin" /> : null}
                   {isProcessing ? 'Processing...' : 'Place Order'}
                 </Button>
               </CardContent>
@@ -373,6 +373,5 @@ export default function CheckoutPage() {
     </div>
   );
 }
-
 
     
