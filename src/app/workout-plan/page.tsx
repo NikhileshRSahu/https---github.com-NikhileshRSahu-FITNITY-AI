@@ -91,7 +91,7 @@ export default function WorkoutPlanPage() {
       <Card className="max-w-2xl mx-auto glassmorphic-card">
         <CardHeader>
           <CardTitle className="text-3xl font-bold flex items-center">
-            <ClipboardList className="mr-3 h-8 w-8 text-accent" /> Generate Your Workout Plan
+            <ClipboardList className="mr-3 h-8 w-8 text-primary dark:text-accent" /> Generate Your Workout Plan
           </CardTitle>
           <CardDescription className="text-base sm:text-lg">
             Fill in your details below, and our AI will create a personalized workout plan for you. The more details you provide, the better the plan!
@@ -170,7 +170,7 @@ export default function WorkoutPlanPage() {
                 name="mood"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-lg font-semibold flex items-center"><Smile className="mr-2 h-5 w-5 text-accent/80"/> Current Mood (Optional)</FormLabel>
+                    <FormLabel className="text-lg font-semibold flex items-center"><Smile className="mr-2 h-5 w-5 text-primary dark:text-accent/80"/> Current Mood (Optional)</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -196,7 +196,7 @@ export default function WorkoutPlanPage() {
                 name="lifestyleNotes"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-lg font-semibold flex items-center"><Briefcase className="mr-2 h-5 w-5 text-accent/80"/> Lifestyle Notes (Optional)</FormLabel>
+                    <FormLabel className="text-lg font-semibold flex items-center"><Briefcase className="mr-2 h-5 w-5 text-primary dark:text-accent/80"/> Lifestyle Notes (Optional)</FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="e.g., Desk job with long sitting hours, limited time on weekdays, prefer outdoor workouts on weekends."
@@ -215,7 +215,9 @@ export default function WorkoutPlanPage() {
                 type="submit" 
                 disabled={isLoading} 
                 size="lg" 
-                className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg transition-transform duration-300 hover:scale-105 cta-glow-pulse active:scale-95"
+                className="w-full text-lg transition-transform duration-300 hover:scale-105 active:scale-95 active:brightness-90
+                           light:bg-primary light:text-primary-foreground light:hover:bg-gradient-to-r light:hover:from-primary light:hover:to-accent
+                           dark:bg-accent dark:text-accent-foreground dark:hover:bg-accent/90 dark:cta-glow-pulse"
               >
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Generate Plan
@@ -235,7 +237,7 @@ export default function WorkoutPlanPage() {
           <CardContent>
              {isLoading && (
               <div className="flex flex-col items-center justify-center p-8 text-card-foreground">
-                <Loader2 className="h-12 w-12 text-accent animate-spin mb-4" />
+                <Loader2 className="h-12 w-12 text-primary dark:text-accent animate-spin mb-4" />
                 <p className="text-lg">AI is crafting your personalized plan...</p>
                 <p className="text-sm text-card-foreground/70">This might take a few moments.</p>
               </div>

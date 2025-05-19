@@ -17,6 +17,7 @@ import { Loader2, Apple as NutritionIcon, AlertTriangle, Smile, Briefcase, Spark
 import { useToast } from '@/hooks/use-toast';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const nutritionPlanFormSchema = z.object({
   dietaryPreferences: z.string().min(10, { message: 'Dietary preferences must be at least 10 characters.' }),
@@ -39,6 +40,7 @@ export default function NutritionPlanPage() {
   const { toast } = useToast();
   const { isFeatureAccessible, mounted: subscriptionMounted } = useSubscription();
   const [pageMounted, setPageMounted] = useState(false);
+  const router = useRouter(); // Added router
 
   useEffect(() => {
     setPageMounted(true);
@@ -113,7 +115,7 @@ export default function NutritionPlanPage() {
   if (!pageMounted || !subscriptionMounted) {
     return (
       <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 flex items-center justify-center min-h-[calc(100vh-10rem)]">
-        <Loader2 className="h-12 w-12 text-accent animate-spin" />
+        <Loader2 className="h-12 w-12 text-primary dark:text-accent animate-spin" />
       </div>
     );
   }
@@ -129,19 +131,10 @@ export default function NutritionPlanPage() {
           </CardDescription>
            <Button 
             size="lg" 
-            className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg transition-transform duration-300 hover:scale-105 cta-glow-pulse active:scale-95"
-            onClick={() => {
-                if (form.formState.isSubmitted && !form.formState.isValid) {
-                     // If form was submitted and is invalid, trigger validation for all fields to show errors
-                    form.trigger();
-                }
-                // Always open upgrade dialog if feature not accessible
-                // This part is handled by the AlertDialog logic in FeaturesSnapshotSection and MainHeader if linking from there
-                // For direct page access, the feature lock above handles it.
-                // If on the page and clicking submit when locked, the onSubmit already handles it.
-                // This button is primarily for linking to pricing when the page itself is locked.
-                router.push('/#pricing');
-            }}
+            className="w-full text-lg transition-transform duration-300 hover:scale-105 active:scale-95 active:brightness-90
+                       light:bg-primary light:text-primary-foreground light:hover:bg-gradient-to-r light:hover:from-primary light:hover:to-accent
+                       dark:bg-accent dark:text-accent-foreground dark:hover:bg-accent/90 dark:cta-glow-pulse"
+            onClick={() => router.push('/#pricing')}
           >
             View Pricing Plans
           </Button>
@@ -156,7 +149,7 @@ export default function NutritionPlanPage() {
       <Card className="max-w-2xl mx-auto glassmorphic-card">
         <CardHeader>
           <CardTitle className="text-3xl font-bold flex items-center">
-            <NutritionIcon className="mr-3 h-8 w-8 text-accent" /> AI Nutrition Planner
+            <NutritionIcon className="mr-3 h-8 w-8 text-primary dark:text-accent" /> AI Nutrition Planner
           </CardTitle>
           <CardDescription className="text-base sm:text-lg">
             Tell us about your dietary needs and goals, and our AI will create a personalized nutrition plan for you. The more details you provide, the better the plan!
@@ -272,7 +265,7 @@ export default function NutritionPlanPage() {
                 name="currentMood"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-lg font-semibold flex items-center"><Smile className="mr-2 h-5 w-5 text-accent/80"/> Current Mood (Optional)</FormLabel>
+                    <FormLabel className="text-lg font-semibold flex items-center"><Smile className="mr-2 h-5 w-5 text-primary dark:text-accent/80"/> Current Mood (Optional)</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -298,7 +291,7 @@ export default function NutritionPlanPage() {
                 name="lifestyleContext"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-lg font-semibold flex items-center"><Briefcase className="mr-2 h-5 w-5 text-accent/80"/> Lifestyle Context (Optional)</FormLabel>
+                    <FormLabel className="text-lg font-semibold flex items-center"><Briefcase className="mr-2 h-5 w-5 text-primary dark:text-accent/80"/> Lifestyle Context (Optional)</FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="e.g., Busy work schedule with limited cooking time, often eat out for lunch, work night shifts."
@@ -317,7 +310,9 @@ export default function NutritionPlanPage() {
                 type="submit" 
                 disabled={isLoading} 
                 size="lg" 
-                className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg transition-transform duration-300 hover:scale-105 cta-glow-pulse active:scale-95"
+                className="w-full text-lg transition-transform duration-300 hover:scale-105 active:scale-95 active:brightness-90
+                           light:bg-primary light:text-primary-foreground light:hover:bg-gradient-to-r light:hover:from-primary light:hover:to-accent
+                           dark:bg-accent dark:text-accent-foreground dark:hover:bg-accent/90 dark:cta-glow-pulse"
               >
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Generate Nutrition Plan
@@ -337,7 +332,7 @@ export default function NutritionPlanPage() {
           <CardContent>
              {isLoading && (
               <div className="flex flex-col items-center justify-center p-8 text-card-foreground">
-                <Loader2 className="h-12 w-12 text-accent animate-spin mb-4" />
+                <Loader2 className="h-12 w-12 text-primary dark:text-accent animate-spin mb-4" />
                 <p className="text-lg">AI is preparing your personalized nutrition advice...</p>
                 <p className="text-sm text-card-foreground/70">This might take a few moments.</p>
               </div>

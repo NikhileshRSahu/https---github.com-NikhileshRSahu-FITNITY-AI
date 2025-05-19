@@ -93,7 +93,7 @@ export default function MainHeader() {
     router.push('/');
   };
   
-  const navLinkBaseClasses = "relative flex items-center justify-center md:justify-start gap-1 px-1 py-1.5 md:px-2 md:py-2 rounded-lg text-sm transition-all duration-300 ease-in-out group border-b-2 border-transparent hover:border-accent focus-visible:border-accent";
+  const navLinkBaseClasses = "relative flex items-center justify-center md:justify-start gap-1 px-1 py-1.5 md:px-2 md:py-2 rounded-lg text-sm transition-all duration-300 ease-in-out group border-b-2 border-transparent focus-visible:border-accent";
   const navLinkHoverClasses = "hover:translate-y-[-2px] hover:text-accent hover:drop-shadow-[0_0_8px_hsl(var(--accent))] focus-visible:text-accent focus-visible:drop-shadow-[0_0_8px_hsl(var(--accent))] hover:bg-transparent focus-visible:bg-accent/10";
   const navIconClasses = "h-4 w-4 sm:h-4.5 sm:w-4.5 md:h-5 md:w-5 flex-shrink-0 group-hover:text-accent group-focus-visible:text-accent transition-colors duration-300";
 
@@ -121,16 +121,15 @@ export default function MainHeader() {
   const baseHeaderClasses = "sticky top-0 z-50 w-full glassmorphic-card transition-all duration-300 ease-in-out";
   const baseContainerClasses = "container mx-auto flex items-center justify-between transition-all duration-300 ease-in-out h-full";
 
-  if (!headerMounted || !subscriptionMounted) { // Wait for both header and subscription context to be client-mounted
+  if (!headerMounted || !subscriptionMounted) { 
     return (
-       <header className={cn(baseHeaderClasses, "h-20 dark:shadow-accent/5")}>
+       <header className={cn(baseHeaderClasses, "h-20 shadow-none dark:shadow-none light:border-b light:border-border/30")}>
          <div className={cn(baseContainerClasses, "px-2 sm:px-4 md:px-6")}>
-            <Link href="/" className="flex items-center gap-2 logo-pulse flex-shrink-0" prefetch={false}>
-              <Zap className="h-7 w-7 md:h-8 md:w-8 text-accent" />
-              <span className="text-xl md:text-2xl font-bold text-card-foreground">Fitnity AI</span>
+            <Link href="/" className="flex items-center gap-2 flex-shrink-0" prefetch={false}>
+              <Zap className="h-7 w-7 md:h-8 md:w-8 text-primary dark:text-accent" />
+              <span className="text-xl md:text-2xl font-bold text-foreground">Fitnity AI</span>
             </Link>
             <nav className="flex items-center gap-0.5 md:gap-1">
-              {/* Minimal placeholders */}
               <div className="h-9 w-10 bg-muted/10 rounded-md md:w-20"></div>
               <div className="h-9 w-10 bg-muted/10 rounded-md md:w-20"></div>
               <div className="h-9 w-10 bg-muted/10 rounded-md md:w-28"></div>
@@ -145,13 +144,15 @@ export default function MainHeader() {
       <header
         className={cn(
           baseHeaderClasses,
-          isScrolled ? "h-16 shadow-xl shadow-accent/5 dark:shadow-accent/10" : "h-20 dark:shadow-accent/5"
+          isScrolled 
+            ? "h-16 shadow-lg dark:shadow-accent/10 light:shadow-md light:border-b light:border-border/30" 
+            : "h-20 shadow-none dark:shadow-none light:border-b light:border-transparent"
         )}
       >
         <div className={cn(baseContainerClasses, "px-2 sm:px-4 md:px-3 lg:px-6")}>
-          <Link href="/" className="flex items-center gap-2 logo-pulse flex-shrink-0" prefetch={false}>
-            <Zap className="h-7 w-7 md:h-8 md:w-8 text-accent" />
-            <span className="text-xl md:text-2xl font-bold text-card-foreground">Fitnity AI</span>
+          <Link href="/" className="flex items-center gap-2 flex-shrink-0" prefetch={false}>
+            <Zap className={cn("h-7 w-7 md:h-8 md:w-8", headerMounted && "logo-pulse", "text-primary dark:text-accent")} />
+            <span className="text-xl md:text-2xl font-bold text-foreground">Fitnity AI</span>
           </Link>
           <nav className="flex items-center gap-0.5 md:gap-0.5 lg:gap-1">
             {itemsToDisplay.map(item => {
@@ -159,18 +160,18 @@ export default function MainHeader() {
               const showLockIcon = item.isPremium && !accessible && isLoggedIn;
               
               const navButtonContent = (
-                <div className="flex flex-col items-center md:flex-row"> {/* Ensure Link child is div or span for layout */}
-                    <item.icon className={cn(navIconClasses, "text-card-foreground group-hover:text-accent group-focus-visible:text-accent" )} />
+                <div className="flex flex-col items-center md:flex-row">
+                    <item.icon className={cn(navIconClasses, "text-foreground group-hover:text-accent group-focus-visible:text-accent dark:group-hover:text-accent light:group-hover:text-primary" )} />
                     <span className={cn(
                       "hidden text-sm ml-0 md:ml-1.5",
                       item.showTextAtBreakpoint === 'md' && 'md:inline',
                       item.showTextAtBreakpoint === 'lg' && 'lg:inline',
-                       (!item.showTextAtBreakpoint && item.label !== 'Login' && item.label !== 'Sign Up') && 'md:inline', // Default for items without specific breakpoint
+                       (!item.showTextAtBreakpoint && item.label !== 'Login' && item.label !== 'Sign Up') && 'md:inline',
                        (item.label === 'Login' || item.label === 'Sign Up') && 'md:inline'
                     )}>
                       {item.label}
                     </span>
-                    {item.label === 'Coach' && isLoggedIn && <span className="glowing-orb ml-0.5 md:ml-1.5 hidden md:inline-block"></span>}
+                    {item.label === 'Coach' && isLoggedIn && headerMounted && <span className="glowing-orb ml-0.5 md:ml-1.5 hidden md:inline-block"></span>}
                     {item.label === 'Shop' && isLoggedIn && cartItemCount > 0 && (
                       <span className="absolute top-0 right-0 -mt-1 -mr-0.5 md:mt-0 md:mr-0 flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
                         {cartItemCount > 9 ? '9+' : cartItemCount}
@@ -186,16 +187,17 @@ export default function MainHeader() {
                     variant="ghost" 
                     className={cn(
                       navLinkBaseClasses, 
-                      navLinkHoverClasses, 
-                      "text-card-foreground px-1.5 sm:px-2 py-1 sm:py-1.5 hover:border-b-accent h-auto",
-                      showLockIcon && "cursor-not-allowed opacity-70 hover:opacity-80" // Style for locked items
+                      "text-foreground px-1.5 sm:px-2 py-1 sm:py-1.5 h-auto",
+                      "hover:translate-y-[-2px] hover:bg-transparent focus-visible:bg-accent/10",
+                      "dark:hover:text-accent dark:hover:drop-shadow-[0_0_8px_hsl(var(--accent))]",
+                      "light:hover:text-primary light:hover:drop-shadow-[0_0_8px_hsl(var(--primary)/0.5)]",
+                      showLockIcon && "cursor-not-allowed opacity-70 hover:opacity-80"
                     )}
-                    disabled={showLockIcon} // Disable if locked
+                    disabled={showLockIcon}
                   >
                     {!showLockIcon ? <Link href={item.href}>{navButtonContent}</Link> : <div>{navButtonContent}</div>}
                   </Button>
               );
-
 
               return item.isCTA ? (
                 <Button
@@ -203,12 +205,13 @@ export default function MainHeader() {
                   asChild
                   size="sm"
                   className={cn(
-                    "ml-1 md:ml-2 px-3 py-2 md:px-4 md:py-2.5 rounded-lg shadow-md transition-all duration-300 ease-in-out text-xs sm:text-sm text-accent-foreground active:scale-95 h-auto cta-glow-pulse",
-                    "bg-accent hover:bg-accent/80"
+                    "ml-1 md:ml-2 px-3 py-2 md:px-4 md:py-2.5 rounded-lg shadow-md transition-all duration-300 ease-in-out text-xs sm:text-sm active:scale-95 h-auto",
+                    "dark:bg-accent dark:hover:bg-accent/80 dark:text-accent-foreground dark:cta-glow-pulse",
+                    "light:bg-primary light:hover:bg-gradient-to-r light:hover:from-primary light:hover:to-accent light:text-primary-foreground"
                   )}
                 >
                   <Link href={item.href} className="flex items-center">
-                    <item.icon className={cn(navIconClasses, "mr-1 md:mr-1.5 h-4 w-4 sm:h-4.5 sm:w-4.5", "text-accent-foreground group-hover:text-accent-foreground group-focus-visible:text-accent-foreground")} />
+                    <item.icon className={cn(navIconClasses, "mr-1 md:mr-1.5 h-4 w-4 sm:h-4.5 sm:w-4.5", "text-inherit group-hover:text-inherit group-focus-visible:text-inherit")} />
                     <span className="hidden sm:inline">{item.label === 'Get Started' || item.label === 'Sign Up' ? 'Sign Up' : item.label}</span>
                      <span className="sm:hidden text-xs">{item.label === 'Get Started' || item.label === 'Sign Up' ? 'Sign Up' : (item.label === 'Login' ? 'Login' : item.label)}</span>
                   </Link>
@@ -232,7 +235,7 @@ export default function MainHeader() {
                            </AlertDialogHeader>
                            <AlertDialogFooter>
                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                             <AlertDialogAction asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
+                             <AlertDialogAction asChild className="bg-accent hover:bg-accent/90 text-accent-foreground light:bg-primary light:hover:bg-primary/90 light:text-primary-foreground">
                                <Link href="/#pricing">View Plans</Link>
                              </AlertDialogAction>
                            </AlertDialogFooter>
@@ -248,14 +251,19 @@ export default function MainHeader() {
                 </Tooltip>
               );
             })}
-            {isLoggedIn && (
+            {headerMounted && isLoggedIn && (
               <AlertDialog>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <AlertDialogTrigger asChild>
-                      <Button variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground px-1.5 sm:px-2 py-1 sm:py-1.5 hover:border-b-accent h-auto")}>
+                      <Button variant="ghost" className={cn(navLinkBaseClasses, 
+                        "text-foreground px-1.5 sm:px-2 py-1 sm:py-1.5 h-auto",
+                        "hover:translate-y-[-2px] hover:bg-transparent focus-visible:bg-accent/10",
+                        "dark:hover:text-accent dark:hover:drop-shadow-[0_0_8px_hsl(var(--accent))]",
+                        "light:hover:text-primary light:hover:drop-shadow-[0_0_8px_hsl(var(--primary)/0.5)]"
+                        )}>
                         <div className="flex flex-col items-center md:flex-row">
-                          <LogOutIcon className={cn(navIconClasses, "text-card-foreground group-hover:text-accent group-focus-visible:text-accent")} />
+                          <LogOutIcon className={cn(navIconClasses, "text-foreground group-hover:text-accent group-focus-visible:text-accent dark:group-hover:text-accent light:group-hover:text-primary")} />
                           <span className="hidden md:inline text-sm ml-0 md:ml-1.5">Logout</span>
                         </div>
                       </Button>

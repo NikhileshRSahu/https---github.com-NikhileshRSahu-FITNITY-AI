@@ -18,7 +18,8 @@ body {
     --popover: 222 83% 7%;
     --popover-foreground: 210 20% 96%;
 
-    --primary: 180 95% 38%; /* Teal, slightly brighter for dark mode */
+    /* Dark mode primary/accent is Cyan */
+    --primary: 180 95% 38%; /* Teal, kept for potential use, but accent is main in dark */
     --primary-foreground: 0 0% 100%;
 
     --secondary: 220 15% 25%; /* Darker gray for secondary elements */
@@ -27,15 +28,15 @@ body {
     --muted: 220 15% 15%; /* Even darker muted for less emphasis */
     --muted-foreground: 210 20% 70%; /* Muted foreground, still readable */
 
-    --accent: 180 100% 55%; /* Bright Cyan, slightly brighter for dark mode */
-    --accent-foreground: 180 100% 10%; /* Darker text on accent for contrast */
+    --accent: 180 100% 55%; /* Bright Cyan for dark mode */
+    --accent-foreground: 180 100% 10%; /* Darker text on cyan accent for contrast */
 
     --destructive: 0 70% 50%; /* Destructive color, adjusted for dark theme */
     --destructive-foreground: 0 0% 98%;
 
     --border: 220 20% 30%; /* Subtle border for dark elements */
     --input: 220 20% 22%; /* Dark input fields */
-    --ring: 180 90% 55%; /* Ring color for focus states */
+    --ring: 180 90% 55%; /* Ring color for focus states (cyan based for dark) */
 
     --radius: 0.75rem; /* Slightly larger radius for a modern feel */
 
@@ -54,48 +55,43 @@ body {
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
 
-    /* Custom colors for pricing page from image */
+    /* Custom colors for pricing page (dark theme) */
     --pricing-premium-accent-color: 45 100% 50%; /* Gold/Yellow */
     --pricing-unlimited-accent-color: 145 63% 49%; /* Green */
   }
 
-  .light { /* Light theme overrides */
-    --background: 210 20% 98%; 
-    --foreground: 210 20% 11%; 
+  .light { /* Light theme "White & Green" */
+    --background: 0 0% 100%; /* White */
+    --foreground: 145 50% 15%; /* Very Dark Green for text */
 
-    --card: 0 0% 100%; 
-    --card-foreground: 210 20% 11%; 
+    --card: 0 0% 100%; /* White card */
+    --card-foreground: 145 50% 15%; /* Dark Green text on card */
 
     --popover: 0 0% 100%;
-    --popover-foreground: 210 20% 11%;
+    --popover-foreground: 145 50% 15%;
 
-    --primary: 180 100% 25%; /* Teal (#008080) */
+    --primary: 145 63% 42%; /* Vibrant Green (e.g., #2A8E5F) */
     --primary-foreground: 0 0% 100%; /* White */
 
-    --secondary: 0 0% 94.1%; /* Light Gray (#F0F0F0) */
-    --secondary-foreground: 210 20% 11%; 
+    --secondary: 145 30% 94%; /* Very light green-gray */
+    --secondary-foreground: 145 50% 25%; 
 
-    --muted: 210 17% 90%; 
-    --muted-foreground: 210 17% 45%; 
+    --muted: 145 25% 90%; /* Lighter green-gray for muted */
+    --muted-foreground: 145 30% 45%; 
 
-    --accent: 180 100% 50%; /* Bright Cyan (#00FFFF) */
-    --accent-foreground: 180 100% 10%; 
+    --accent: 150 55% 50%; /* Brighter, complementary Green (e.g., #3EB365) */
+    --accent-foreground: 0 0% 100%; /* White text on accent green */
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 84.2% 60.2%; /* Standard red */
+    --destructive-foreground: 0 0% 98%; /* Light text on red */
 
-    --border: 210 17% 88%; 
-    --input: 210 17% 93%; 
-    --ring: 180 90% 45%; 
+    --border: 145 20% 85%; /* Very light green-gray border */
+    --input: 145 25% 96%; /* Very light, slightly greenish background for inputs */
+    --ring: 145 63% 42%; /* Primary Green for focus rings */
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Pricing specific for light theme if needed, or they can use primary/accent */
+    --pricing-premium-accent-color: hsl(var(--primary));
+    --pricing-unlimited-accent-color: hsl(var(--accent));
   }
 }
 
@@ -105,8 +101,8 @@ body {
   }
   body {
     @apply bg-background text-foreground;
-    font-size: 100%; /* Resetting to ensure rem units are based on browser default */
-    @apply text-base leading-relaxed; /* Improved base leading for readability */
+    font-size: 100%; 
+    @apply text-base leading-relaxed; 
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -121,50 +117,46 @@ body {
     @apply mb-4 text-foreground/80;
   }
 
-  /* Ensure prose text also inherits themed foreground color */
   .prose {
     color: hsl(var(--foreground));
-    @apply leading-relaxed; /* Improved line height for prose */
+    @apply leading-relaxed;
   }
-  .prose p {
-    @apply mb-4 text-foreground/80; /* Consistent paragraph spacing & color */
-  }
+  .prose p { @apply mb-4 text-foreground/80; }
   .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
     color: hsl(var(--foreground));
-    @apply mt-6 mb-3; /* Adjusted heading margins in prose */
+    @apply mt-6 mb-3 leading-snug;
   }
-  .prose strong, .prose a, .prose code, .prose blockquote {
-    color: hsl(var(--foreground));
-  }
-  .prose ul > li::before { 
-    background-color: hsl(var(--muted-foreground));
-  }
-  .dark .prose ul > li::before {
-     background-color: hsl(var(--muted-foreground));
-  }
-
-  .dark .prose-invert {
-    color: hsl(var(--foreground));
-  }
-   .dark .prose-invert h1, .dark .prose-invert h2, .dark .prose-invert h3, .dark .prose-invert h4, .dark .prose-invert h5, .dark .prose-invert h6 {
-    color: hsl(var(--foreground));
-  }
-  .dark .prose-invert p, .dark .prose-invert li, .dark .prose-invert ul, .dark .prose-invert strong, .dark .prose-invert a, .dark .prose-invert code, .dark .prose-invert blockquote {
-    color: hsl(var(--foreground));
-  }
+  .prose strong, .prose code, .prose blockquote { color: hsl(var(--foreground)); }
+  .prose a { color: hsl(var(--primary)); @apply hover:text-accent; } /* Green links in light mode */
+  .prose ul > li::before { background-color: hsl(var(--muted-foreground)); }
+  
+  .dark .prose-invert { color: hsl(var(--foreground)); }
+  .dark .prose-invert h1, .dark .prose-invert h2, .dark .prose-invert h3, .dark .prose-invert h4, .dark .prose-invert h5, .dark .prose-invert h6 { color: hsl(var(--foreground)); }
+  .dark .prose-invert p, .dark .prose-invert li, .dark .prose-invert ul, .dark .prose-invert strong, .dark .prose-invert code, .dark .prose-invert blockquote { color: hsl(var(--foreground)); }
+  .dark .prose-invert a { color: hsl(var(--accent)); @apply hover:opacity-80; } /* Cyan links in dark mode */
 }
 
 /* Glassmorphic card utility */
 .glassmorphic-card {
-  @apply bg-card/10 backdrop-blur-lg shadow-xl border border-card-foreground/5 text-card-foreground;
-  transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
+  @apply text-card-foreground rounded-lg;
 }
 .dark .glassmorphic-card {
   @apply bg-card/20 backdrop-blur-md shadow-2xl border border-accent/10 text-card-foreground;
 }
-.glassmorphic-card:hover {
-  @apply shadow-[0_0_25px_5px_hsl(var(--accent)/0.25)];
+.light .glassmorphic-card {
+  @apply bg-card/95 border border-border shadow-lg; /* Cleaner white card for light mode */
 }
+
+.glassmorphic-card:hover {
+  /* Universal subtle hover glow - keep for dark, might be too much for light depending on preference */
+}
+.dark .glassmorphic-card:hover {
+   @apply shadow-[0_0_25px_5px_hsl(var(--accent)/0.25)];
+}
+.light .glassmorphic-card:hover {
+  @apply shadow-[0_8px_30px_rgb(0,0,0,0.08)]; /* Softer shadow for light cards */
+}
+
 
 /* Styling for inputs and selects within glassmorphic cards */
 .glassmorphic-card input[type="text"], 
@@ -175,7 +167,7 @@ body {
 .glassmorphic-card textarea,
 .glassmorphic-card .SelectTrigger { 
   @apply bg-background/30 border-border/50 text-card-foreground placeholder:text-card-foreground/60 
-  focus:ring-2 focus:ring-accent focus:border-transparent focus:shadow-[0_0_15px_1px_hsl(var(--accent)/0.5)] transition-all duration-300 ease-in-out;
+  focus:ring-2 focus:ring-ring focus:border-transparent focus:shadow-[0_0_15px_1px_hsl(var(--ring)/0.5)] transition-all duration-300 ease-in-out;
 }
 .dark .glassmorphic-card input[type="text"],
 .dark .glassmorphic-card input[type="email"], 
@@ -185,32 +177,29 @@ body {
 .dark .glassmorphic-card textarea,
 .dark .glassmorphic-card .SelectTrigger {
    @apply bg-background/30 border-border/50 text-card-foreground placeholder:text-card-foreground/60 
-   focus:ring-2 focus:ring-accent focus:border-transparent focus:shadow-[0_0_15px_1px_hsl(var(--accent)/0.5)] transition-all duration-300 ease-in-out;
+   focus:ring-2 focus:ring-ring focus:border-transparent focus:shadow-[0_0_15px_1px_hsl(var(--ring)/0.5)] transition-all duration-300 ease-in-out;
+}
+.light .glassmorphic-card input[type="text"],
+.light .glassmorphic-card input[type="email"], 
+.light .glassmorphic-card input[type="password"],
+.light .glassmorphic-card input[type="tel"],
+.light .glassmorphic-card input[type="number"],
+.light .glassmorphic-card textarea,
+.light .glassmorphic-card .SelectTrigger {
+   @apply bg-input border-border text-foreground placeholder:text-muted-foreground 
+   focus:ring-2 focus:ring-ring focus:border-ring transition-all duration-300 ease-in-out;
 }
 
-/* General text color corrections based on context */
-.glassmorphic-card .text-primary-foreground,
-.glassmorphic-card .text-primary-foreground\/80,
-.glassmorphic-card .text-primary-foreground\/90,
-.glassmorphic-card .text-primary-foreground\/70,
-.glassmorphic-card .text-primary-foreground\/60 {
-  color: hsl(var(--card-foreground)); 
-}
+
+/* General text color corrections */
+.glassmorphic-card .text-primary-foreground { color: hsl(var(--primary-foreground)); }
 .dark .glassmorphic-card .text-primary-foreground { color: hsl(var(--primary-foreground)); }
-.dark .glassmorphic-card .text-primary-foreground\/80 { color: hsla(var(--primary-foreground), 0.8); }
-.dark .glassmorphic-card .text-primary-foreground\/90 { color: hsla(var(--primary-foreground), 0.9); }
-.dark .glassmorphic-card .text-primary-foreground\/70 { color: hsla(var(--primary-foreground), 0.7); }
-.dark .glassmorphic-card .text-primary-foreground\/60 { color: hsla(var(--primary-foreground), 0.6); }
+.light .glassmorphic-card .text-primary-foreground { color: hsl(var(--primary-foreground)); }
 
 
-header.glassmorphic-card .text-2xl.font-bold {
-  color: hsl(var(--card-foreground));
-}
+.light footer.bg-background\/80 { background-color: hsl(var(--secondary)) !important; }
+.dark footer.bg-background\/80 { background-color: hsl(var(--background), 0.8) !important; }
 
-
-footer.bg-background\/80 { 
-  /* Background is already theme-aware from the component */
-}
 footer .text-foreground, 
 footer .text-foreground\/80 {
   color: hsl(var(--foreground)); 
@@ -222,12 +211,9 @@ footer .hover\:text-accent:hover {
 .glassmorphic-card .FormLabel,
 .glassmorphic-card label { 
   color: hsl(var(--card-foreground));
-  @apply font-medium text-base; /* Make labels slightly more prominent */
+  @apply font-medium text-base;
 }
-.dark .glassmorphic-card .FormLabel,
-.dark .glassmorphic-card label {
-  color: hsl(var(--card-foreground)); 
-}
+
 
 /* Logo Pulse Animation */
 @keyframes logoPulse {
@@ -277,6 +263,9 @@ footer .hover\:text-accent:hover {
 .cta-glow-pulse:not(:disabled):not(:hover) { 
   animation: ctaGlowPulse 2.5s infinite ease-in-out;
 }
+.light .cta-glow-pulse:not(:disabled):not(:hover) {
+  animation: none; /* Disable general glow for light mode CTAs if they use gradient */
+}
 
 
 /* Result card animation */
@@ -305,6 +294,10 @@ footer .hover\:text-accent:hover {
 .bg-pricing-section-dark {
   background-color: #101010; /* Very dark background like the image */
 }
+.light .bg-pricing-section-dark { /* Light theme override for pricing section background */
+  background-color: hsl(var(--background));
+}
+
 
 .animated-bg-waves {
   position: absolute;
@@ -315,15 +308,17 @@ footer .hover\:text-accent:hover {
   overflow: hidden;
   z-index: 0;
 }
+.light .animated-bg-waves { display: none; } /* Hide complex bg animation in light mode */
+
 
 .animated-bg-waves::before,
 .animated-bg-waves::after {
   content: '';
   position: absolute;
-  width: 200%; /* Wider to allow for movement */
-  height: 200%; /* Taller to allow for movement */
-  border-radius: 40%; /* Creates oval shapes */
-  opacity: 0.05; /* Very subtle */
+  width: 200%; 
+  height: 200%; 
+  border-radius: 40%; 
+  opacity: 0.05; 
   animation: wave-animation 30s infinite linear alternate;
 }
 
@@ -331,32 +326,22 @@ footer .hover\:text-accent:hover {
   background: radial-gradient(ellipse at center, hsl(var(--pricing-premium-accent-color), 0.5) 0%, transparent 70%);
   top: -50%;
   left: -50%;
-  animation-duration: 35s; /* Different speed */
+  animation-duration: 35s; 
 }
 
 .animated-bg-waves::after {
   background: radial-gradient(ellipse at center, hsl(var(--pricing-unlimited-accent-color), 0.4) 0%, transparent 70%);
   bottom: -50%;
   right: -50%;
-  animation-delay: -5s; /* Offset animation */
+  animation-delay: -5s; 
 }
 
 @keyframes wave-animation {
-  0% {
-    transform: translate(0, 0) rotate(0deg);
-  }
-  25% {
-    transform: translate(5%, -5%) rotate(10deg);
-  }
-  50% {
-    transform: translate(-5%, 5%) rotate(-10deg);
-  }
-  75% {
-    transform: translate(3%, -3%) rotate(5deg);
-  }
-  100% {
-    transform: translate(0, 0) rotate(0deg);
-  }
+  0% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(5%, -5%) rotate(10deg); }
+  50% { transform: translate(-5%, 5%) rotate(-10deg); }
+  75% { transform: translate(3%, -3%) rotate(5deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
 }
 
 .pricing-toggle > span[data-state="checked"] {
@@ -365,26 +350,50 @@ footer .hover\:text-accent:hover {
 .pricing-toggle > span[data-state="unchecked"] {
   background-color: hsl(var(--muted)) !important;
 }
+.light .pricing-toggle > span[data-state="checked"] {
+  background-color: hsl(var(--primary)) !important; /* Green for active toggle in light */
+}
+
 
 .popular-plan-glow {
   box-shadow: 0 0 30px 0px hsla(var(--pricing-premium-accent-color), 0.4), 0 0 15px 0px hsla(var(--pricing-premium-accent-color), 0.3);
 }
+.light .popular-plan-glow {
+  box-shadow: 0 0 20px 0px hsla(var(--primary), 0.3), 0 0 10px 0px hsla(var(--primary), 0.2);
+}
+
 
 .premium-accent-glow {
   color: hsl(var(--pricing-premium-accent-color));
   filter: drop-shadow(0 0 8px hsl(var(--pricing-premium-accent-color), 0.7));
 }
+.light .premium-accent-glow {
+  color: hsl(var(--primary));
+  filter: none;
+}
+
 
 .unlimited-accent-text {
   color: hsl(var(--pricing-unlimited-accent-color));
 }
+.light .unlimited-accent-text {
+  color: hsl(var(--accent));
+}
+
 
 .unlimited-button-gradient {
-  background-image: linear-gradient(to right, hsl(var(--pricing-unlimited-accent-color)) 0%, #6effb2 100%); /* Green to lighter green/cyan */
+  background-image: linear-gradient(to right, hsl(var(--pricing-unlimited-accent-color)) 0%, #6effb2 100%);
 }
 .unlimited-button-gradient:hover {
    background-image: linear-gradient(to right, hsl(var(--pricing-unlimited-accent-color), 0.9) 0%, #60e0a0 100%);
 }
+.light .unlimited-button-gradient {
+  background-image: linear-gradient(to right, hsl(var(--accent)) 0%, hsl(var(--primary)) 100%);
+}
+.light .unlimited-button-gradient:hover {
+  background-image: linear-gradient(to right, hsl(var(--accent), 0.9) 0%, hsl(var(--primary),0.9) 100%);
+}
+
 
 /* Hero Icon Pulse */
 @keyframes heroIconPulse {
@@ -400,4 +409,8 @@ footer .hover\:text-accent:hover {
 .hero-icon-pulse {
   animation: heroIconPulse 3s infinite ease-in-out;
 }
+.light .hero-icon-pulse {
+  animation: none; /* Disable complex hero icon pulse in light mode for cleaner look */
+}
 
+    

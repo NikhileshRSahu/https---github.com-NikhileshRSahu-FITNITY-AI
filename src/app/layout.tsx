@@ -1,22 +1,24 @@
 
 import type { Metadata } from 'next';
 import { GeistSans } from 'geist/font/sans';
-// import { GeistMono } from 'geist/font/mono'; // Corrected path
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import MainHeader from '@/components/layout/MainHeader';
 import MainFooter from '@/components/layout/MainFooter';
 import { ThemeProvider } from '@/components/theme-provider';
-// import CursorFollower from '@/components/effects/CursorFollower'; // Temporarily commented out
 import { CartProvider } from '@/contexts/CartContext';
-import { SubscriptionProvider } from '@/contexts/SubscriptionContext'; // Ensure correct import path
+import { SubscriptionProvider } from '@/contexts/SubscriptionContext'; 
+import BackToTopButton from '@/components/layout/BackToTopButton';
+
 
 const geistSans = GeistSans;
-// const geistMono = GeistMono;
 
 export const metadata: Metadata = {
-  title: 'Fitnity AI',
-  description: 'Your Ultimate AI Fitness Coach — Anytime, Anywhere',
+  title: {
+    default: "Fitnity AI - Your Ultimate AI Fitness Coach",
+    template: "%s - Fitnity AI",
+  },
+  description: 'Your Ultimate AI Fitness Coach — Anytime, Anywhere. Real-time form correction, personalized AI workouts, and smart health tracking.',
 };
 
 export default function RootLayout({
@@ -27,21 +29,22 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} antialiased flex flex-col min-h-screen`}
+        className={`${geistSans.variable} antialiased flex flex-col min-h-screen bg-background text-foreground`}
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark" // Or "light" based on desired default
+          defaultTheme="dark" 
           enableSystem
           disableTransitionOnChange
         >
-          <SubscriptionProvider> {/* SubscriptionProvider should wrap CartProvider and thus MainHeader */}
+          <SubscriptionProvider> 
             <CartProvider>
-              {/* <CursorFollower /> */} {/* Cursor follower can be re-enabled later */}
+              {/* <CursorFollower /> */} {/* Cursor follower can be re-enabled if desired */}
               <MainHeader />
               <main className="flex-grow">{children}</main>
               <MainFooter />
               <Toaster />
+              <BackToTopButton />
             </CartProvider>
           </SubscriptionProvider>
         </ThemeProvider>
