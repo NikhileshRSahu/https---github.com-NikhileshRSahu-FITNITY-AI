@@ -42,6 +42,8 @@ import { useSubscription, type SubscriptionTier } from '@/contexts/SubscriptionC
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+
 
 // Profile Data Structure (for localStorage simulation)
 interface ProfileData {
@@ -221,15 +223,15 @@ export default function ProfilePage() {
     setIsEditing(false);
   }
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    setIsPasswordSubmitting(true); // Re-use for logout loading state
+    await new Promise(resolve => setTimeout(resolve, 700)); 
     if (typeof window !== 'undefined' && uiMounted) {
       localStorage.removeItem('fitnityUserLoggedIn');
-      // Optionally clear other user-specific data from localStorage on logout
-      // localStorage.removeItem('fitnityUserProfile'); 
-      // localStorage.removeItem('fitnityUserSettings');
       window.dispatchEvent(new Event('loginStateChange')); 
     }
     toast({title: "Logged Out", description: "You have been successfully logged out."});
+    setIsPasswordSubmitting(false);
     router.push('/'); 
   };
   
@@ -247,14 +249,23 @@ export default function ProfilePage() {
     document.getElementById('closeChangePasswordDialog')?.click(); 
   };
 
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = async () => {
+    setIsPasswordSubmitting(true); // Re-use for delete loading state
+    await new Promise(resolve => setTimeout(resolve, 1000)); 
     toast({
       title: "Account Deletion Simulated",
       description: "You have been logged out. Your account would be permanently deleted in a real app.",
       variant: "destructive",
       duration: 7000,
     });
-    handleLogout(); 
+    if (typeof window !== 'undefined' && uiMounted) {
+      localStorage.removeItem('fitnityUserLoggedIn');
+      localStorage.removeItem('fitnityUserProfile');
+      localStorage.removeItem('fitnityUserSettings');
+      window.dispatchEvent(new Event('loginStateChange')); 
+    }
+    setIsPasswordSubmitting(false);
+    router.push('/'); 
   }
 
   if (!uiMounted || !isLoggedIn || !subscriptionMounted) { 
@@ -289,7 +300,7 @@ export default function ProfilePage() {
                 name="fullName" 
                 value={profileData.fullName} 
                 onChange={handleProfileInputChange} 
-                className="text-3xl sm:text-4xl font-bold text-foreground text-center bg-background/50 border-border focus:ring-primary dark:focus:ring-accent focus:border-primary dark:focus:border-accent shadow-sm p-1 h-auto"
+                className={cn("text-3xl sm:text-4xl font-bold text-foreground text-center bg-background/50 dark:bg-background/50 border-border focus:ring-primary dark:focus:ring-accent focus:border-primary dark:focus:border-accent shadow-sm p-1 h-auto")}
               />
             ) : (
               <h1 className="text-3xl sm:text-4xl font-bold text-foreground">{profileData.fullName}</h1>
@@ -300,7 +311,7 @@ export default function ProfilePage() {
                 type="email" 
                 value={profileData.email} 
                 onChange={handleProfileInputChange} 
-                className="text-base sm:text-lg text-foreground/80 text-center bg-background/50 border-border focus:ring-primary dark:focus:ring-accent focus:border-primary dark:focus:border-accent shadow-sm p-1 h-auto"
+                className={cn("text-base sm:text-lg text-foreground/80 text-center bg-background/50 dark:bg-background/50 border-border focus:ring-primary dark:focus:ring-accent focus:border-primary dark:focus:border-accent shadow-sm p-1 h-auto")}
               />
             ) : (
               <p className="text-base sm:text-lg text-foreground/80">{profileData.email}</p>
@@ -444,7 +455,7 @@ export default function ProfilePage() {
           </CardHeader>
           <CardContent className="space-y-4 sm:space-y-5 text-sm sm:text-base">
              <div>
-              <Label htmlFor="profileFullNameView" className="text-sm sm:text-base font-medium">Full Name</Label>
+              <Label htmlFor="profileFullNameView" className="text-sm sm:text-base font-medium text-card-foreground">Full Name</Label>
               {isEditing ? (
                 <Input id="profileFullNameEdit" type="text" value={profileData.fullName} onChange={handleProfileInputChange} name="fullName" className={cn("mt-1 text-card-foreground", isEditing && "bg-background/50 dark:bg-background/50")} />
               ) : (
@@ -452,7 +463,7 @@ export default function ProfilePage() {
               )}
             </div>
             <div>
-              <Label htmlFor="profileEmailView" className="text-sm sm:text-base font-medium">Email Address</Label>
+              <Label htmlFor="profileEmailView" className="text-sm sm:text-base font-medium text-card-foreground">Email Address</Label>
               {isEditing ? (
                 <Input id="profileEmailEdit" type="email" value={profileData.email} onChange={handleProfileInputChange} name="email" className={cn("mt-1 text-card-foreground", isEditing && "bg-background/50 dark:bg-background/50")} />
               ) : (
@@ -620,7 +631,7 @@ export default function ProfilePage() {
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction onClick={handleDeleteAccount} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">
-                      Yes, Delete My Account
+                      {isPasswordSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Yes, Delete My Account"}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -646,7 +657,7 @@ export default function ProfilePage() {
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction onClick={handleLogout} className="bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90 text-primary-foreground dark:text-accent-foreground">
-                      Logout
+                      {isPasswordSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Logout"}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
