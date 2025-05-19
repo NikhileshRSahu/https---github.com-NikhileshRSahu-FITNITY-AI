@@ -15,7 +15,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Zap, LogIn, UserPlus, LayoutDashboard, User as UserIcon, LogOut as LogOutIcon, ClipboardList, Bot, Apple as NutritionIcon, Camera, ShoppingCart, Settings } from 'lucide-react';
+import { Zap, LogIn, UserPlus, LayoutDashboard, User as UserIcon, LogOut as LogOutIcon, ClipboardList, Bot, Apple as NutritionIcon, Camera, ShoppingCart, PlayCircle } from 'lucide-react'; // Added PlayCircle
 import { useEffect, useState, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { useRouter, usePathname } from 'next/navigation';
@@ -76,10 +76,10 @@ export default function MainHeader() {
   }, [pathname, checkLoginStatus]);
 
   useEffect(() => {
-    if (mounted) {
+    if (mounted) { // Ensure this runs only on client after mount
       setCartItemCount(getItemCount());
     }
-  }, [mounted, getItemCount, pathname]); // getItemCount reference is stable
+  }, [mounted, getItemCount, pathname]); // getItemCount should be stable
 
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
@@ -94,6 +94,9 @@ export default function MainHeader() {
   const navIconClasses = "h-4 w-4 sm:h-4.5 sm:w-4.5 md:h-5 md:w-5 flex-shrink-0 group-hover:text-accent group-focus-visible:text-accent transition-colors duration-300";
 
   const unauthenticatedNavItems: NavItem[] = [
+    { href: '/#features', label: 'Features', icon: Zap, tooltipText: 'Explore Features' },
+    { href: '/#pricing', label: 'Pricing', icon: Zap, tooltipText: 'View Pricing' }, // Placeholder Icon
+    { href: '/shop/products', label: 'Shop', icon: ShoppingCart, tooltipText: 'Browse Shop'},
     { href: '/auth/sign-in', label: 'Login', icon: LogIn, tooltipText: 'Login to your account' },
     { href: '/auth/sign-up', label: 'Get Started', icon: UserPlus, isCTA: true, tooltipText: 'Create an account' },
   ];
@@ -102,6 +105,7 @@ export default function MainHeader() {
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, tooltipText: 'View your progress' },
     { href: '/workout-plan', label: 'Workout', icon: ClipboardList, tooltipText: 'Generate workout plans' },
     { href: '/nutrition-plan', label: 'Nutrition', icon: NutritionIcon, tooltipText: 'Get nutrition advice' },
+    { href: '/videos', label: 'Videos', icon: PlayCircle, tooltipText: 'Watch fitness videos' }, // New Videos Link
     { href: '/form-analysis', label: 'Form Check', icon: Camera, tooltipText: 'Analyze your exercise form' },
     { href: '/ai-coach', label: 'AI Coach', icon: Bot, tooltipText: 'Chat with your AI Coach' },
     { href: '/shop', label: 'Shop', icon: ShoppingCart, tooltipText: 'Browse fitness gear' },
@@ -116,17 +120,15 @@ export default function MainHeader() {
   if (!mounted) {
     return (
        <header className={cn(baseHeaderClasses, "h-20 dark:shadow-accent/5")}>
-         <div className={cn(baseContainerClasses)}>
+         <div className={cn(baseContainerClasses, "px-2 sm:px-4 md:px-6")}>
             <Link href="/" className="flex items-center gap-2 logo-pulse flex-shrink-0" prefetch={false}>
               <Zap className="h-7 w-7 md:h-8 md:w-8 text-accent" />
               <span className="text-xl md:text-2xl font-bold text-card-foreground">Fitnity AI</span>
             </Link>
             <nav className="flex items-center gap-0.5 md:gap-1">
-              {/* Minimal placeholders to maintain structure */}
-              <div className="h-9 w-20 bg-muted/10 rounded-md hidden md:block"></div>
-              <div className="h-9 w-28 bg-muted/10 rounded-md hidden md:block"></div>
-              <div className="h-9 w-10 bg-muted/10 rounded-md md:hidden"></div>
-              <div className="h-9 w-10 bg-muted/10 rounded-md md:hidden"></div>
+              {/* Minimal placeholders to maintain structure and avoid layout shift */}
+              <div className="h-9 w-10 bg-muted/10 rounded-md md:w-20"></div>
+              <div className="h-9 w-10 bg-muted/10 rounded-md md:w-28"></div>
             </nav>
          </div>
        </header>
@@ -141,7 +143,7 @@ export default function MainHeader() {
           isScrolled ? "h-16 shadow-xl shadow-accent/5 dark:shadow-accent/10" : "h-20 dark:shadow-accent/5"
         )}
       >
-        <div className={cn(baseContainerClasses)}>
+        <div className={cn(baseContainerClasses, "px-2 sm:px-4 md:px-6")}>
           <Link href="/" className="flex items-center gap-2 logo-pulse flex-shrink-0" prefetch={false}>
             <Zap className="h-7 w-7 md:h-8 md:w-8 text-accent" />
             <span className="text-xl md:text-2xl font-bold text-card-foreground">Fitnity AI</span>
@@ -154,8 +156,8 @@ export default function MainHeader() {
                   asChild
                   size="sm"
                   className={cn(
-                    "ml-1 md:ml-2 px-3 py-2 md:px-4 md:py-2.5 rounded-lg shadow-md transition-all duration-300 ease-in-out text-xs sm:text-sm text-accent-foreground active:scale-95 h-auto",
-                    "bg-gradient-to-r from-[hsl(var(--accent)_/_0.9)] via-[hsl(var(--primary)_/_0.9)] to-[hsl(var(--accent)_/_0.9)] hover:shadow-[0_0_15px_3px_hsl(var(--accent)_/_0.7)] hover:scale-105 cta-glow-pulse"
+                    "ml-1 md:ml-2 px-3 py-2 md:px-4 md:py-2.5 rounded-lg shadow-md transition-all duration-300 ease-in-out text-xs sm:text-sm text-accent-foreground active:scale-95 h-auto cta-glow-pulse",
+                    "bg-accent hover:bg-accent/80" // Simplified CTA gradient for better theme consistency
                   )}
                 >
                   <Link href={item.href} className="flex items-center">
@@ -223,5 +225,3 @@ export default function MainHeader() {
     </TooltipProvider>
   );
 }
-
-    
