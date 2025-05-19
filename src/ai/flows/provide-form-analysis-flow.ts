@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -18,6 +19,21 @@ const ProvideFormAnalysisInputSchema = z.object({
       "A video stream of the user performing an exercise, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
   exerciseName: z.string().describe('The name of the exercise being performed.'),
+  focusArea: z
+    .enum([
+      'overall',
+      'back_posture',
+      'knee_alignment',
+      'elbow_position',
+      'core_engagement',
+      'foot_placement',
+    ])
+    .optional()
+    .describe('Optional: A specific area the user wants the AI to focus on during analysis.'),
+  notes: z
+    .string()
+    .optional()
+    .describe('Optional: Any specific notes or concerns the user has about performing this exercise.'),
 });
 export type ProvideFormAnalysisInput = z.infer<typeof ProvideFormAnalysisInputSchema>;
 
@@ -38,10 +54,11 @@ const prompt = ai.definePrompt({
   prompt: `You are an AI-powered fitness coach that specializes in form analysis and injury prevention.
 
 You will receive a video stream of the user performing the following exercise: {{{exerciseName}}}.
+{{#if focusArea}}The user has requested a specific focus on: {{{focusArea}}}. Prioritize feedback related to this area if possible, while still providing an overall assessment.{{/if}}
+{{#if notes}}The user has provided the following notes/concerns: "{{{notes}}}". Please consider these in your analysis.{{/if}}
 
-You will analyze the user's form in real-time and provide biomechanical feedback and corrections.
-
-If the user's form poses a risk of injury, you will provide an alert message.
+You will analyze the user's form in real-time and provide biomechanical feedback and corrections. Be specific and actionable.
+If the user's form poses a risk of injury, you will provide an alert message in the 'injuryPreventionAlert' field. Otherwise, this field can be omitted.
 
 Video: {{media url=videoDataUri}}
 `,
@@ -58,3 +75,4 @@ const provideFormAnalysisFlow = ai.defineFlow(
     return output!;
   }
 );
+

@@ -7,28 +7,39 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { provideFormAnalysis, type ProvideFormAnalysisInput, type ProvideFormAnalysisOutput } from '@/ai/flows/provide-form-analysis-flow';
-import { Loader2, Camera, AlertTriangle, FileText } from 'lucide-react';
+import { Loader2, Camera, AlertTriangle, FileText, Info, ShieldAlert } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 const formAnalysisSchema = z.object({
   exerciseName: z.string().min(3, { message: 'Please enter the exercise name (min. 3 characters).' }),
+  focusArea: z.enum([
+      'overall',
+      'back_posture',
+      'knee_alignment',
+      'elbow_position',
+      'core_engagement',
+      'foot_placement',
+    ]).optional(),
+  notes: z.string().optional(),
 });
 
 type FormAnalysisValues = z.infer<typeof formAnalysisSchema>;
-
 type AnalysisStatus = 'idle' | 'capturing' | 'analyzing' | 'done' | 'error';
 
 export default function FormAnalysisPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [analysisStatus, setAnalysisStatus] = useState<AnalysisStatus>('idle');
   const [analysisResult, setAnalysisResult] = useState<ProvideFormAnalysisOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
+  const [capturedFrameDataUri, setCapturedFrameDataUri] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
 
@@ -36,6 +47,7 @@ export default function FormAnalysisPage() {
     resolver: zodResolver(formAnalysisSchema),
     defaultValues: {
       exerciseName: '',
+      focusArea: 'overall',
     },
   });
 
@@ -63,6 +75,7 @@ export default function FormAnalysisPage() {
           variant: 'destructive',
           title: 'Camera Access Denied',
           description: 'Fitnity AI needs access to your camera for form analysis. Please enable camera permissions in your browser settings and refresh the page.',
+          duration: 7000,
         });
       }
     };
@@ -82,39 +95,31 @@ export default function FormAnalysisPage() {
       toast({
         variant: 'destructive',
         title: 'Camera Not Ready',
-        description: 'Camera is not accessible. Please ensure permissions are granted and the camera is working properly.',
+        description: 'Camera is not accessible. Please ensure permissions are granted and the camera is working.',
       });
       setAnalysisStatus('error');
-      setError('Camera is not accessible. Please ensure permissions are granted and the camera is working properly.');
+      setError('Camera is not accessible.');
       return;
     }
     
     if (videoRef.current.readyState < videoRef.current.HAVE_ENOUGH_DATA) {
-        toast({
-            variant: 'destructive',
-            title: 'Video Stream Not Ready',
-            description: 'The video stream is not fully loaded yet. Please wait a moment and try again.',
-        });
+        toast({ variant: 'destructive', title: 'Video Stream Not Ready', description: 'Please wait a moment and try again.' });
         setAnalysisStatus('error');
-        setError('The video stream is not fully loaded yet. Please wait a moment and try again.');
+        setError('Video stream not fully loaded.');
         return;
     }
 
     if (videoRef.current.videoWidth === 0 || videoRef.current.videoHeight === 0) {
-        toast({ 
-            variant: 'destructive', 
-            title: 'Video Error', 
-            description: 'Could not get video dimensions. The camera might still be initializing or there could be an issue with the video feed. Please wait a moment and try again.'
-        });
+        toast({ variant: 'destructive', title: 'Video Error', description: 'Could not get video dimensions. Camera might be initializing.' });
         setAnalysisStatus('error');
-        setError('Could not get video dimensions. The camera might still be initializing or there could be an issue with the video feed.');
+        setError('Could not get video dimensions.');
         return;
     }
 
-    setIsSubmitting(true);
     setAnalysisStatus('capturing');
     setAnalysisResult(null);
     setError(null);
+    setCapturedFrameDataUri(null);
 
     const canvas = document.createElement('canvas');
     canvas.width = videoRef.current.videoWidth;
@@ -122,100 +127,83 @@ export default function FormAnalysisPage() {
     const ctx = canvas.getContext('2d');
 
     if (!ctx) {
-      toast({
-        variant: 'destructive',
-        title: 'Processing Error',
-        description: 'Could not create a canvas context to process the video frame. Please try again or use a different browser.',
-      });
-      setIsSubmitting(false);
+      toast({ variant: 'destructive', title: 'Processing Error', description: 'Could not create canvas context.' });
       setAnalysisStatus('error');
-      setError('Could not create a canvas context to process the video frame.');
+      setError('Canvas context error.');
       return;
     }
 
     ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-    const videoDataUri = canvas.toDataURL('image/jpeg'); 
-
+    const frameDataUri = canvas.toDataURL('image/jpeg'); 
+    setCapturedFrameDataUri(frameDataUri);
     setAnalysisStatus('analyzing');
+
     try {
       const input: ProvideFormAnalysisInput = {
-        videoDataUri,
+        videoDataUri: frameDataUri,
         exerciseName: data.exerciseName,
+        focusArea: data.focusArea,
+        notes: data.notes,
       };
       const result = await provideFormAnalysis(input);
       if (result && result.feedback) {
         setAnalysisResult(result);
         setAnalysisStatus('done');
-        toast({
-          title: 'Analysis Complete!',
-          description: 'Your form analysis is ready.',
-        });
+        toast({ title: 'Analysis Complete!', description: 'Your form analysis is ready.' });
       } else {
         setError('The AI could not provide feedback for this exercise. Please try again.');
         setAnalysisStatus('error');
-        toast({
-          variant: 'destructive',
-          title: 'Analysis Failed',
-          description: 'The AI could not provide feedback. Please try again.',
-        });
+        toast({ variant: 'destructive', title: 'Analysis Failed', description: 'The AI could not provide feedback.' });
       }
     } catch (err) {
       console.error('Error analyzing form:', err);
-      let errorMessage = 'Failed to analyze form. Please try again.';
-      if (err instanceof Error && err.message) {
-        errorMessage = err.message;
-      }
+      let errorMessage = (err instanceof Error && err.message) ? err.message : 'Failed to analyze form. Please try again.';
       setError(errorMessage);
       setAnalysisStatus('error');
-      toast({
-        variant: 'destructive',
-        title: 'Analysis Error',
-        description: errorMessage,
-      });
-    } finally {
-      setIsSubmitting(false);
-      if (analysisResult && analysisStatus !== 'error') { // Check if result is actually set and no error
-        setAnalysisStatus('done');
-      } else if (error) {
-         setAnalysisStatus('error');
-      } else if (!analysisResult && !error) { // No result and no error, implies AI didn't return feedback but didn't throw
-         setAnalysisStatus('error'); // Or some other status like 'no_feedback'
-         setError('The AI could not provide feedback for this exercise. Please try again.');
-      } else {
-        setAnalysisStatus('idle');
-      }
+      toast({ variant: 'destructive', title: 'Analysis Error', description: errorMessage });
     }
   }
   
   const getButtonText = () => {
-    if (isSubmitting) {
-      switch (analysisStatus) {
-        case 'capturing':
-          return 'Capturing frame...';
-        case 'analyzing':
-          return 'Analyzing form...';
-        default:
-          return 'Processing...';
-      }
-    }
+    if (analysisStatus === 'capturing') return 'Capturing frame...';
+    if (analysisStatus === 'analyzing') return 'Analyzing form...';
     return 'Analyze My Form';
   };
 
+  const focusAreaOptions = [
+    { value: 'overall', label: 'Overall Form' },
+    { value: 'back_posture', label: 'Back Posture' },
+    { value: 'knee_alignment', label: 'Knee Alignment' },
+    { value: 'elbow_position', label: 'Elbow Position' },
+    { value: 'core_engagement', label: 'Core Engagement' },
+    { value: 'foot_placement', label: 'Foot Placement' },
+  ];
+
   return (
     <div className="container mx-auto px-4 md:px-6 py-12 md:py-20">
-      <Card className="max-w-2xl mx-auto glassmorphic-card">
+      <Card className="max-w-2xl mx-auto glassmorphic-card animate-fade-in-up">
         <CardHeader>
           <CardTitle className="text-3xl font-bold flex items-center">
             <Camera className="mr-3 h-8 w-8 text-accent" /> Real-time Form Analysis
           </CardTitle>
-          <CardDescription>
-            Let our AI check your exercise form. Enter the exercise name and click analyze. Ensure good lighting and that your full body is visible for best results.
+          <CardDescription className="text-base">
+            Let our AI check your exercise form. Ensure good lighting and that your full body is visible for best results.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-8">
+        <CardContent className="space-y-6">
           <div className="aspect-video bg-background/20 rounded-md overflow-hidden border-2 border-accent/30 shadow-inner">
             <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
           </div>
+          
+          {capturedFrameDataUri && (analysisStatus === 'analyzing' || analysisStatus === 'done' || analysisStatus === 'error') && (
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-card-foreground/80 text-center">Frame captured for analysis:</p>
+              <div className="aspect-video relative bg-background/10 rounded-md overflow-hidden border border-border/30">
+                <Image src={capturedFrameDataUri} alt="Captured exercise frame" layout="fill" objectFit="contain" />
+              </div>
+            </div>
+          )}
+
 
           {hasCameraPermission === false && (
             <Alert variant="destructive">
@@ -250,45 +238,100 @@ export default function FormAnalysisPage() {
                         <Input
                           placeholder="e.g., Squat, Push-up, Lunge"
                           {...field}
-                          disabled={isSubmitting}
+                          disabled={analysisStatus === 'capturing' || analysisStatus === 'analyzing'}
                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+                 <FormField
+                  control={form.control}
+                  name="focusArea"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-lg">Focus Area (Optional)</FormLabel>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        defaultValue={field.value}
+                        disabled={analysisStatus === 'capturing' || analysisStatus === 'analyzing'}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select an area to focus on" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {focusAreaOptions.map(opt => (
+                            <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>Help the AI prioritize a specific part of your form.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="notes"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-lg">Your Notes/Concerns (Optional)</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="e.g., 'Feeling a pinch in my left shoulder', 'Is my squat depth okay?'"
+                          {...field}
+                          rows={3}
+                          disabled={analysisStatus === 'capturing' || analysisStatus === 'analyzing'}
+                        />
+                      </FormControl>
+                      <FormDescription>Share any specific issues or questions you have.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <Button 
                   type="submit" 
-                  disabled={isSubmitting || !hasCameraPermission || hasCameraPermission === null} 
+                  disabled={analysisStatus === 'capturing' || analysisStatus === 'analyzing' || !hasCameraPermission || hasCameraPermission === null} 
                   size="lg" 
                   className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg transition-transform duration-300 hover:scale-105 cta-glow-pulse active:scale-95"
                 >
-                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {(analysisStatus === 'capturing' || analysisStatus === 'analyzing') && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {getButtonText()}
                 </Button>
               </form>
             </Form>
           )}
         </CardContent>
+        <CardFooter>
+            <Alert variant="default" className="border-accent/30 bg-accent/5 text-accent-foreground/80 text-xs">
+              <ShieldAlert className="h-4 w-4 text-accent" />
+              <AlertTitle className="text-sm font-medium text-accent">Important Disclaimer</AlertTitle>
+              <AlertDescription>
+                AI form analysis provides suggestions and is not a substitute for professional medical or coaching advice. Always prioritize your safety and consult a professional if you have concerns.
+              </AlertDescription>
+            </Alert>
+        </CardFooter>
       </Card>
 
-      {(analysisResult || error) && analysisStatus !== 'capturing' && analysisStatus !== 'analyzing' && (
+      {(analysisStatus === 'done' || (analysisStatus === 'error' && error)) && (
         <Card className="max-w-2xl mx-auto mt-12 glassmorphic-card result-card-animate">
           <CardHeader>
             <CardTitle className="text-2xl font-bold flex items-center">
               <FileText className="mr-3 h-7 w-7 text-accent" /> 
-              {error && analysisStatus === 'error' ? 'Analysis Error' : 'Form Analysis Results'}
+              {analysisStatus === 'error' ? 'Analysis Error' : 'Form Analysis Results'}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {error && analysisStatus === 'error' && (
+            {analysisStatus === 'error' && error && (
               <Alert variant="destructive">
                 <AlertTriangle className="h-5 w-5" />
                 <AlertTitle>Oops! Something went wrong.</AlertTitle>
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
-            {analysisResult && analysisStatus === 'done' && !error && (
+            {analysisResult && analysisStatus === 'done' && (
               <>
                 <div>
                   <h4 className="font-semibold text-card-foreground/90 mb-1 text-lg">Feedback for {form.getValues('exerciseName')}:</h4>
@@ -297,7 +340,7 @@ export default function FormAnalysisPage() {
                   </div>
                 </div>
                 {analysisResult.injuryPreventionAlert && (
-                  <Alert variant="destructive" className="border-2 border-destructive shadow-lg">
+                  <Alert variant="destructive" className="border-2 border-destructive shadow-lg mt-4">
                     <AlertTriangle className="h-5 w-5 animate-pulse" />
                     <AlertTitle className="text-lg">Injury Prevention Alert!</AlertTitle>
                     <AlertDescription className="whitespace-pre-wrap">{analysisResult.injuryPreventionAlert}</AlertDescription>
@@ -305,14 +348,21 @@ export default function FormAnalysisPage() {
                 )}
               </>
             )}
-            {analysisStatus === 'error' && !isSubmitting && !analysisResult?.feedback && (
+             {analysisStatus === 'error' && !error && !analysisResult?.feedback && (
                  <Alert className="bg-background/30 border-border/50 text-card-foreground">
                     <AlertTriangle className="h-5 w-5 text-accent" />
-                    <AlertTitle>{ error ? "Analysis Failed" : "No Feedback Available"}</AlertTitle>
+                    <AlertTitle>No Feedback Available</AlertTitle>
                     <AlertDescription>
-                     {error || "The AI could not provide feedback for this exercise. Please try again."}
+                     The AI could not provide feedback for this exercise. Please try again.
                     </AlertDescription>
                 </Alert>
+            )}
+            {(analysisStatus === 'analyzing') && (
+                <div className="flex flex-col items-center justify-center p-8 text-card-foreground">
+                    <Loader2 className="h-12 w-12 text-accent animate-spin mb-4" />
+                    <p className="text-lg">AI is analyzing your form...</p>
+                    <p className="text-sm text-card-foreground/70">This might take a few moments.</p>
+                </div>
             )}
           </CardContent>
         </Card>
