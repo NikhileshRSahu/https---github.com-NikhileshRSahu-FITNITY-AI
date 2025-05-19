@@ -21,8 +21,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Moon, Sun, Bell, Globe, ShieldCheck, LogOut as LogOutIcon, Zap, Edit3, Save, XCircle, User as UserIcon, CalendarClock, Settings as SettingsIcon, Gem } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { Moon, Sun, Bell, Globe, ShieldCheck, LogOut as LogOutIcon, Zap, Edit3, Save, XCircle, User as UserIcon, CalendarClock, Settings as SettingsIcon, Gem, Loader2 } from 'lucide-react'
+import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useRouter } from 'next/navigation'
@@ -38,7 +38,7 @@ export default function ProfilePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const { subscriptionTier, setSubscriptionTier } = useSubscription();
+  const { subscriptionTier, setSubscriptionTier, mounted: subscriptionMounted } = useSubscription();
 
 
   const [profileData, setProfileData] = useState({
@@ -52,16 +52,44 @@ export default function ProfilePage() {
    const [initialProfileData, setInitialProfileData] = useState(profileData);
 
 
-  useEffect(() => {
-    setUiMounted(true); 
-     if (typeof window !== 'undefined') {
+  const checkLoginStatus = useCallback(() => {
+    if (typeof window !== 'undefined') {
       const loggedInStatus = localStorage.getItem('fitnityUserLoggedIn') === 'true';
       setIsLoggedIn(loggedInStatus);
-      if (!loggedInStatus) {
+      if (!loggedInStatus && uiMounted) { // Ensure uiMounted before redirecting
         router.replace('/auth/sign-in');
       }
     }
-  }, [router]);
+  }, [router, uiMounted]);
+
+  useEffect(() => {
+    setUiMounted(true); 
+  }, []);
+
+  useEffect(() => {
+    if (uiMounted) {
+      checkLoginStatus();
+    }
+    // Add event listener for login state changes from other tabs/windows
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'fitnityUserLoggedIn') {
+        checkLoginStatus();
+      }
+    };
+    // Add event listener for login state changes triggered by the app itself
+    const handleLoginStateChange = () => {
+      checkLoginStatus();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('loginStateChange', handleLoginStateChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('loginStateChange', handleLoginStateChange);
+    };
+  }, [uiMounted, checkLoginStatus]);
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -92,10 +120,10 @@ export default function ProfilePage() {
       localStorage.removeItem('fitnityUserLoggedIn');
       window.dispatchEvent(new Event('loginStateChange')); 
     }
-    router.push('/');
+    router.push('/'); // Redirect to homepage after logout
   };
 
-  if (!uiMounted || !isLoggedIn) { 
+  if (!uiMounted || !isLoggedIn || !subscriptionMounted) { 
     return (
         <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 animate-fade-in-up">
           <div className="max-w-2xl sm:max-w-3xl mx-auto space-y-6 sm:space-y-8">
@@ -128,7 +156,7 @@ export default function ProfilePage() {
       );
   }
 
-  const isDarkMode = theme === 'dark' || (theme === 'system' && resolvedTheme === 'dark');
+  const isDarkMode = resolvedTheme === 'dark';
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 animate-fade-in-up">
@@ -195,7 +223,7 @@ export default function ProfilePage() {
         
         <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.1s'}}>
           <CardHeader>
-            <CardTitle className="text-lg sm:text-xl font-bold flex items-center">
+            <CardTitle className="text-xl font-bold flex items-center">
               <Zap className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> My Fitness Snapshot
             </CardTitle>
             <CardDescription className="text-xs sm:text-sm text-card-foreground/70">Your current fitness goals and preferences.</CardDescription>
@@ -262,7 +290,7 @@ export default function ProfilePage() {
 
         <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.15s'}}>
           <CardHeader>
-            <CardTitle className="text-lg sm:text-xl font-bold flex items-center">
+            <CardTitle className="text-xl font-bold flex items-center">
               <Gem className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Subscription Simulator
             </CardTitle>
             <CardDescription className="text-xs sm:text-sm text-card-foreground/70">
@@ -273,11 +301,13 @@ export default function ProfilePage() {
             {(['free', 'premium', 'unlimited'] as SubscriptionTier[]).map(tier => (
               <Button
                 key={tier}
-                variant={subscriptionTier === tier ? "default" : "outline"}
+                variant={subscriptionTier === tier ? "default" : "ghost"}
                 onClick={() => setSubscriptionTier(tier)}
                 className={cn(
                   "w-full sm:flex-1 capitalize",
-                  subscriptionTier === tier ? "bg-accent hover:bg-accent/90 text-accent-foreground" : "border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground"
+                  subscriptionTier === tier 
+                    ? "bg-accent hover:bg-accent/90 text-accent-foreground" 
+                    : "border border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground"
                 )}
               >
                 Set to {tier}
@@ -289,7 +319,7 @@ export default function ProfilePage() {
 
         <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.2s'}}>
           <CardHeader>
-            <CardTitle className="text-lg sm:text-xl font-bold flex items-center">
+            <CardTitle className="text-xl font-bold flex items-center">
               <SettingsIcon className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Account Settings
             </CardTitle>
             <CardDescription className="text-xs sm:text-sm text-card-foreground/70">Manage your personal details.</CardDescription>
@@ -300,7 +330,7 @@ export default function ProfilePage() {
               {isEditing ? (
                 <Input id="profileFullName" type="text" value={profileData.fullName} onChange={handleInputChange} name="fullName" className="mt-1 bg-background/50 text-card-foreground" />
               ) : (
-                <p className="mt-1 p-3 rounded-md bg-background/10 text-card-foreground/80 border border-transparent text-sm sm:text-base">{profileData.fullName}</p>
+                <p className="mt-1 p-3 rounded-md bg-background/20 text-card-foreground/80 border border-transparent text-sm sm:text-base">{profileData.fullName}</p>
               )}
             </div>
             <div>
@@ -308,7 +338,7 @@ export default function ProfilePage() {
               {isEditing ? (
                 <Input id="profileEmail" type="email" value={profileData.email} onChange={handleInputChange} name="email" className="mt-1 bg-background/50 text-card-foreground" />
               ) : (
-                 <p className="mt-1 p-3 rounded-md bg-background/10 text-card-foreground/80 border border-transparent text-sm sm:text-base">{profileData.email}</p>
+                 <p className="mt-1 p-3 rounded-md bg-background/20 text-card-foreground/80 border border-transparent text-sm sm:text-base">{profileData.email}</p>
               )}
             </div>
              <div className="flex items-center justify-between p-3 rounded-lg bg-background/10 mt-2">
@@ -324,7 +354,7 @@ export default function ProfilePage() {
 
         <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.3s'}}>
           <CardHeader>
-            <CardTitle className="text-lg sm:text-xl font-bold flex items-center">
+            <CardTitle className="text-xl font-bold flex items-center">
               {isDarkMode ? 
                 <Moon className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> : 
                 <Sun className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" />
@@ -350,7 +380,7 @@ export default function ProfilePage() {
 
         <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.4s'}}>
           <CardHeader>
-            <CardTitle className="text-lg sm:text-xl font-bold flex items-center">
+            <CardTitle className="text-xl font-bold flex items-center">
               <Bell className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Notification Preferences
             </CardTitle>
             <CardDescription className="text-xs sm:text-sm text-card-foreground/70">Choose what updates you want to receive.</CardDescription>
@@ -373,7 +403,7 @@ export default function ProfilePage() {
         
         <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.5s'}}>
           <CardHeader>
-            <CardTitle className="text-lg sm:text-xl font-bold flex items-center">
+            <CardTitle className="text-xl font-bold flex items-center">
               <Globe className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Language Preference
             </CardTitle>
             <CardDescription className="text-xs sm:text-sm text-card-foreground/70">Select your preferred language for the app interface.</CardDescription>
@@ -393,7 +423,7 @@ export default function ProfilePage() {
 
         <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.6s'}}>
           <CardHeader>
-            <CardTitle className="text-lg sm:text-xl font-bold flex items-center">
+            <CardTitle className="text-xl font-bold flex items-center">
               <ShieldCheck className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Data & Privacy
             </CardTitle>
             <CardDescription className="text-xs sm:text-sm text-card-foreground/70">Manage your data and review our policies.</CardDescription>
