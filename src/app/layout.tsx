@@ -7,9 +7,9 @@ import { Toaster } from '@/components/ui/toaster';
 import MainHeader from '@/components/layout/MainHeader';
 import MainFooter from '@/components/layout/MainFooter';
 import { ThemeProvider } from '@/components/theme-provider';
-import CursorFollower from '@/components/effects/CursorFollower';
+// import CursorFollower from '@/components/effects/CursorFollower'; // Temporarily commented out
 import { CartProvider } from '@/contexts/CartContext';
-import { SubscriptionProvider } from '@/contexts/SubscriptionContext'; // Added SubscriptionProvider import
+import { SubscriptionProvider } from '@/contexts/SubscriptionContext'; // Ensure correct import path
 
 const geistSans = GeistSans;
 // const geistMono = GeistMono;
@@ -31,13 +31,13 @@ export default function RootLayout({
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="dark" // Or "light" based on desired default
           enableSystem
           disableTransitionOnChange
         >
-          <SubscriptionProvider> {/* Wrapped with SubscriptionProvider */}
+          <SubscriptionProvider> {/* SubscriptionProvider should wrap CartProvider and thus MainHeader */}
             <CartProvider>
-              {/* <CursorFollower /> */} {/* Cursor follower can be distracting, commented out for now */}
+              {/* <CursorFollower /> */} {/* Cursor follower can be re-enabled later */}
               <MainHeader />
               <main className="flex-grow">{children}</main>
               <MainFooter />

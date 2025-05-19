@@ -1,5 +1,4 @@
-
-'use client';
+'use client'; // CRITICAL: This directive was missing or incorrect.
 
 import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback, Dispatch, SetStateAction } from 'react';
 
@@ -10,7 +9,7 @@ export interface FeatureAccessConfig {
   workoutPlan: SubscriptionTier[];
   formAnalysis: SubscriptionTier[];
   aiCoach: SubscriptionTier[];
-  dashboard: SubscriptionTier[]; // General dashboard access
+  dashboard: SubscriptionTier[];
   dashboardWorkoutConsistency: SubscriptionTier[];
   dashboardHealthSnapshot: SubscriptionTier[];
   dashboardBodyMeasurements: SubscriptionTier[];
@@ -38,16 +37,18 @@ const featureAccess: FeatureAccessConfig = {
   profile: ['free', 'premium', 'unlimited'],
 };
 
-type SubscriptionContextType = {
+export type SubscriptionContextType = {
   subscriptionTier: SubscriptionTier;
   setSubscriptionTier: Dispatch<SetStateAction<SubscriptionTier>>;
   isFeatureAccessible: (featureKey: keyof FeatureAccessConfig) => boolean;
-  mounted: boolean;
+  mounted: boolean; // Indicates if provider is mounted and localStorage can be accessed
 };
 
-const initialSubscriptionContextValue: SubscriptionContextType = {
+const defaultSubscriptionContextValue: SubscriptionContextType = {
   subscriptionTier: 'free',
-  setSubscriptionTier: () => {},
+  setSubscriptionTier: () => {
+    console.warn("setSubscriptionTier called before SubscriptionProvider is fully mounted or outside of it.");
+  },
   isFeatureAccessible: (featureKey: keyof FeatureAccessConfig) => {
     const accessibleTiers = featureAccess[featureKey];
     return accessibleTiers.includes('free');
@@ -55,7 +56,7 @@ const initialSubscriptionContextValue: SubscriptionContextType = {
   mounted: false,
 };
 
-const SubscriptionContext = createContext<SubscriptionContextType>(initialSubscriptionContextValue);
+const SubscriptionContext = createContext<SubscriptionContextType>(defaultSubscriptionContextValue);
 
 export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
   const [subscriptionTier, setSubscriptionTier] = useState<SubscriptionTier>('free');
@@ -63,20 +64,17 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     setMounted(true);
-    if (typeof window !== 'undefined') {
-      const storedTier = localStorage.getItem('fitnitySubscriptionTier') as SubscriptionTier | null;
-      if (storedTier && ['free', 'premium', 'unlimited'].includes(storedTier)) {
-        setSubscriptionTier(storedTier);
-      } else {
-        // Default to 'free' if nothing stored or invalid
-        localStorage.setItem('fitnitySubscriptionTier', 'free');
-        setSubscriptionTier('free');
-      }
+    const storedTier = localStorage.getItem('fitnitySubscriptionTier') as SubscriptionTier | null;
+    if (storedTier && ['free', 'premium', 'unlimited'].includes(storedTier)) {
+      setSubscriptionTier(storedTier);
+    } else {
+      localStorage.setItem('fitnitySubscriptionTier', 'free'); // Initialize if not present
+      setSubscriptionTier('free');
     }
   }, []);
 
   useEffect(() => {
-    if (mounted && typeof window !== 'undefined') {
+    if (mounted) {
       localStorage.setItem('fitnitySubscriptionTier', subscriptionTier);
     }
   }, [subscriptionTier, mounted]);
@@ -84,9 +82,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
   const isFeatureAccessible = useCallback(
     (featureKey: keyof FeatureAccessConfig): boolean => {
       if (!mounted) {
-        // SSR or pre-hydration: default to 'free' access for the given feature
-        const accessibleTiersForFeature = featureAccess[featureKey];
-        return accessibleTiersForFeature.includes('free');
+        return defaultSubscriptionContextValue.isFeatureAccessible(featureKey);
       }
       const accessibleTiers = featureAccess[featureKey];
       return accessibleTiers.includes(subscriptionTier);
@@ -110,10 +106,10 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
 
 export const useSubscription = () => {
   const context = useContext(SubscriptionContext);
+  // This error should not be hit if createContext has a default and Provider is correctly placed.
   if (context === undefined) {
-    // This error should ideally not be hit if using the default value in createContext
-    // and ensuring provider wraps the app.
-    throw new Error('useSubscription must be used within a SubscriptionProvider');
+    console.error("useSubscription hook: SubscriptionContext is undefined. Check Provider setup and default context value.");
+    throw new Error('useSubscription must be used within a SubscriptionProvider (context returned undefined)');
   }
   return context;
 };
