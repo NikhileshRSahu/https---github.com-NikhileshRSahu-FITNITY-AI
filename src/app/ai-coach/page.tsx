@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { aiCoach, type AiCoachInput } from '@/ai/flows/provide-ai-coach';
-import { Loader2, Send, User, Bot } from 'lucide-react';
+import { Loader2, Send, User, Bot, Languages, Dumbbell } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import ChatMessage from '@/components/ai-coach/ChatMessage';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
@@ -22,7 +22,7 @@ const aiCoachSetupSchema = z.object({
   language: z.enum(['English', 'Hindi'], {
     required_error: 'Please select a language.',
   }),
-  fitnessGoal: z.string().min(5, { message: 'Please describe your fitness goal (min. 5 characters).' }),
+  fitnessGoal: z.string().min(10, { message: 'Fitness goal must be at least 10 characters.' }),
   workoutHistorySummary: z.string().optional().describe('A brief summary of recent workouts or current physical status.'),
 });
 
@@ -80,14 +80,14 @@ export default function AiCoachPage() {
     setIsCoachReady(true);
     
     const historySummaryText = data.workoutHistorySummary 
-        ? `You mentioned: "${data.workoutHistorySummary}". ` 
+        ? `You mentioned your recent activity/status: "${data.workoutHistorySummary}". ` 
         : "You haven't shared any specific recent activity. ";
 
     setMessages([
       {
         id: 'initial-greet',
         sender: 'ai',
-        text: `Hello! I'm your Fitnity AI Coach, ready to assist in ${data.language}. I see your goal is "${data.fitnessGoal}". ${historySummaryText}How can I help you kickstart your journey today?`,
+        text: `Hello! I'm your Fitnity AI Coach, ready to assist in ${data.language}. I see your primary goal is "${data.fitnessGoal}". ${historySummaryText}How can I help you kickstart your fitness journey today or provide guidance on your current path?`,
         timestamp: new Date(),
       }
     ]);
@@ -158,32 +158,33 @@ export default function AiCoachPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 md:px-6 py-12 md:py-20">
+    <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 animate-fade-in-up">
       {!isCoachReady ? (
         <Card className="max-w-lg mx-auto glassmorphic-card">
           <CardHeader>
             <CardTitle className="text-3xl font-bold flex items-center">
               <Bot className="mr-3 h-8 w-8 text-accent" /> Setup AI Coach
               </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-base sm:text-lg">
               Tell us a bit about your goals to personalize your AI Coach experience.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...setupForm}>
-              <form onSubmit={setupForm.handleSubmit(onSetupSubmit)} className="space-y-6">
+              <form onSubmit={setupForm.handleSubmit(onSetupSubmit)} className="space-y-8">
                 <FormField
                   control={setupForm.control}
                   name="fitnessGoal"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-lg">Primary Fitness Goal</FormLabel>
+                      <FormLabel className="text-lg font-semibold flex items-center"><Dumbbell className="mr-2 h-5 w-5 text-accent/80"/> Primary Fitness Goal</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="e.g., Improve stamina, build upper body strength"
                           {...field}
                         />
                       </FormControl>
+                      <FormDescription>What are you aiming to achieve? (min. 10 characters)</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -193,10 +194,10 @@ export default function AiCoachPage() {
                   name="workoutHistorySummary"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-lg">Recent Activity / Current Status (Optional)</FormLabel>
+                      <FormLabel className="text-lg font-semibold">Recent Activity / Current Status (Optional)</FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder="e.g., Went for a 30 min run yesterday, feeling a bit tired."
+                          placeholder="e.g., Went for a 30 min run yesterday, feeling a bit tired. Or, 'New to workouts, where do I start?'"
                           {...field}
                           rows={3}
                         />
@@ -213,7 +214,7 @@ export default function AiCoachPage() {
                   name="language"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-lg">Preferred Language</FormLabel>
+                      <FormLabel className="text-lg font-semibold flex items-center"><Languages className="mr-2 h-5 w-5 text-accent/80"/> Preferred Language</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -225,6 +226,9 @@ export default function AiCoachPage() {
                           <SelectItem value="Hindi">Hindi</SelectItem>
                         </SelectContent>
                       </Select>
+                       <FormDescription>
+                        The AI will communicate in your chosen language.
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -242,7 +246,7 @@ export default function AiCoachPage() {
             <CardTitle className="text-2xl font-bold flex items-center">
               <Bot className="mr-2 h-6 w-6 text-accent" /> AI Fitness Coach
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-sm sm:text-base">
               Your goal: {coachSettings?.fitnessGoal} | Language: {coachSettings?.language}
             </CardDescription>
           </CardHeader>

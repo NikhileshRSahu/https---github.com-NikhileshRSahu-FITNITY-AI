@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { LineChart, CartesianGrid, XAxis, YAxis, Line, ResponsiveContainer } from 'recharts';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Award, Flame, HeartPulse, TrendingUp, Scaling, Star, Droplets, Trophy, CalendarDays, BarChart4, Dumbbell, Zap, Activity } from 'lucide-react';
+import { Award, Flame, HeartPulse, TrendingUp, Scaling, Star, Droplets, Trophy, CalendarDays, BarChart4, Dumbbell, Zap, Activity, ShieldCheck } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -42,6 +42,7 @@ const bodyMeasurementData = {
 const streaksAndBadges = {
   currentStreak: 21,
   totalBadges: 12,
+  currentChallengeStreak: { name: '30-Day Cardio Blast', day: 15, totalDays: 30, icon: Flame },
   recentBadges: [
     { name: 'Consistent Challenger Pro', icon: Flame, date: 'July 28' },
     { name: 'Workout Warrior Supreme', icon: Award, date: 'July 25' },
@@ -99,7 +100,7 @@ export default function DashboardPage() {
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 animate-fade-in-up">
-      <h1 className="text-3xl md:text-4xl font-bold mb-10 text-foreground text-center">My Progress Dashboard</h1>
+      <h1 className="text-3xl md:text-4xl font-bold mb-10 text-foreground text-center animate-fade-in-up">My Progress Dashboard</h1>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <Card className="glassmorphic-card lg:col-span-2 hover:shadow-2xl transition-shadow duration-300 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
@@ -108,7 +109,7 @@ export default function DashboardPage() {
               <CardTitle className="flex items-center text-xl">
                 <TrendingUp className="mr-3 h-6 w-6 text-accent" /> Workout Consistency
               </CardTitle>
-              <CardDescription>Your workouts completed over time.</CardDescription>
+              <CardDescription className="text-sm sm:text-base">Your workouts completed over time.</CardDescription>
             </div>
             <div className="flex items-center gap-1 sm:gap-2 mt-2 sm:mt-0">
               {(['weekly', 'monthly', 'allTime'] as TimeRange[]).map((range) => (
@@ -167,6 +168,7 @@ export default function DashboardPage() {
                       stroke="hsl(var(--accent))"
                       dot={false}
                       activeDot={{ r: 6, strokeWidth: 0, fill: "hsl(var(--accent))" }}
+                      isAnimationActive={true}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -188,7 +190,7 @@ export default function DashboardPage() {
             <CardTitle className="flex items-center text-xl">
               <Scaling className="mr-3 h-6 w-6 text-accent" /> Body Measurements
             </CardTitle>
-            <CardDescription>Your current key body metrics.</CardDescription>
+            <CardDescription className="text-sm sm:text-base">Your current key body metrics.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 sm:space-y-4">
             <div className="flex items-baseline justify-between p-3 rounded-lg bg-background/10">
@@ -211,7 +213,7 @@ export default function DashboardPage() {
             <CardTitle className="flex items-center text-xl">
               <Trophy className="mr-3 h-6 w-6 text-accent" /> Personal Records
             </CardTitle>
-            <CardDescription>Your noteworthy achievements.</CardDescription>
+            <CardDescription className="text-sm sm:text-base">Your noteworthy achievements.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2 sm:space-y-3">
             {personalRecordsData && personalRecordsData.length > 0 ? (
@@ -241,13 +243,28 @@ export default function DashboardPage() {
             <CardTitle className="flex items-center text-xl">
               <Award className="mr-3 h-6 w-6 text-accent" /> Streaks & Badges
             </CardTitle>
-            <CardDescription>Your accomplishments and consistency.</CardDescription>
+            <CardDescription className="text-sm sm:text-base">Your accomplishments and consistency.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 sm:space-y-4">
             <div className="flex items-center justify-between p-3 rounded-lg bg-background/10">
               <span className="font-medium text-sm sm:text-base text-card-foreground">Current Workout Streak:</span>
               <span className="text-lg sm:text-xl font-semibold text-accent">{streaksAndBadges.currentStreak} days</span>
             </div>
+             {streaksAndBadges.currentChallengeStreak && (
+              <div className="p-3 rounded-lg bg-accent/10 border border-accent/30 shadow-inner">
+                <div className="flex items-center gap-2 mb-1">
+                  <streaksAndBadges.currentChallengeStreak.icon className="h-5 w-5 text-accent/90"/>
+                  <h4 className="font-semibold text-card-foreground text-sm sm:text-base">Current Challenge: {streaksAndBadges.currentChallengeStreak.name}</h4>
+                </div>
+                <Progress 
+                  value={(streaksAndBadges.currentChallengeStreak.day / streaksAndBadges.currentChallengeStreak.totalDays) * 100} 
+                  className="h-2 bg-accent/20 [&>div]:bg-accent"
+                />
+                <p className="text-xs text-card-foreground/70 text-right mt-1">
+                  Day {streaksAndBadges.currentChallengeStreak.day} of {streaksAndBadges.currentChallengeStreak.totalDays}
+                </p>
+              </div>
+            )}
             <div className="flex items-center justify-between p-3 rounded-lg bg-background/10">
               <span className="font-medium text-sm sm:text-base text-card-foreground">Total Badges Unlocked:</span>
               <span className="text-lg sm:text-xl font-semibold text-accent">{streaksAndBadges.totalBadges}</span>
@@ -274,7 +291,7 @@ export default function DashboardPage() {
             <CardTitle className="flex items-center text-xl">
               <HeartPulse className="mr-3 h-6 w-6 text-accent" /> Daily Health Snapshot
             </CardTitle>
-            <CardDescription>Your recent sleep, hydration and activity.</CardDescription>
+            <CardDescription className="text-sm sm:text-base">Your recent sleep, hydration and activity.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 sm:space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">

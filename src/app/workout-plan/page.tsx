@@ -12,15 +12,17 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { generateWorkoutPlan, type GenerateWorkoutPlanInput } from '@/ai/flows/generate-workout-plan';
-import { Loader2, ClipboardList, AlertTriangle } from 'lucide-react';
+import { Loader2, ClipboardList, AlertTriangle, Smile, Briefcase } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const workoutPlanFormSchema = z.object({
-  fitnessGoals: z.string().min(10, { message: 'Please describe your fitness goals in at least 10 characters.' }),
-  workoutPreferences: z.string().min(10, { message: 'Please describe your workout preferences in at least 10 characters.' }),
+  fitnessGoals: z.string().min(10, { message: 'Fitness goals must be at least 10 characters.' }),
+  workoutPreferences: z.string().min(10, { message: 'Workout preferences must be at least 10 characters.' }),
   currentFitnessLevel: z.enum(['beginner', 'intermediate', 'advanced'], {
     required_error: 'Please select your current fitness level.',
   }),
+  mood: z.enum(['energetic', 'neutral', 'tired', 'stressed']).optional(),
+  lifestyleNotes: z.string().optional(),
 });
 
 type WorkoutPlanFormValues = z.infer<typeof workoutPlanFormSchema>;
@@ -36,6 +38,7 @@ export default function WorkoutPlanPage() {
     defaultValues: {
       fitnessGoals: '',
       workoutPreferences: '',
+      lifestyleNotes: '',
     },
   });
 
@@ -48,6 +51,8 @@ export default function WorkoutPlanPage() {
         fitnessGoals: data.fitnessGoals,
         workoutPreferences: data.workoutPreferences,
         currentFitnessLevel: data.currentFitnessLevel,
+        mood: data.mood,
+        lifestyleNotes: data.lifestyleNotes,
       };
       const result = await generateWorkoutPlan(input);
       if (result && result.workoutPlan) {
@@ -89,7 +94,7 @@ export default function WorkoutPlanPage() {
             <ClipboardList className="mr-3 h-8 w-8 text-accent" /> Generate Your Workout Plan
           </CardTitle>
           <CardDescription className="text-base sm:text-lg">
-            Fill in your details below, and our AI will create a personalized workout plan for you.
+            Fill in your details below, and our AI will create a personalized workout plan for you. The more details you provide, the better the plan!
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -100,7 +105,7 @@ export default function WorkoutPlanPage() {
                 name="fitnessGoals"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-lg">Fitness Goals</FormLabel>
+                    <FormLabel className="text-lg font-semibold">Fitness Goals</FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="e.g., Achieve a 10k run, sculpt lean muscle, boost daily energy levels."
@@ -109,7 +114,7 @@ export default function WorkoutPlanPage() {
                       />
                     </FormControl>
                     <FormDescription>
-                      Describe what you want to achieve with your fitness routine.
+                      Describe what you want to achieve with your fitness routine. (min. 10 characters)
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -120,7 +125,7 @@ export default function WorkoutPlanPage() {
                 name="workoutPreferences"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-lg">Workout Preferences</FormLabel>
+                    <FormLabel className="text-lg font-semibold">Workout Preferences</FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="e.g., Prefer 45-min gym sessions with free weights, enjoy outdoor cycling, need low-impact options."
@@ -129,7 +134,7 @@ export default function WorkoutPlanPage() {
                       />
                     </FormControl>
                     <FormDescription>
-                      Tell us about your preferred workout styles, duration, location, and any equipment availability.
+                      Tell us about your preferred workout styles, duration, location, and any equipment availability. (min. 10 characters)
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -140,7 +145,7 @@ export default function WorkoutPlanPage() {
                 name="currentFitnessLevel"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-lg">Current Fitness Level</FormLabel>
+                    <FormLabel className="text-lg font-semibold">Current Fitness Level</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -155,6 +160,52 @@ export default function WorkoutPlanPage() {
                     </Select>
                      <FormDescription>
                       Honest assessment helps in creating a suitable plan.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="mood"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-lg font-semibold flex items-center"><Smile className="mr-2 h-5 w-5 text-accent/80"/> Current Mood (Optional)</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="How are you feeling today?" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="energetic">Energetic & Ready to Go!</SelectItem>
+                        <SelectItem value="neutral">Neutral / Average</SelectItem>
+                        <SelectItem value="tired">A Bit Tired / Low Energy</SelectItem>
+                        <SelectItem value="stressed">Stressed / Need to Unwind</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      This helps the AI tailor workout intensity or suggest restorative activities if needed.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="lifestyleNotes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-lg font-semibold flex items-center"><Briefcase className="mr-2 h-5 w-5 text-accent/80"/> Lifestyle Notes (Optional)</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="e.g., Desk job with long sitting hours, limited time on weekdays, prefer outdoor workouts on weekends."
+                        {...field}
+                        rows={3}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Any details about your daily routine, work, or time constraints that might affect your workouts.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

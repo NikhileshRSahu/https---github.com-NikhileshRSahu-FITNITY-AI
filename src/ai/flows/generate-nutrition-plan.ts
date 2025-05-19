@@ -14,11 +14,11 @@ import {z} from 'genkit';
 const GenerateNutritionPlanInputSchema = z.object({
   dietaryPreferences: z
     .string()
-    .min(10, { message: 'Please describe your dietary preferences (e.g., vegetarian, vegan, keto, omnivore) in at least 10 characters.' })
+    .min(10, { message: 'Dietary preferences must be at least 10 characters.' })
     .describe('The user\'s primary dietary preferences, e.g., vegetarian, vegan, omnivore, specific restrictions.'),
   healthGoals: z
     .string()
-    .min(10, { message: 'Please describe your health goals (e.g., weight loss, muscle gain, better energy) in at least 10 characters.' })
+    .min(10, { message: 'Health goals must be at least 10 characters.' })
     .describe('The user\'s health and fitness goals, e.g., weight loss, muscle gain, improved energy levels, managing a condition.'),
   allergies: z
     .string()
@@ -29,6 +29,8 @@ const GenerateNutritionPlanInputSchema = z.object({
     .optional()
     .describe('Preferred types of cuisine, e.g., Indian, Mediterranean, Italian, Mexican.'),
   dailyActivityLevel: z.enum(['sedentary', 'light', 'moderate', 'active', 'very_active']).describe('User\'s general daily activity level.'),
+  currentMood: z.enum(['positive', 'neutral', 'stressed', 'low_energy']).optional().describe('User\'s current mood, which can affect appetite or food choices.'),
+  lifestyleContext: z.string().optional().describe('Brief description of daily routine or lifestyle factors relevant to diet, e.g., busy schedule, frequent travel, works night shifts, specific mealtime constraints.')
 });
 export type GenerateNutritionPlanInput = z.infer<typeof GenerateNutritionPlanInputSchema>;
 
@@ -47,9 +49,11 @@ const prompt = ai.definePrompt({
   name: 'generateNutritionPlanPrompt',
   input: {schema: GenerateNutritionPlanInputSchema},
   output: {schema: GenerateNutritionPlanOutputSchema},
-  prompt: `You are an expert nutritionist and dietitian. Your task is to create a comprehensive, personalized nutrition plan for a user based on their specific dietary preferences, health goals, allergies, cuisine preferences, and daily activity level.
-
-The plan should be practical, balanced, and sustainable. Provide example meal ideas for breakfast, lunch, dinner, and snacks. Include general dietary guidelines and tips relevant to their goals.
+  prompt: `You are an expert nutritionist and dietitian. Your task is to create a comprehensive, personalized 7-day nutrition plan for a user.
+The plan should be practical, balanced, sustainable, and tailored to their specific dietary preferences, health goals, allergies, cuisine preferences, daily activity level, current mood, and lifestyle context.
+Provide example meal ideas for breakfast, lunch, dinner, and snacks for each of the 7 days. Include general dietary guidelines and tips relevant to their goals.
+Consider the user's mood: if stressed or low energy, suggest comfort foods that are still healthy or energy-boosting options.
+Factor in lifestyle context: if they have a busy schedule, suggest quick and easy meals.
 
 User Details:
 - Dietary Preferences: {{{dietaryPreferences}}}
@@ -57,8 +61,10 @@ User Details:
 - Allergies/Intolerances: {{#if allergies}}{{{allergies}}}{{else}}None specified{{/if}}
 - Cuisine Preferences: {{#if cuisinePreferences}}{{{cuisinePreferences}}}{{else}}Any suitable cuisine{{/if}}
 - Daily Activity Level: {{{dailyActivityLevel}}}
+{{#if currentMood}}- Current Mood: {{{currentMood}}}{{/if}}
+{{#if lifestyleContext}}- Lifestyle Context: {{{lifestyleContext}}}{{/if}}
 
-Generate a detailed nutrition plan based on this information.
+Generate a detailed 7-day nutrition plan based on this information.
 Nutrition Plan:
 `,
 });
