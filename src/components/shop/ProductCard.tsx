@@ -46,7 +46,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           <a className="block aspect-square overflow-hidden">
             <Image
               src={product.imagePlaceholder}
-              alt={product.name} // Ensure alt text
+              alt={product.name} 
               width={300}
               height={300}
               className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
@@ -55,36 +55,38 @@ export default function ProductCard({ product }: ProductCardProps) {
           </a>
         </Link>
       </CardHeader>
-      <CardContent className="p-4 flex-grow flex flex-col">
+      <CardContent className="p-3 sm:p-4 flex-grow flex flex-col">
         <Link href={`/shop/products/${product.slug}`} passHref legacyBehavior>
           <a>
-            <CardTitle className="text-lg font-semibold mb-1 group-hover:text-accent transition-colors duration-200 truncate">
+            <CardTitle className="text-base sm:text-lg font-semibold mb-1 group-hover:text-accent transition-colors duration-200 truncate">
               {product.name}
             </CardTitle>
           </a>
         </Link>
-        <p className="text-sm text-card-foreground/70 mb-3 line-clamp-2 flex-grow">{product.description}</p>
-        <div className="flex items-baseline gap-2 mt-auto pt-2">
-            <p className="text-xl font-bold text-accent">₹{product.priceINR.toLocaleString()}</p>
+        <p className="text-xs sm:text-sm text-card-foreground/70 mb-2 sm:mb-3 line-clamp-2 flex-grow">{product.description}</p>
+        <div className="flex items-baseline gap-1 sm:gap-2 mt-auto pt-1 sm:pt-2">
+            <p className="text-lg sm:text-xl font-bold text-accent">₹{product.priceINR.toLocaleString()}</p>
             {product.originalPriceINR && (
-              <p className="text-sm text-card-foreground/60 line-through">₹{(product.originalPriceINR).toLocaleString()}</p>
+              <p className="text-xs sm:text-sm text-card-foreground/60 line-through">₹{(product.originalPriceINR).toLocaleString()}</p>
             )}
         </div>
-         <p className="text-xs text-card-foreground/50 mb-2">Approx. ${product.priceUSD}</p>
+         <p className="text-xs text-card-foreground/50 mb-1 sm:mb-2">Approx. ${product.priceUSD}</p>
       </CardContent>
-      <CardFooter className="p-4 pt-0 flex flex-col sm:flex-row gap-2">
+      <CardFooter className="p-3 sm:p-4 pt-0 flex flex-col sm:flex-row gap-2">
         <Button
           variant="outline"
-          className="w-full sm:w-auto flex-grow border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground active:scale-95 transition-all duration-200"
+          size="sm"
+          className="w-full sm:w-auto flex-grow border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground active:scale-95 transition-all duration-200 text-xs sm:text-sm"
           asChild
         >
           <Link href={`/shop/products/${product.slug}`}>
-            <Eye className="mr-2 h-4 w-4" /> View Details
+            <Eye className="mr-1.5 h-3.5 w-3.5 sm:h-4 sm:w-4" /> View Details
           </Link>
         </Button>
         <Button
+          size="sm"
           className={cn(
-            "w-full sm:w-auto flex-grow text-accent-foreground active:scale-95 transition-all duration-200 text-sm py-2.5 px-4 cta-glow-pulse",
+            "w-full sm:w-auto flex-grow text-accent-foreground active:scale-95 transition-all duration-200 text-xs sm:text-sm cta-glow-pulse",
             isAdding ? "bg-green-500 hover:bg-green-600" : "bg-accent hover:bg-accent/90"
           )}
           onClick={handleAddToCart}

@@ -33,12 +33,12 @@ export default function ProductDetailPage() {
       if (foundProduct) {
         let recommendations: Product[] = products
           .filter(p => p.id !== foundProduct.id && p.category === foundProduct.category)
-          .sort(() => 0.5 - Math.random()); // Shuffle for variety
+          .sort(() => 0.5 - Math.random()); 
         
         if (recommendations.length < 3) {
           const otherRandomProducts = products
             .filter(p => p.id !== foundProduct.id && p.category !== foundProduct.category)
-            .sort(() => 0.5 - Math.random()) // Shuffle for variety
+            .sort(() => 0.5 - Math.random()) 
             .slice(0, 3 - recommendations.length);
           recommendations = [...recommendations, ...otherRandomProducts];
         }
@@ -68,10 +68,10 @@ export default function ProductDetailPage() {
 
     setTimeout(() => {
       setIsAddingToCart(false);
-    }, 1500); // Revert button state after 1.5 seconds
+    }, 1500); 
   };
 
-  if (product === undefined) { // Initial loading state
+  if (product === undefined) { 
     return (
       <div className="container mx-auto px-4 md:px-6 py-8 sm:py-12 md:py-16 animate-fade-in-up">
         <div className="mb-6 sm:mb-8">
@@ -109,7 +109,7 @@ export default function ProductDetailPage() {
     );
   }
 
-  if (!product) { // Product not found after attempting to load
+  if (!product) { 
     return (
         <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 text-center min-h-[calc(100vh-10rem)] flex flex-col items-center justify-center animate-fade-in-up">
             <Info className="h-16 w-16 text-destructive mb-6" />
@@ -153,8 +153,8 @@ export default function ProductDetailPage() {
           </div>
         </Card>
 
-        <div className="space-y-4 sm:space-y-6 animate-fade-in-up" style={{animationDelay: '0.2s'}}>
-          <Card className="glassmorphic-card">
+        <div className="space-y-4 sm:space-y-6 animate-fade-in-up md:flex md:flex-col" style={{animationDelay: '0.2s'}}>
+          <Card className="glassmorphic-card md:flex-grow">
             <CardHeader className="pb-3 sm:pb-4">
               <Link href={`/shop/products?category=${product.category.toLowerCase()}`} className="text-xs sm:text-sm text-accent hover:underline mb-1 flex items-center gap-1">
                  <Tag className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> {product.category}
@@ -240,3 +240,4 @@ export default function ProductDetailPage() {
     </div>
   );
 }
+
