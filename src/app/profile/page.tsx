@@ -1,3 +1,4 @@
+
 'use client'
 
 import { useTheme } from 'next-themes'
@@ -107,25 +108,25 @@ export default function ProfilePage() {
     defaultValues: { currentPassword: "", newPassword: "", confirmNewPassword: "" },
   });
   const [isPasswordSubmitting, setIsPasswordSubmitting] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false); // Added isLoggingOut state
 
 
   const checkLoginStatus = useCallback(() => {
     if (typeof window !== 'undefined') {
       const loggedInStatus = localStorage.getItem('fitnityUserLoggedIn') === 'true';
       setIsLoggedIn(loggedInStatus);
-      if (!loggedInStatus && uiMounted) { // only redirect if uiMounted to prevent SSR issues
+      if (!loggedInStatus && uiMounted) { 
         router.replace('/auth/sign-in');
       }
     }
   }, [router, uiMounted]);
 
-  // Load data from localStorage on mount
   useEffect(() => {
-    setUiMounted(true); // Indicates component has mounted on client
+    setUiMounted(true); 
   }, []);
 
   useEffect(() => {
-    if (uiMounted) { // Only run localStorage access logic after mount
+    if (uiMounted) { 
       checkLoginStatus();
 
       const storedProfileData = localStorage.getItem('fitnityUserProfile');
@@ -147,9 +148,8 @@ export default function ProfilePage() {
   }, [uiMounted, checkLoginStatus]);
 
 
-  // Add event listener for login state changes
   useEffect(() => {
-    if (!uiMounted) return; // Don't add listeners on server or before mount
+    if (!uiMounted) return; 
 
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key === 'fitnityUserLoggedIn') checkLoginStatus();
@@ -223,33 +223,32 @@ export default function ProfilePage() {
   }
 
   const handleLogout = async () => {
-    setIsPasswordSubmitting(true); // Re-use for logout loading state
+    setIsLoggingOut(true);
     await new Promise(resolve => setTimeout(resolve, 700)); 
     if (typeof window !== 'undefined' && uiMounted) {
       localStorage.removeItem('fitnityUserLoggedIn');
       window.dispatchEvent(new Event('loginStateChange')); 
     }
     toast({title: "Logged Out", description: "You have been successfully logged out."});
-    setIsPasswordSubmitting(false);
+    setIsLoggingOut(false);
     router.push('/'); 
   };
   
   const onSubmitChangePassword = async (data: ChangePasswordFormValues) => {
     setIsPasswordSubmitting(true);
     console.log("Change Password Submitted (simulated):", data);
-    await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500)); 
     toast({
       title: "Password Change Simulated",
       description: "In a real app, your password would be updated.",
     });
     changePasswordForm.reset();
     setIsPasswordSubmitting(false);
-    // Manually close dialog if it's controlled, or use DialogClose inside form
     document.getElementById('closeChangePasswordDialog')?.click(); 
   };
 
   const handleDeleteAccount = async () => {
-    setIsPasswordSubmitting(true); // Re-use for delete loading state
+    setIsPasswordSubmitting(true); 
     await new Promise(resolve => setTimeout(resolve, 1000)); 
     toast({
       title: "Account Deletion Simulated",
@@ -655,7 +654,7 @@ export default function ProfilePage() {
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleLogout} disabled={isLoggingOut} className="bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90 text-primary-foreground dark:text-accent-foreground">
+                    <AlertDialogAction onClick={handleLogout} disabled={isLoggingOut} className="bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90 text-primary-foreground dark:text-accent-foreground active:scale-95">
                       {isLoggingOut ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Logout"}
                     </AlertDialogAction>
                   </AlertDialogFooter>
@@ -668,3 +667,6 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+
+    
