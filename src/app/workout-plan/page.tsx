@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { generateWorkoutPlan, type GenerateWorkoutPlanInput } from '@/ai/flows/generate-workout-plan';
@@ -153,6 +153,9 @@ export default function WorkoutPlanPage() {
                         <SelectItem value="advanced">Advanced (Very experienced, comfortable with high intensity and complex exercises)</SelectItem>
                       </SelectContent>
                     </Select>
+                     <FormDescription>
+                      Honest assessment helps in creating a suitable plan.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -198,9 +201,9 @@ export default function WorkoutPlanPage() {
                 {workoutPlanResult}
               </div>
             )}
-            {!isLoading && !error && !workoutPlanResult && ( // Handles the case where AI returns no plan explicitly
-                <Alert variant="destructive" className="bg-background/30 border-border/50 text-card-foreground">
-                    <AlertTriangle className="h-5 w-5 text-accent" />
+            {!isLoading && !error && !workoutPlanResult && ( 
+                <Alert variant="destructive" className="bg-destructive/20 border-destructive/50 text-destructive-foreground">
+                    <AlertTriangle className="h-5 w-5 text-destructive" />
                     <AlertTitle>No Plan Available</AlertTitle>
                     <AlertDescription>
                     The AI did not return a workout plan. Please try again with different inputs or refine your preferences.
