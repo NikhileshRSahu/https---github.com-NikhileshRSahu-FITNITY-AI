@@ -18,7 +18,7 @@ const ProvideFormAnalysisInputSchema = z.object({
     .describe(
       "A video stream of the user performing an exercise, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
-  exerciseName: z.string().describe('The name of the exercise being performed.'),
+  exerciseName: z.string().min(3, {message: "Exercise name must be at least 3 characters."}).describe('The name of the exercise being performed.'),
   focusArea: z
     .enum([
       'overall',
@@ -32,8 +32,9 @@ const ProvideFormAnalysisInputSchema = z.object({
     .describe('Optional: A specific area the user wants the AI to focus on during analysis.'),
   notes: z
     .string()
+    .max(300, {message: "Notes cannot exceed 300 characters."})
     .optional()
-    .describe('Optional: Any specific notes or concerns the user has about performing this exercise.'),
+    .describe('Optional: Any specific notes or concerns the user has about performing this exercise, or their perceived difficulty.'),
 });
 export type ProvideFormAnalysisInput = z.infer<typeof ProvideFormAnalysisInputSchema>;
 
@@ -57,8 +58,10 @@ You will receive a video stream of the user performing the following exercise: {
 {{#if focusArea}}The user has requested a specific focus on: {{{focusArea}}}. Prioritize feedback related to this area if possible, while still providing an overall assessment.{{/if}}
 {{#if notes}}The user has provided the following notes/concerns: "{{{notes}}}". Please consider these in your analysis.{{/if}}
 
-You will analyze the user's form in real-time and provide biomechanical feedback and corrections. Be specific and actionable.
-If the user's form poses a risk of injury, you will provide an alert message in the 'injuryPreventionAlert' field. Otherwise, this field can be omitted.
+Analyze the user's form based on the provided video frame.
+Provide specific, actionable biomechanical feedback and corrections to improve their form and maximize effectiveness.
+If the user's form poses a significant risk of injury, clearly state this in the 'injuryPreventionAlert' field. Otherwise, this field can be omitted.
+Structure your feedback clearly.
 
 Video: {{media url=videoDataUri}}
 `,
@@ -75,4 +78,3 @@ const provideFormAnalysisFlow = ai.defineFlow(
     return output!;
   }
 );
-
