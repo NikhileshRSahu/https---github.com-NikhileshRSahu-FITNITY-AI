@@ -288,7 +288,7 @@ export default function FormAnalysisPage() {
                           disabled={analysisStatus === 'capturing' || analysisStatus === 'analyzing'}
                         />
                       </FormControl>
-                      <FormDescription>Share any specific issues, questions, or things you are working on.</FormDescription>
+                      <FormDescription>Share any specific issues, questions, or things you are working on (max 300 characters).</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}

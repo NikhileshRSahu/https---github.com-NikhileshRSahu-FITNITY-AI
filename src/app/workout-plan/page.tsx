@@ -233,7 +233,7 @@ export default function WorkoutPlanPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {isLoading && (
+             {isLoading && (
               <div className="flex flex-col items-center justify-center p-8 text-card-foreground">
                 <Loader2 className="h-12 w-12 text-accent animate-spin mb-4" />
                 <p className="text-lg">AI is crafting your personalized plan...</p>

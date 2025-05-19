@@ -31,8 +31,16 @@ export default function ProductDetailPage() {
       setProduct(foundProduct || null);
 
       if (foundProduct) {
-        const otherProducts = products.filter(p => p.id !== foundProduct.id && p.category === foundProduct.category);
-        setRelatedProducts(otherProducts.sort(() => 0.5 - Math.random()).slice(0, 3));
+        const otherProductsInCategory = products.filter(p => p.id !== foundProduct.id && p.category === foundProduct.category);
+        let recommendations = otherProductsInCategory.sort(() => 0.5 - Math.random()).slice(0, 3);
+        
+        if (recommendations.length < 3) {
+          const otherRandomProducts = products.filter(p => p.id !== foundProduct.id && p.category !== foundProduct.category)
+                                           .sort(() => 0.5 - Math.random())
+                                           .slice(0, 3 - recommendations.length);
+          recommendations = [...recommendations, ...otherRandomProducts];
+        }
+        setRelatedProducts(recommendations.slice(0, 3)); // Ensure max 3
       }
     }
   }, [slug]);
@@ -61,31 +69,31 @@ export default function ProductDetailPage() {
     return (
       <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 animate-fade-in-up">
         <div className="mb-6 sm:mb-8">
-          <Skeleton className="h-8 w-36 sm:w-48" />
+          <Skeleton className="h-8 w-36 sm:w-48 bg-muted/50" />
         </div>
         <div className="grid md:grid-cols-2 gap-6 md:gap-8 lg:gap-12 items-start">
           <div>
-            <Skeleton className="w-full aspect-square rounded-xl" />
+            <Skeleton className="w-full aspect-square rounded-xl bg-muted/50" />
           </div>
           <div className="space-y-4 sm:space-y-6">
-            <Skeleton className="h-8 sm:h-10 w-3/4" />
-            <Skeleton className="h-5 sm:h-6 w-1/4" />
-            <Skeleton className="h-16 sm:h-20 w-full" />
+            <Skeleton className="h-10 w-3/4 sm:h-12 bg-muted/50" /> 
+            <Skeleton className="h-6 w-1/4 sm:h-7 bg-muted/50" /> 
+            <Skeleton className="h-20 w-full sm:h-24 bg-muted/50" /> 
             <div className="flex items-center gap-3 sm:gap-4">
-              <Skeleton className="h-9 sm:h-10 w-28 sm:w-32" />
-              <Skeleton className="h-9 sm:h-10 w-20 sm:w-24" />
+              <Skeleton className="h-10 w-32 sm:h-12 bg-muted/50" /> 
+              <Skeleton className="h-10 w-24 sm:h-12 bg-muted/50" /> 
             </div>
-            <Skeleton className="h-10 sm:h-12 w-1/2" />
+            <Skeleton className="h-12 w-1/2 sm:h-14 bg-muted/50" /> 
           </div>
         </div>
          <div className="mt-12 sm:mt-16">
-          <Skeleton className="h-7 sm:h-8 w-1/3 mb-4 sm:mb-6" />
+          <Skeleton className="h-8 w-1/3 sm:h-9 mb-4 sm:mb-6 bg-muted/50" /> 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {[...Array(3)].map((_, i) => (
-              <Card key={i} className="glassmorphic-card p-3 sm:p-4">
-                <Skeleton className="h-28 sm:h-32 w-full mb-2 sm:mb-3 rounded-md" />
-                <Skeleton className="h-4 sm:h-5 w-3/4 mb-1 rounded-md" />
-                <Skeleton className="h-4 sm:h-5 w-1/2 rounded-md" />
+              <Card key={i} className="glassmorphic-card p-3 sm:p-4 border-transparent"> 
+                <Skeleton className="h-32 w-full sm:h-36 mb-2 sm:mb-3 rounded-md bg-muted/50" /> 
+                <Skeleton className="h-5 w-3/4 sm:h-6 mb-1 rounded-md bg-muted/50" /> 
+                <Skeleton className="h-5 w-1/2 sm:h-6 rounded-md bg-muted/50" /> 
               </Card>
             ))}
           </div>
@@ -95,7 +103,7 @@ export default function ProductDetailPage() {
   }
 
   if (!product) {
-    notFound(); // This will render the not-found.tsx or Next.js default 404
+    notFound(); 
     return null;
   }
 
