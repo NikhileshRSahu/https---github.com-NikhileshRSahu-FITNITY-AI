@@ -127,13 +127,29 @@ export default function NutritionPlanPage() {
           <CardDescription className="text-foreground/80 mb-8 text-base sm:text-lg">
             Get personalized meal plans and dietary advice tailored to your goals. This is a Premium feature.
           </CardDescription>
-          <Button asChild size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground cta-glow-pulse text-lg active:scale-95">
-            <Link href="/#pricing">View Pricing Plans</Link>
+           <Button 
+            size="lg" 
+            className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg transition-transform duration-300 hover:scale-105 cta-glow-pulse active:scale-95"
+            onClick={() => {
+                if (form.formState.isSubmitted && !form.formState.isValid) {
+                     // If form was submitted and is invalid, trigger validation for all fields to show errors
+                    form.trigger();
+                }
+                // Always open upgrade dialog if feature not accessible
+                // This part is handled by the AlertDialog logic in FeaturesSnapshotSection and MainHeader if linking from there
+                // For direct page access, the feature lock above handles it.
+                // If on the page and clicking submit when locked, the onSubmit already handles it.
+                // This button is primarily for linking to pricing when the page itself is locked.
+                router.push('/#pricing');
+            }}
+          >
+            View Pricing Plans
           </Button>
         </Card>
       </div>
     );
   }
+
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 animate-fade-in-up">
@@ -353,4 +369,3 @@ export default function NutritionPlanPage() {
     </div>
   );
 }
-

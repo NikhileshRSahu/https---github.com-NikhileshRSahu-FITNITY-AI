@@ -19,6 +19,8 @@ import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useRouter } from 'next/navigation';
+
 
 const formAnalysisSchema = z.object({
   exerciseName: z.string().min(3, { message: 'Exercise name must be at least 3 characters.' }),
@@ -46,6 +48,7 @@ export default function FormAnalysisPage() {
   const { toast } = useToast();
   const { isFeatureAccessible, mounted: subscriptionMounted } = useSubscription();
   const [pageMounted, setPageMounted] = useState(false);
+  const router = useRouter();
 
   const form = useForm<FormAnalysisValues>({
     resolver: zodResolver(formAnalysisSchema),
@@ -60,7 +63,7 @@ export default function FormAnalysisPage() {
   }, []);
 
   useEffect(() => {
-    if (!pageMounted || !subscriptionMounted || !isFeatureAccessible('formAnalysis')) {
+    if (!pageMounted || !subscriptionMounted ) { // Removed !isFeatureAccessible here; will handle with button click
       return; 
     }
 
@@ -100,7 +103,7 @@ export default function FormAnalysisPage() {
         stream.getTracks().forEach(track => track.stop());
       }
     };
-  }, [toast, pageMounted, subscriptionMounted, isFeatureAccessible]);
+  }, [toast, pageMounted, subscriptionMounted]);
 
   async function onSubmit(data: FormAnalysisValues) {
     if (!isFeatureAccessible('formAnalysis')) {
@@ -221,8 +224,13 @@ export default function FormAnalysisPage() {
           <CardDescription className="text-foreground/80 mb-8 text-base sm:text-lg">
             This premium feature provides instant feedback on your exercise form using your webcam.
           </CardDescription>
-          <Button asChild size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground cta-glow-pulse text-lg active:scale-95">
-            <Link href="/#pricing">View Pricing Plans</Link>
+          <Button 
+            asChild 
+            size="lg" 
+            className="w-full bg-accent hover:bg-accent/90 text-accent-foreground cta-glow-pulse text-lg active:scale-95"
+            onClick={() => router.push('/#pricing')}
+          >
+            View Pricing Plans
           </Button>
         </Card>
       </div>
@@ -420,4 +428,3 @@ export default function FormAnalysisPage() {
     </div>
   );
 }
-

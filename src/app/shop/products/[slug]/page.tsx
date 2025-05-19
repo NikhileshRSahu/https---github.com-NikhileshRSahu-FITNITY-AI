@@ -28,17 +28,17 @@ export default function ProductDetailPage() {
   useEffect(() => {
     if (slug) {
       const foundProduct = products.find(p => p.slug === slug);
-      setProduct(foundProduct || null); // Set to null if not found, undefined while loading
+      setProduct(foundProduct || null); 
 
       if (foundProduct) {
         let recommendations: Product[] = products
           .filter(p => p.id !== foundProduct.id && p.category === foundProduct.category)
-          .sort(() => 0.5 - Math.random());
+          .sort(() => 0.5 - Math.random()); // Shuffle for variety
         
         if (recommendations.length < 3) {
           const otherRandomProducts = products
             .filter(p => p.id !== foundProduct.id && p.category !== foundProduct.category)
-            .sort(() => 0.5 - Math.random())
+            .sort(() => 0.5 - Math.random()) // Shuffle for variety
             .slice(0, 3 - recommendations.length);
           recommendations = [...recommendations, ...otherRandomProducts];
         }
@@ -47,7 +47,7 @@ export default function ProductDetailPage() {
         setRelatedProducts([]);
       }
     } else {
-      setProduct(null); // Handle case where slug might be missing initially
+      setProduct(null); 
     }
   }, [slug]);
 
@@ -68,7 +68,7 @@ export default function ProductDetailPage() {
 
     setTimeout(() => {
       setIsAddingToCart(false);
-    }, 2000);
+    }, 1500); // Revert button state after 1.5 seconds
   };
 
   if (product === undefined) { // Initial loading state
@@ -240,4 +240,3 @@ export default function ProductDetailPage() {
     </div>
   );
 }
-

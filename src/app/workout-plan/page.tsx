@@ -252,7 +252,7 @@ export default function WorkoutPlanPage() {
                 {workoutPlanResult}
               </div>
             )}
-            {!isLoading && !error && !workoutPlanResult && !isLoading && ( 
+            {!isLoading && !error && !workoutPlanResult && ( 
                 <Alert variant="destructive" className="bg-destructive/20 border-destructive/50 text-destructive-foreground">
                     <AlertTriangle className="h-5 w-5 text-destructive" />
                     <AlertTitle>No Plan Available</AlertTitle>
