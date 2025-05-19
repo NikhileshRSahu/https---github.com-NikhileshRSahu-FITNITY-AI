@@ -21,7 +21,7 @@ import Link from 'next/link';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 
 const formAnalysisSchema = z.object({
-  exerciseName: z.string().min(3, { message: 'Please enter the exercise name (min. 3 characters).' }),
+  exerciseName: z.string().min(3, { message: 'Exercise name must be at least 3 characters.' }),
   focusArea: z.enum([
       'overall',
       'back_posture',
@@ -147,7 +147,7 @@ export default function FormAnalysisPage() {
 
     ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
     const frameDataUri = canvas.toDataURL('image/jpeg'); 
-    setCapturedFrameDataUri(frameDataUri); // Set captured frame for display
+    setCapturedFrameDataUri(frameDataUri);
     setAnalysisStatus('analyzing');
 
     try {
@@ -163,10 +163,11 @@ export default function FormAnalysisPage() {
         setAnalysisStatus('done');
         toast({ title: 'Analysis Complete!', description: 'Your form analysis is ready.' });
       } else {
-        setError('The AI could not provide feedback for this exercise. Please try again or rephrase your input.');
-        setAnalysisResult(null); // Ensure result is cleared on incomplete analysis
+        const noFeedbackError = 'The AI could not provide feedback for this exercise. Please try again or rephrase your input.';
+        setError(noFeedbackError);
+        setAnalysisResult(null); 
         setAnalysisStatus('error');
-        toast({ variant: 'destructive', title: 'Analysis Incomplete', description: 'The AI could not provide feedback for this exercise.' });
+        toast({ variant: 'destructive', title: 'Analysis Incomplete', description: noFeedbackError });
       }
     } catch (err) {
       console.error('Error analyzing form:', err);
@@ -220,8 +221,8 @@ export default function FormAnalysisPage() {
 
 
   return (
-    <div className="container mx-auto px-4 md:px-6 py-12 md:py-20">
-      <Card className="max-w-2xl mx-auto glassmorphic-card animate-fade-in-up">
+    <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 animate-fade-in-up">
+      <Card className="max-w-2xl mx-auto glassmorphic-card">
         <CardHeader>
           <CardTitle className="text-3xl font-bold flex items-center">
             <Camera className="mr-3 h-8 w-8 text-accent" /> Real-time Form Analysis
@@ -239,7 +240,7 @@ export default function FormAnalysisPage() {
             <div className="space-y-2">
               <p className="text-sm font-medium text-card-foreground/80 text-center">Frame captured for analysis:</p>
               <div className="aspect-video relative bg-background/10 rounded-md overflow-hidden border border-border/30">
-                <Image src={capturedFrameDataUri} alt="Captured exercise frame" layout="fill" objectFit="contain" />
+                <Image src={capturedFrameDataUri} alt="Captured exercise frame" fill objectFit="contain" />
               </div>
             </div>
           )}
@@ -266,13 +267,13 @@ export default function FormAnalysisPage() {
 
           {hasCameraPermission && (
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <FormField
                   control={form.control}
                   name="exerciseName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-lg">Exercise Name</FormLabel>
+                      <FormLabel className="text-lg font-semibold">Exercise Name</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="e.g., Squat, Push-up, Lunge"
@@ -289,7 +290,7 @@ export default function FormAnalysisPage() {
                   name="focusArea"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-lg">Focus Area (Optional)</FormLabel>
+                      <FormLabel className="text-lg font-semibold">Focus Area (Optional)</FormLabel>
                       <Select 
                         onValueChange={field.onChange} 
                         defaultValue={field.value}
@@ -316,7 +317,7 @@ export default function FormAnalysisPage() {
                   name="notes"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-lg">Your Notes/Concerns (Optional)</FormLabel>
+                      <FormLabel className="text-lg font-semibold">Your Notes/Concerns (Optional)</FormLabel>
                       <FormControl>
                         <Textarea
                           placeholder="e.g., 'Feeling a pinch in my left shoulder', 'Is my squat depth okay?', 'Trying to keep my back straight.'"
