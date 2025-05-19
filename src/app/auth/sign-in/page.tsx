@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -35,21 +36,45 @@ export default function SignInPage() {
 
   async function onSubmit(data: SignInFormValues) {
     setIsLoading(true);
-    console.log('Sign In submitted (simulated):', data);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('fitnityUserLoggedIn', 'true');
-      window.dispatchEvent(new Event('loginStateChange')); 
-    }
+    try {
+      const response = await fetch('/api/auth/signin', { // Adjust if your backend is on a different URL/port
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
 
-    toast({
-      title: 'Sign In Successful!',
-      description: 'Welcome back! You are now signed in.',
-    });
-    setIsLoading(false);
-    router.push('/dashboard'); 
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'Sign-in failed. Please try again.');
+      }
+
+      // Store token and user data from backend
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('fitnityToken', result.token);
+        localStorage.setItem('fitnityUserId', result.user.id);
+        localStorage.setItem('fitnityUserFullName', result.user.fullName);
+        localStorage.setItem('fitnityUserEmail', result.user.email);
+        localStorage.setItem('fitnityUserLoggedIn', 'true');
+        window.dispatchEvent(new Event('loginStateChange'));
+      }
+
+      toast({
+        title: 'Sign In Successful!',
+        description: `Welcome back, ${result.user.fullName}!`,
+      });
+      router.push('/dashboard');
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Sign In Failed',
+        description: error.message || 'An unexpected error occurred.',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
