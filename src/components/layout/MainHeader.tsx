@@ -15,7 +15,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Zap, LogIn, UserPlus, LayoutDashboard, User as UserIcon, LogOut as LogOutIcon, ClipboardList, Bot, Apple as NutritionIcon, Camera, ShoppingCart } from 'lucide-react';
+import { Zap, LogIn, UserPlus, LayoutDashboard, User as UserIcon, LogOut as LogOutIcon, ClipboardList, Bot, Apple as NutritionIcon, Camera, ShoppingCart, Settings } from 'lucide-react';
 import { useEffect, useState, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { useRouter, usePathname } from 'next/navigation';
@@ -27,6 +27,7 @@ interface NavItem {
   icon: React.ElementType;
   isProtected?: boolean;
   isCTA?: boolean;
+  tooltipText?: string;
 }
 
 export default function MainHeader() {
@@ -38,7 +39,6 @@ export default function MainHeader() {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Callback to check login status, memoized to prevent re-creation
   const checkLoginStatus = useCallback(() => {
     if (typeof window !== 'undefined') {
       const loggedInStatus = localStorage.getItem('fitnityUserLoggedIn') === 'true';
@@ -47,8 +47,7 @@ export default function MainHeader() {
   }, []);
 
   useEffect(() => {
-    setMounted(true); // Component is now mounted on the client
-
+    setMounted(true);
     checkLoginStatus(); // Initial check
 
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -74,13 +73,13 @@ export default function MainHeader() {
         window.removeEventListener('loginStateChange', handleLoginStateChange);
       }
     };
-  }, [pathname, checkLoginStatus]); // Only re-run if pathname or checkLoginStatus (stable ref) changes
+  }, [pathname, checkLoginStatus]);
 
   useEffect(() => {
-    if (mounted) { // Ensure this runs only on client after mount
+    if (mounted) {
       setCartItemCount(getItemCount());
     }
-  }, [mounted, getItemCount, pathname]); // getItemCount reference stability is important here
+  }, [mounted, getItemCount, pathname]); // getItemCount reference is stable
 
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
@@ -89,60 +88,60 @@ export default function MainHeader() {
     }
     router.push('/');
   };
-  
-  const navLinkBaseClasses = "relative flex items-center justify-center md:justify-start gap-1 px-1.5 py-1.5 md:px-2 md:py-2 rounded-lg text-sm transition-all duration-300 ease-in-out group border-b-2 border-transparent hover:border-accent focus-visible:border-accent";
+
+  const navLinkBaseClasses = "relative flex items-center justify-center md:justify-start gap-1 px-1 py-1.5 md:px-2 md:py-2 rounded-lg text-sm transition-all duration-300 ease-in-out group border-b-2 border-transparent hover:border-accent focus-visible:border-accent";
   const navLinkHoverClasses = "hover:translate-y-[-2px] hover:text-accent hover:drop-shadow-[0_0_8px_hsl(var(--accent))] focus-visible:text-accent focus-visible:drop-shadow-[0_0_8px_hsl(var(--accent))] hover:bg-transparent focus-visible:bg-accent/10";
-  const navIconClasses = "h-5 w-5 flex-shrink-0 group-hover:text-accent group-focus-visible:text-accent transition-colors duration-300";
+  const navIconClasses = "h-4 w-4 sm:h-4.5 sm:w-4.5 md:h-5 md:w-5 flex-shrink-0 group-hover:text-accent group-focus-visible:text-accent transition-colors duration-300";
 
   const unauthenticatedNavItems: NavItem[] = [
-    { href: '/auth/sign-in', label: 'Login', icon: LogIn },
-    { href: '/auth/sign-up', label: 'Get Started', icon: UserPlus, isCTA: true },
-  ];
-  
-  const authenticatedNavItems: NavItem[] = [
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/workout-plan', label: 'Workout', icon: ClipboardList },
-    { href: '/nutrition-plan', label: 'Nutrition', icon: NutritionIcon },
-    { href: '/form-analysis', label: 'Form Check', icon: Camera },
-    { href: '/ai-coach', label: 'AI Coach', icon: Bot },
-    { href: '/shop', label: 'Shop', icon: ShoppingCart },
-    { href: '/profile', label: 'Profile', icon: UserIcon },
+    { href: '/auth/sign-in', label: 'Login', icon: LogIn, tooltipText: 'Login to your account' },
+    { href: '/auth/sign-up', label: 'Get Started', icon: UserPlus, isCTA: true, tooltipText: 'Create an account' },
   ];
 
-  // Render a minimal header during SSR or before client-side mount
-  if (!mounted) { 
+  const authenticatedNavItems: NavItem[] = [
+    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, tooltipText: 'View your progress' },
+    { href: '/workout-plan', label: 'Workout', icon: ClipboardList, tooltipText: 'Generate workout plans' },
+    { href: '/nutrition-plan', label: 'Nutrition', icon: NutritionIcon, tooltipText: 'Get nutrition advice' },
+    { href: '/form-analysis', label: 'Form Check', icon: Camera, tooltipText: 'Analyze your exercise form' },
+    { href: '/ai-coach', label: 'AI Coach', icon: Bot, tooltipText: 'Chat with your AI Coach' },
+    { href: '/shop', label: 'Shop', icon: ShoppingCart, tooltipText: 'Browse fitness gear' },
+    { href: '/profile', label: 'Profile', icon: UserIcon, tooltipText: 'Manage your profile' },
+  ];
+
+  const itemsToDisplay = isLoggedIn ? authenticatedNavItems : unauthenticatedNavItems;
+
+  const baseHeaderClasses = "sticky top-0 z-50 w-full glassmorphic-card transition-all duration-300 ease-in-out";
+  const baseContainerClasses = "container mx-auto flex items-center justify-between px-2 sm:px-4 md:px-6 transition-all duration-300 ease-in-out h-full";
+
+  if (!mounted) {
     return (
-       <header className={cn("sticky top-0 z-50 w-full glassmorphic-card transition-all duration-300 ease-in-out h-20", "shadow-xl shadow-accent/5 dark:shadow-accent/10")}>
-         <div className={cn("container mx-auto flex items-center justify-between px-4 md:px-6 transition-all duration-300 ease-in-out h-full")}>
+       <header className={cn(baseHeaderClasses, "h-20 dark:shadow-accent/5")}>
+         <div className={cn(baseContainerClasses)}>
             <Link href="/" className="flex items-center gap-2 logo-pulse flex-shrink-0" prefetch={false}>
               <Zap className="h-7 w-7 md:h-8 md:w-8 text-accent" />
               <span className="text-xl md:text-2xl font-bold text-card-foreground">Fitnity AI</span>
             </Link>
             <nav className="flex items-center gap-0.5 md:gap-1">
-              {/* Placeholder for buttons to maintain layout consistency if needed */}
-              <div className="h-9 w-20 bg-muted/20 rounded-md"></div>
-              <div className="h-9 w-28 bg-muted/20 rounded-md"></div>
+              {/* Minimal placeholders to maintain structure */}
+              <div className="h-9 w-20 bg-muted/10 rounded-md hidden md:block"></div>
+              <div className="h-9 w-28 bg-muted/10 rounded-md hidden md:block"></div>
+              <div className="h-9 w-10 bg-muted/10 rounded-md md:hidden"></div>
+              <div className="h-9 w-10 bg-muted/10 rounded-md md:hidden"></div>
             </nav>
          </div>
        </header>
     );
   }
 
-  const itemsToDisplay = isLoggedIn ? authenticatedNavItems : unauthenticatedNavItems;
-
   return (
     <TooltipProvider delayDuration={100}>
       <header
         className={cn(
-          "sticky top-0 z-50 w-full glassmorphic-card transition-all duration-300 ease-in-out",
-          isScrolled ? "shadow-xl shadow-accent/5 dark:shadow-accent/10 h-16" : "h-20 dark:shadow-accent/5"
+          baseHeaderClasses,
+          isScrolled ? "h-16 shadow-xl shadow-accent/5 dark:shadow-accent/10" : "h-20 dark:shadow-accent/5"
         )}
       >
-        <div
-          className={cn(
-            "container mx-auto flex items-center justify-between px-2 sm:px-4 md:px-6 transition-all duration-300 ease-in-out h-full"
-          )}
-        >
+        <div className={cn(baseContainerClasses)}>
           <Link href="/" className="flex items-center gap-2 logo-pulse flex-shrink-0" prefetch={false}>
             <Zap className="h-7 w-7 md:h-8 md:w-8 text-accent" />
             <span className="text-xl md:text-2xl font-bold text-card-foreground">Fitnity AI</span>
@@ -162,7 +161,7 @@ export default function MainHeader() {
                   <Link href={item.href} className="flex items-center">
                     <item.icon className={cn(navIconClasses, "mr-1 md:mr-1.5 h-4 w-4 sm:h-4.5 sm:w-4.5", "text-accent-foreground group-hover:text-accent-foreground group-focus-visible:text-accent-foreground")} />
                     <span className="hidden sm:inline">{item.label === 'Get Started' ? 'Sign Up' : item.label}</span>
-                     <span className="sm:hidden text-xs">{item.label === 'Get Started' ? 'Sign Up' : (item.label === 'Login' ? 'Login' : item.label)}</span>
+                    <span className="sm:hidden text-xs">{item.label === 'Get Started' ? 'Sign Up' : (item.label === 'Login' ? 'Login' : item.label)}</span>
                   </Link>
                 </Button>
               ) : (
@@ -170,8 +169,8 @@ export default function MainHeader() {
                   <TooltipTrigger asChild>
                     <Button asChild variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground px-1.5 sm:px-2 py-1 sm:py-1.5 hover:border-b-accent h-auto")}>
                       <Link href={item.href} className="flex flex-col items-center md:flex-row">
-                        <item.icon className={cn(navIconClasses, "text-card-foreground group-hover:text-accent group-focus-visible:text-accent h-4.5 w-4.5 sm:h-5 sm:w-5" )} />
-                        <span className="hidden md:inline text-xs sm:text-sm ml-0 md:ml-1.5">{item.label}</span>
+                        <item.icon className={cn(navIconClasses, "text-card-foreground group-hover:text-accent group-focus-visible:text-accent" )} />
+                        <span className="hidden md:inline text-sm ml-0 md:ml-1.5">{item.label}</span>
                         {item.label === 'AI Coach' && isLoggedIn && <span className="glowing-orb ml-0.5 md:ml-1.5 hidden md:inline-block"></span>}
                         {item.label === 'Shop' && isLoggedIn && cartItemCount > 0 && (
                           <span className="absolute top-0 right-0 -mt-1 -mr-0.5 md:mt-0 md:mr-0 flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
@@ -182,7 +181,7 @@ export default function MainHeader() {
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent className="bg-popover text-popover-foreground border-border shadow-md md:hidden">
-                    <p>{item.label}</p>
+                    <p>{item.tooltipText || item.label}</p>
                   </TooltipContent>
                 </Tooltip>
               )
@@ -193,8 +192,8 @@ export default function MainHeader() {
                   <TooltipTrigger asChild>
                     <AlertDialogTrigger asChild>
                       <Button variant="ghost" className={cn(navLinkBaseClasses, navLinkHoverClasses, "text-card-foreground px-1.5 sm:px-2 py-1 sm:py-1.5 hover:border-b-accent h-auto")}>
-                        <LogOutIcon className={cn(navIconClasses, "text-card-foreground group-hover:text-accent group-focus-visible:text-accent h-4.5 w-4.5 sm:h-5 sm:w-5")} />
-                        <span className="hidden md:inline text-xs sm:text-sm ml-0 md:ml-1.5">Logout</span>
+                        <LogOutIcon className={cn(navIconClasses, "text-card-foreground group-hover:text-accent group-focus-visible:text-accent")} />
+                        <span className="hidden md:inline text-sm ml-0 md:ml-1.5">Logout</span>
                       </Button>
                     </AlertDialogTrigger>
                   </TooltipTrigger>

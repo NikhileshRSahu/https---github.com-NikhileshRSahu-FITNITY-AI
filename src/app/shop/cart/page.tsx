@@ -32,7 +32,7 @@ export default function CartPage() {
     if (!isNaN(newQuantity) && newQuantity >= 1) {
       updateQuantity(id, newQuantity);
     } else if (value === '' || (!isNaN(newQuantity) && newQuantity === 0)) {
-        // Allow empty or zero input temporarily, handle on blur
+        // Allow empty or zero input temporarily, handle on blur or if user tries to proceed
     }
   };
 
@@ -85,8 +85,12 @@ export default function CartPage() {
 
       <div className="grid lg:grid-cols-3 gap-6 md:gap-8 items-start">
         <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-          {state.items.map(item => (
-            <Card key={item.id} className="glassmorphic-card flex flex-col sm:flex-row items-center gap-3 sm:gap-4 p-3 sm:p-4 hover:shadow-accent/20 transition-shadow duration-300">
+          {state.items.map((item, index) => (
+            <Card 
+              key={item.id} 
+              className="glassmorphic-card flex flex-col sm:flex-row items-center gap-3 sm:gap-4 p-3 sm:p-4 hover:shadow-accent/20 transition-shadow duration-300 animate-fade-in-up"
+              style={{animationDelay: `${index * 0.1}s`}}
+            >
               <div className="relative h-24 w-24 sm:h-28 sm:w-28 md:h-32 md:w-32 rounded-md overflow-hidden flex-shrink-0 border border-border/20">
                 <Image
                   src={item.imagePlaceholder}
@@ -132,7 +136,7 @@ export default function CartPage() {
         </div>
 
         <div className="lg:col-span-1">
-          <Card className="glassmorphic-card p-4 sm:p-6 sticky top-20 md:top-24">
+          <Card className="glassmorphic-card p-4 sm:p-6 sticky top-20 md:top-24 animate-fade-in-up" style={{animationDelay: `${state.items.length * 0.1 + 0.1}s`}}>
             <CardHeader className="p-0 mb-4 sm:mb-5">
               <CardTitle className="text-xl sm:text-2xl font-semibold text-card-foreground">Order Summary</CardTitle>
             </CardHeader>

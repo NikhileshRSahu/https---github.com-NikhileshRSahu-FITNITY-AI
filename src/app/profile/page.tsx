@@ -1,3 +1,4 @@
+
 'use client'
 
 import { useTheme } from 'next-themes'
@@ -95,7 +96,7 @@ export default function ProfilePage() {
         <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 animate-fade-in-up">
           <div className="max-w-2xl sm:max-w-3xl mx-auto space-y-6 sm:space-y-8">
             <div className="flex flex-col items-center space-y-3 sm:space-y-4 mb-8 sm:mb-12">
-                <Skeleton className="h-24 w-24 rounded-full bg-muted/50" />
+                <Skeleton className="h-24 w-24 sm:h-28 sm:w-28 rounded-full bg-muted/50" />
                 <Skeleton className="h-8 w-1/2 bg-muted/50" />
                 <Skeleton className="h-5 w-3/4 bg-muted/50" />
             </div>
@@ -187,7 +188,7 @@ export default function ProfilePage() {
             )}
         </div>
         
-        <Card className="glassmorphic-card">
+        <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.1s'}}>
           <CardHeader>
             <CardTitle className="text-lg sm:text-xl font-bold flex items-center">
               <Zap className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> My Fitness Snapshot
@@ -208,7 +209,7 @@ export default function ProfilePage() {
                 <div className="space-y-1">
                   <Label htmlFor="fitnessLevel" className="text-sm sm:text-base font-medium">Current Fitness Level</Label>
                   <Select name="fitnessLevel" value={profileData.fitnessLevel} onValueChange={handleSelectChange('fitnessLevel')}>
-                    <SelectTrigger className="w-full bg-background/50 text-card-foreground mt-1">
+                    <SelectTrigger className="w-full bg-background/50 text-card-foreground mt-1 text-sm sm:text-base">
                       <SelectValue placeholder="Select fitness level" />
                     </SelectTrigger>
                     <SelectContent>
@@ -221,7 +222,7 @@ export default function ProfilePage() {
                  <div className="space-y-1">
                     <Label htmlFor="preferredLanguage" className="text-sm sm:text-base font-medium">Preferred Language (AI Coach)</Label>
                     <Select name="preferredLanguage" value={profileData.preferredLanguage} onValueChange={handleSelectChange('preferredLanguage')}>
-                        <SelectTrigger className="w-full bg-background/50 text-card-foreground mt-1">
+                        <SelectTrigger className="w-full bg-background/50 text-card-foreground mt-1 text-sm sm:text-base">
                         <SelectValue placeholder="Select language" />
                         </SelectTrigger>
                         <SelectContent>
@@ -234,27 +235,27 @@ export default function ProfilePage() {
             ) : (
               <>
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between p-3 rounded-lg bg-background/10">
-                    <span className="font-medium text-card-foreground/90 mb-1 sm:mb-0 text-base">Primary Fitness Goal:</span>
-                    <span className="text-card-foreground/80 text-left sm:text-right text-base">{profileData.fitnessGoal}</span>
+                    <span className="font-medium text-card-foreground/90 mb-1 sm:mb-0 text-sm sm:text-base">Primary Fitness Goal:</span>
+                    <span className="text-card-foreground/80 text-left sm:text-right text-sm sm:text-base">{profileData.fitnessGoal}</span>
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between p-3 rounded-lg bg-background/10">
-                    <span className="font-medium text-card-foreground/90 mb-1 sm:mb-0 text-base">Workout Style & Frequency:</span>
-                    <span className="text-card-foreground/80 text-left sm:text-right text-base">{profileData.workoutStyle}</span>
+                    <span className="font-medium text-card-foreground/90 mb-1 sm:mb-0 text-sm sm:text-base">Workout Style & Frequency:</span>
+                    <span className="text-card-foreground/80 text-left sm:text-right text-sm sm:text-base">{profileData.workoutStyle}</span>
                 </div>
                 <div className="flex items-center justify-between p-3 rounded-lg bg-background/10">
-                    <span className="font-medium text-card-foreground/90 text-base">Current Fitness Level:</span>
-                    <span className="text-card-foreground/80 capitalize text-right text-base">{profileData.fitnessLevel}</span>
+                    <span className="font-medium text-card-foreground/90 text-sm sm:text-base">Current Fitness Level:</span>
+                    <span className="text-card-foreground/80 capitalize text-right text-sm sm:text-base">{profileData.fitnessLevel}</span>
                 </div>
                 <div className="flex items-center justify-between p-3 rounded-lg bg-background/10">
-                    <span className="font-medium text-card-foreground/90 text-base">Preferred Language (AI Coach):</span>
-                    <span className="text-card-foreground/80 text-right text-base">{profileData.preferredLanguage}</span>
+                    <span className="font-medium text-card-foreground/90 text-sm sm:text-base">Preferred Language (AI Coach):</span>
+                    <span className="text-card-foreground/80 text-right text-sm sm:text-base">{profileData.preferredLanguage}</span>
                 </div>
               </>
             )}
           </CardContent>
         </Card>
 
-        <Card className="glassmorphic-card">
+        <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.2s'}}>
           <CardHeader>
             <CardTitle className="text-lg sm:text-xl font-bold flex items-center">
               <SettingsIcon className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Account Settings
@@ -267,7 +268,7 @@ export default function ProfilePage() {
               {isEditing ? (
                 <Input id="profileFullName" type="text" value={profileData.fullName} onChange={handleInputChange} name="fullName" className="mt-1 bg-background/50 text-card-foreground" />
               ) : (
-                <p className="mt-1 p-3 rounded-md bg-background/20 text-card-foreground/80 border border-transparent text-base">{profileData.fullName}</p>
+                <p className="mt-1 p-3 rounded-md bg-background/20 text-card-foreground/80 border border-transparent text-sm sm:text-base">{profileData.fullName}</p>
               )}
             </div>
             <div>
@@ -275,21 +276,21 @@ export default function ProfilePage() {
               {isEditing ? (
                 <Input id="profileEmail" type="email" value={profileData.email} onChange={handleInputChange} name="email" className="mt-1 bg-background/50 text-card-foreground" />
               ) : (
-                 <p className="mt-1 p-3 rounded-md bg-background/20 text-card-foreground/80 border border-transparent text-base">{profileData.email}</p>
+                 <p className="mt-1 p-3 rounded-md bg-background/20 text-card-foreground/80 border border-transparent text-sm sm:text-base">{profileData.email}</p>
               )}
             </div>
              <div className="flex items-center justify-between p-3 rounded-lg bg-background/10 mt-2">
                 <div className="flex items-center">
                     <CalendarClock className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-accent/80" />
-                    <span className="font-medium text-card-foreground text-base">Last Logged In:</span>
+                    <span className="font-medium text-card-foreground text-sm sm:text-base">Last Logged In:</span>
                 </div>
-                <span className="text-card-foreground/80 text-sm sm:text-base">July 29, 2024, 10:30 AM (Simulated)</span>
+                <span className="text-card-foreground/80 text-xs sm:text-sm">July 29, 2024, 10:30 AM (Simulated)</span>
             </div>
             <Button variant="outline" className="w-full sm:w-auto hover:bg-accent/10 hover:text-accent-foreground transition-transform duration-300 hover:scale-105 active:scale-95 mt-2 border-accent text-accent text-sm sm:text-base px-4 py-2">Change Password</Button>
           </CardContent>
         </Card>
 
-        <Card className="glassmorphic-card">
+        <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.3s'}}>
           <CardHeader>
             <CardTitle className="text-lg sm:text-xl font-bold flex items-center">
               {isDarkMode ? 
@@ -315,7 +316,7 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
-        <Card className="glassmorphic-card">
+        <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.4s'}}>
           <CardHeader>
             <CardTitle className="text-lg sm:text-xl font-bold flex items-center">
               <Bell className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Notification Preferences
@@ -324,21 +325,21 @@ export default function ProfilePage() {
           </CardHeader>
           <CardContent className="space-y-3 sm:space-y-4 text-sm sm:text-base">
             <div className="flex items-center justify-between p-3 rounded-lg bg-background/10">
-              <Label htmlFor="workoutReminders" className="font-medium text-card-foreground text-base">Workout Reminders</Label>
+              <Label htmlFor="workoutReminders" className="font-medium text-card-foreground text-sm sm:text-base">Workout Reminders</Label>
               <Switch id="workoutReminders" defaultChecked />
             </div>
             <div className="flex items-center justify-between p-3 rounded-lg bg-background/10">
-              <Label htmlFor="featureUpdates" className="font-medium text-card-foreground text-base">New Feature Updates</Label>
+              <Label htmlFor="featureUpdates" className="font-medium text-card-foreground text-sm sm:text-base">New Feature Updates</Label>
               <Switch id="featureUpdates" />
             </div>
              <div className="flex items-center justify-between p-3 rounded-lg bg-background/10">
-              <Label htmlFor="communityAlerts" className="font-medium text-card-foreground text-base">Community Alerts</Label>
+              <Label htmlFor="communityAlerts" className="font-medium text-card-foreground text-sm sm:text-base">Community Alerts</Label>
               <Switch id="communityAlerts" defaultChecked />
             </div>
           </CardContent>
         </Card>
         
-        <Card className="glassmorphic-card">
+        <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.5s'}}>
           <CardHeader>
             <CardTitle className="text-lg sm:text-xl font-bold flex items-center">
               <Globe className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Language Preference
@@ -347,7 +348,7 @@ export default function ProfilePage() {
           </CardHeader>
           <CardContent>
              <Select defaultValue="English">
-                <SelectTrigger className="w-full bg-background/20 border-border focus:ring-accent focus:border-accent text-card-foreground text-base sm:text-base">
+                <SelectTrigger className="w-full bg-background/20 border-border focus:ring-accent focus:border-accent text-card-foreground text-sm sm:text-base">
                   <SelectValue placeholder="Select language" />
                 </SelectTrigger>
                 <SelectContent>
@@ -358,7 +359,7 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
-        <Card className="glassmorphic-card">
+        <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.6s'}}>
           <CardHeader>
             <CardTitle className="text-lg sm:text-xl font-bold flex items-center">
               <ShieldCheck className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Data & Privacy
@@ -366,11 +367,11 @@ export default function ProfilePage() {
             <CardDescription className="text-xs sm:text-sm">Manage your data and review our policies.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2 sm:space-y-3 text-sm sm:text-base">
-            <Button asChild variant="link" className="p-0 text-accent hover:underline h-auto transition-opacity hover:opacity-80 text-base sm:text-base">
+            <Button asChild variant="link" className="p-0 text-accent hover:underline h-auto transition-opacity hover:opacity-80 text-sm sm:text-base">
               <Link href="/privacy-policy">View Privacy Policy</Link>
             </Button>
             <br />
-             <Button asChild variant="link" className="p-0 text-accent hover:underline h-auto transition-opacity hover:opacity-80 text-base sm:text-base">
+             <Button asChild variant="link" className="p-0 text-accent hover:underline h-auto transition-opacity hover:opacity-80 text-sm sm:text-base">
               <Link href="/terms-of-service">View Terms of Service</Link>
             </Button>
              <br />
@@ -380,7 +381,7 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
-         <Card className="glassmorphic-card">
+         <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.7s'}}>
             <CardContent className="p-4 sm:pt-6">
               <AlertDialog>
                 <AlertDialogTrigger asChild>
@@ -410,3 +411,5 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+    

@@ -79,12 +79,12 @@ export default function OrderConfirmationPage() {
             You will receive an email confirmation shortly with your order details and tracking information (simulated).
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mt-6 sm:mt-8">
-            <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground cta-glow-pulse active:scale-95 text-base sm:text-lg px-5 py-2.5 sm:px-6 sm:py-3 sm:h-14">
+            <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground cta-glow-pulse active:scale-95 text-base sm:text-lg px-5 py-2.5 sm:px-6 sm:py-3 sm:h-auto">
               <Link href="/shop/products">
                 <ShoppingBag className="mr-2 h-4.5 w-4.5 sm:h-5 sm:w-5" /> Continue Shopping
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground active:scale-95 text-base sm:text-lg px-5 py-2.5 sm:px-6 sm:py-3 sm:h-14">
+            <Button asChild variant="outline" size="lg" className="border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground active:scale-95 text-base sm:text-lg px-5 py-2.5 sm:px-6 sm:py-3 sm:h-auto">
               <Link href="/dashboard">
                 <LayoutDashboard className="mr-2 h-4.5 w-4.5 sm:h-5 sm:w-5" /> Go to Dashboard
               </Link>

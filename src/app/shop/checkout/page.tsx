@@ -152,7 +152,7 @@ export default function CheckoutPage() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="grid md:grid-cols-3 gap-6 md:gap-8 lg:gap-12 items-start">
           <div className="md:col-span-2 space-y-6 sm:space-y-8">
-            <Card className="glassmorphic-card">
+            <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.1s'}}>
               <CardHeader>
                 <CardTitle className="text-xl sm:text-2xl font-semibold flex items-center">
                   <MapPin className="mr-2 sm:mr-3 h-6 w-6 sm:h-7 sm:w-7 text-accent" /> Shipping Address
@@ -222,7 +222,7 @@ export default function CheckoutPage() {
               </CardContent>
             </Card>
 
-            <Card className="glassmorphic-card">
+            <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.2s'}}>
               <CardHeader>
                 <CardTitle className="text-xl sm:text-2xl font-semibold flex items-center">
                   <CreditCard className="mr-2 sm:mr-3 h-6 w-6 sm:h-7 sm:w-7 text-accent" /> Payment Method
@@ -315,7 +315,7 @@ export default function CheckoutPage() {
           </div>
 
           <div className="md:col-span-1">
-            <Card className="glassmorphic-card p-4 sm:p-6 sticky top-20 md:top-24">
+            <Card className="glassmorphic-card p-4 sm:p-6 sticky top-20 md:top-24 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
               <CardHeader className="p-0 mb-4 sm:mb-6">
                 <CardTitle className="text-xl sm:text-2xl font-semibold flex items-center">
                   <Package className="mr-2 sm:mr-3 h-6 w-6 sm:h-7 sm:w-7 text-accent" /> Order Summary

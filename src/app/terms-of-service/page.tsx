@@ -1,8 +1,7 @@
 
-
 export default function TermsOfServicePage() {
   return (
-    <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 text-foreground">
+    <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 text-foreground animate-fade-in-up">
       <h1 className="text-3xl sm:text-4xl md:text-4xl font-bold mb-6 sm:mb-8 text-foreground">Terms of Service</h1>
       <div className="prose dark:prose-invert max-w-none space-y-4 sm:space-y-6 text-sm sm:text-base">
         <p>Last updated: July 24, 2024</p>
@@ -68,3 +67,5 @@ export default function TermsOfServicePage() {
     </div>
   );
 }
+
+    

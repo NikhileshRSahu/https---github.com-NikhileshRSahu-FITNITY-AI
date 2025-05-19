@@ -55,12 +55,15 @@ export default function AllProductsPage() {
       current.set('category', categorySlug);
     }
     const query = current.toString();
+    // Using window.history.pushState to avoid full page reload if preferred
+    // For Next.js App Router, usually navigation via Link or router.push is preferred for prefetching etc.
+    // But for simple query param changes without full navigation, this is okay.
     window.history.pushState({}, '', query ? `?${query}` : '/shop/products');
   };
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 animate-fade-in-up">
-      <header className="text-center mb-10 sm:mb-12 md:mb-16">
+      <header className="text-center mb-10 sm:mb-12 md:mb-16 animate-fade-in-up">
         <LayoutGrid className="mx-auto h-12 w-12 sm:h-16 sm:w-16 text-accent mb-3 sm:mb-4" />
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-2 sm:mb-3">
           Our Gear & Nutrition
@@ -70,7 +73,7 @@ export default function AllProductsPage() {
         </p>
       </header>
 
-      <Card className="mb-6 sm:mb-8 p-3 sm:p-4 md:p-6 glassmorphic-card">
+      <Card className="mb-6 sm:mb-8 p-3 sm:p-4 md:p-6 glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.2s'}}>
         <div className="flex flex-col md:flex-row gap-3 sm:gap-4 md:gap-6 items-center">
           <div className="relative w-full md:flex-grow">
             <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
@@ -119,13 +122,15 @@ export default function AllProductsPage() {
       </Card>
 
       {filteredProducts.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8 animate-fade-in-up" style={{animationDelay: '0.4s'}}>
+          {filteredProducts.map((product, index) => (
+            <div key={product.id} className="animate-fade-in-up" style={{animationDelay: `${index * 0.05 + 0.5}s`}}>
+              <ProductCard product={product} />
+            </div>
           ))}
         </div>
       ) : (
-        <Alert className="glassmorphic-card text-center py-8 sm:py-10">
+        <Alert className="glassmorphic-card text-center py-8 sm:py-10 animate-fade-in-up" style={{animationDelay: '0.4s'}}>
           <XCircle className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-destructive mb-3 sm:mb-4" />
           <AlertTitle className="text-xl sm:text-2xl font-semibold mb-1 sm:mb-2">No Products Found</AlertTitle>
           <AlertDescription className="text-base sm:text-lg">
@@ -136,3 +141,5 @@ export default function AllProductsPage() {
     </div>
   );
 }
+
+    

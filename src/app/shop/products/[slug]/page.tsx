@@ -103,8 +103,17 @@ export default function ProductDetailPage() {
   }
 
   if (!product) {
-    notFound(); 
-    return null;
+    // This should ideally be caught by Next.js's notFound() for a better UX
+    // but as a fallback:
+    return (
+        <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 text-center animate-fade-in-up">
+            <h1 className="text-2xl sm:text-3xl font-bold text-destructive mb-4">Product Not Found</h1>
+            <p className="text-foreground/70 mb-6">Sorry, we couldn't find the product you were looking for.</p>
+            <Button asChild>
+                <Link href="/shop/products">Back to All Products</Link>
+            </Button>
+        </div>
+    );
   }
 
   const discountPercentage = product.originalPriceINR
@@ -123,7 +132,7 @@ export default function ProductDetailPage() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-6 md:gap-8 lg:gap-12 items-start">
-        <Card className="glassmorphic-card overflow-hidden sticky top-20 md:top-24">
+        <Card className="glassmorphic-card overflow-hidden sticky top-20 md:top-24 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
           <div className="aspect-square relative">
             <Image
               src={product.imagePlaceholder}
@@ -136,7 +145,7 @@ export default function ProductDetailPage() {
           </div>
         </Card>
 
-        <div className="space-y-4 sm:space-y-6">
+        <div className="space-y-4 sm:space-y-6 animate-fade-in-up" style={{animationDelay: '0.2s'}}>
           <Card className="glassmorphic-card">
             <CardHeader className="pb-3 sm:pb-4">
               <Link href={`/shop/products?category=${product.category.toLowerCase()}`} className="text-xs sm:text-sm text-accent hover:underline mb-1 flex items-center gap-1">
@@ -209,11 +218,13 @@ export default function ProductDetailPage() {
       </div>
 
       {relatedProducts.length > 0 && (
-        <div className="mt-12 sm:mt-16">
+        <div className="mt-12 sm:mt-16 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
           <h3 className="text-xl sm:text-2xl font-semibold text-foreground mb-4 sm:mb-6">You Might Also Like</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {relatedProducts.map((relatedProduct) => (
-              <ProductCard key={relatedProduct.id} product={relatedProduct} />
+            {relatedProducts.map((relatedProduct, index) => (
+               <div key={relatedProduct.id} className="animate-fade-in-up" style={{animationDelay: `${index * 0.1 + 0.4}s`}}>
+                <ProductCard product={relatedProduct} />
+              </div>
             ))}
           </div>
         </div>
@@ -221,3 +232,5 @@ export default function ProductDetailPage() {
     </div>
   );
 }
+
+    
