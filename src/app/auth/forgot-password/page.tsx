@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
     
     toast({
       title: 'Password Reset Email Sent (Simulated)',
-      description: `If an account exists for ${data.email}, you will receive an email with instructions to reset your password.`,
+      description: `If an account exists for ${data.email}, you will receive an email with instructions to reset your password. Please check your inbox and spam folder.`,
     });
     setIsLoading(false);
     // Optionally redirect or clear form
@@ -56,7 +56,9 @@ export default function ForgotPasswordPage() {
             <KeyRound className="h-10 w-10 text-primary dark:text-accent" />
           </div>
           <CardTitle className="text-3xl font-bold">Forgot Password?</CardTitle>
-          <CardDescription>Enter your email address below and we&apos;ll send you a link to reset your password.</CardDescription>
+          <CardDescription className="text-base sm:text-lg text-card-foreground/80">
+            No worries! Enter your email address below, and we&apos;ll send you a link to reset your password.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -90,6 +92,9 @@ export default function ForgotPasswordPage() {
               </Button>
             </form>
           </Form>
+           <p className="mt-4 text-center text-xs text-muted-foreground">
+            If an account associated with this email exists, instructions will be sent. This is a simulated process.
+          </p>
           <p className="mt-6 text-center text-sm text-muted-foreground">
             <Link href="/auth/sign-in" className="font-medium text-primary dark:text-accent hover:underline flex items-center justify-center">
               <ArrowLeft className="mr-1 h-4 w-4" /> Back to Sign In
@@ -100,3 +105,4 @@ export default function ForgotPasswordPage() {
     </div>
   );
 }
+

@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 import { useRouter, usePathname } from 'next/navigation';
 import { useCart } from '@/contexts/CartContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useToast } from '@/hooks/use-toast'; // Ensure this import is present
 
 interface NavItem {
   href: string;
@@ -31,14 +32,15 @@ interface NavItem {
   showTextAtBreakpoint?: 'md' | 'lg';
   featureKey?: keyof import('@/contexts/SubscriptionContext').FeatureAccessConfig;
   isPremium?: boolean;
+  ariaLabel?: string;
 }
 
 export default function MainHeader() {
   const { getItemCount } = useCart();
-  const { isFeatureAccessible, mounted: subscriptionMounted } = useSubscription();
+  const { isFeatureAccessible, subscriptionTier } = useSubscription(); // Removed 'mounted' from here, use local mounted state
   const [isScrolled, setIsScrolled] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [headerMounted, setHeaderMounted] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [cartItemCount, setCartItemCount] = useState(0);
   const router = useRouter();
   const pathname = usePathname();
@@ -51,8 +53,8 @@ export default function MainHeader() {
   }, []);
 
   useEffect(() => {
-    setHeaderMounted(true);
-    checkLoginStatus();
+    setMounted(true);
+    checkLoginStatus(); // Initial check
 
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     const handleStorageChange = (event: StorageEvent) => {
@@ -63,7 +65,7 @@ export default function MainHeader() {
     const handleLoginStateChange = () => {
       checkLoginStatus();
     };
-
+    
     if (typeof window !== 'undefined') {
       window.addEventListener('scroll', handleScroll);
       window.addEventListener('storage', handleStorageChange);
@@ -80,59 +82,66 @@ export default function MainHeader() {
   }, [pathname, checkLoginStatus]);
 
   useEffect(() => {
-    if (headerMounted && subscriptionMounted) {
+    if (mounted) { // Only update cart count if component is mounted
       setCartItemCount(getItemCount());
     }
-  }, [headerMounted, subscriptionMounted, getItemCount, pathname]);
+  }, [mounted, getItemCount, pathname]); // Rerun when getItemCount, pathname, or mounted status changes
+
+
+  const { toast } = useToast();
 
   const handleLogout = () => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && mounted) {
       localStorage.removeItem('fitnityUserLoggedIn');
       window.dispatchEvent(new Event('loginStateChange'));
     }
+    toast({ title: "Logged Out", description: "You have been successfully logged out." });
     router.push('/');
   };
   
-  const navLinkBaseClasses = "relative flex items-center justify-center md:justify-start gap-1 px-1 py-1.5 md:px-2 md:py-2 rounded-lg text-sm transition-all duration-300 ease-in-out group border-b-2 border-transparent focus-visible:border-accent";
-  const navLinkHoverClasses = "hover:translate-y-[-2px] hover:text-accent hover:drop-shadow-[0_0_8px_hsl(var(--accent))] focus-visible:text-accent focus-visible:drop-shadow-[0_0_8px_hsl(var(--accent))] hover:bg-transparent focus-visible:bg-accent/10";
-  const navIconClasses = "h-4 w-4 sm:h-4.5 sm:w-4.5 md:h-5 md:w-5 flex-shrink-0 group-hover:text-accent group-focus-visible:text-accent transition-colors duration-300";
+
+  const navLinkBaseClasses = "relative flex items-center justify-center md:justify-start gap-1 px-1 py-1.5 md:px-2 md:py-2 rounded-lg text-sm transition-all duration-300 ease-in-out group border-b-2 border-transparent hover:border-accent focus-visible:border-accent";
+  const navLinkHoverClasses = "hover:translate-y-[-2px] hover:text-primary dark:hover:text-accent hover:drop-shadow-[0_0_8px_hsl(var(--accent))] focus-visible:text-accent focus-visible:drop-shadow-[0_0_8px_hsl(var(--accent))] hover:bg-transparent focus-visible:bg-accent/10";
+  const navIconClasses = "h-4 w-4 sm:h-4.5 sm:w-4.5 md:h-5 md:w-5 flex-shrink-0 text-foreground group-hover:text-primary dark:group-hover:text-accent group-focus-visible:text-accent transition-colors duration-300";
+
 
   const unauthenticatedNavItems: NavItem[] = [
-    { href: '/#features', label: 'Features', icon: Zap, tooltipText: 'Explore Features', showTextAtBreakpoint: 'md' },
-    { href: '/#pricing', label: 'Pricing', icon: Sparkles, tooltipText: 'View Pricing', showTextAtBreakpoint: 'md' },
-    { href: '/shop/products', label: 'Shop', icon: ShoppingCart, tooltipText: 'Browse Shop', showTextAtBreakpoint: 'md'},
-    { href: '/auth/sign-in', label: 'Login', icon: LogIn, tooltipText: 'Login to your account', showTextAtBreakpoint: 'md' },
-    { href: '/auth/sign-up', label: 'Sign Up', icon: UserPlus, isCTA: true, tooltipText: 'Create an account' },
+    { href: '/#features', label: 'Features', icon: Zap, tooltipText: 'Explore Features', showTextAtBreakpoint: 'md', ariaLabel: 'Explore Features'},
+    { href: '/#pricing', label: 'Pricing', icon: Sparkles, tooltipText: 'View Pricing', showTextAtBreakpoint: 'md', ariaLabel: 'View Pricing Plans'},
+    { href: '/shop/products', label: 'Shop', icon: ShoppingCart, tooltipText: 'Browse Shop', showTextAtBreakpoint: 'md', ariaLabel: 'Browse Shop'},
+    { href: '/auth/sign-in', label: 'Login', icon: LogIn, tooltipText: 'Login to your account', showTextAtBreakpoint: 'md', ariaLabel: 'Login to your account'},
+    { href: '/auth/sign-up', label: 'Sign Up', icon: UserPlus, isCTA: true, tooltipText: 'Create an account', ariaLabel: 'Create an account' },
   ];
 
   const authenticatedNavItems: NavItem[] = [
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, tooltipText: 'View your progress', showTextAtBreakpoint: 'md', featureKey: 'dashboard' },
-    { href: '/workout-plan', label: 'Workout', icon: ClipboardList, tooltipText: 'Generate workout plans', showTextAtBreakpoint: 'lg', featureKey: 'workoutPlan' },
-    { href: '/nutrition-plan', label: 'Nutrition', icon: NutritionIcon, tooltipText: 'Get nutrition advice', showTextAtBreakpoint: 'lg', featureKey: 'nutritionPlan', isPremium: true },
-    { href: '/videos', label: 'Videos', icon: PlayCircle, tooltipText: 'Watch fitness videos', showTextAtBreakpoint: 'lg', featureKey: 'videos' },
-    { href: '/form-analysis', label: 'Form Check', icon: Camera, tooltipText: 'Analyze your exercise form', showTextAtBreakpoint: 'lg', featureKey: 'formAnalysis', isPremium: true },
-    { href: '/ai-coach', label: 'Coach', icon: Bot, tooltipText: 'Chat with your AI Coach', showTextAtBreakpoint: 'lg', featureKey: 'aiCoach' },
-    { href: '/shop', label: 'Shop', icon: ShoppingCart, tooltipText: 'Browse fitness gear', showTextAtBreakpoint: 'md', featureKey: 'shop' },
-    { href: '/profile', label: 'Profile', icon: UserIcon, tooltipText: 'Manage your profile', showTextAtBreakpoint: 'md', featureKey: 'profile' },
+    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, tooltipText: 'View your progress', showTextAtBreakpoint: 'md', featureKey: 'dashboard', ariaLabel: 'View your progress dashboard'},
+    { href: '/workout-plan', label: 'Workout', icon: ClipboardList, tooltipText: 'Generate workout plans', showTextAtBreakpoint: 'lg', featureKey: 'workoutPlan', ariaLabel: 'Generate workout plans' },
+    { href: '/nutrition-plan', label: 'Nutrition', icon: NutritionIcon, tooltipText: 'Get nutrition advice', showTextAtBreakpoint: 'lg', featureKey: 'nutritionPlan', isPremium: true, ariaLabel: 'Get nutrition advice' },
+    { href: '/videos', label: 'Videos', icon: PlayCircle, tooltipText: 'Watch fitness videos', showTextAtBreakpoint: 'lg', featureKey: 'videos', ariaLabel: 'Watch fitness videos' },
+    { href: '/form-analysis', label: 'Form Check', icon: Camera, tooltipText: 'Analyze your exercise form', showTextAtBreakpoint: 'lg', featureKey: 'formAnalysis', isPremium: true, ariaLabel: 'Analyze your exercise form' },
+    { href: '/ai-coach', label: 'Coach', icon: Bot, tooltipText: 'Chat with your AI Coach', showTextAtBreakpoint: 'lg', featureKey: 'aiCoach', ariaLabel: 'Chat with your AI Coach' },
+    { href: '/shop', label: 'Shop', icon: ShoppingCart, tooltipText: 'Browse fitness gear', showTextAtBreakpoint: 'md', featureKey: 'shop', ariaLabel: 'Browse fitness gear' },
+    { href: '/profile', label: 'Profile', icon: UserIcon, tooltipText: 'Manage your profile', showTextAtBreakpoint: 'md', featureKey: 'profile', ariaLabel: 'Manage your profile' },
   ];
 
-  const itemsToDisplay = isLoggedIn ? authenticatedNavItems : unauthenticatedNavItems;
+  const itemsToDisplay = mounted && isLoggedIn ? authenticatedNavItems : unauthenticatedNavItems;
 
   const baseHeaderClasses = "sticky top-0 z-50 w-full glassmorphic-card transition-all duration-300 ease-in-out";
   const baseContainerClasses = "container mx-auto flex items-center justify-between transition-all duration-300 ease-in-out h-full";
 
-  if (!headerMounted || !subscriptionMounted) { 
+  if (!mounted) {
     return (
-       <header className={cn(baseHeaderClasses, "h-20 shadow-none dark:shadow-none light:border-b light:border-border/30")}>
+       <header className={cn(baseHeaderClasses, "h-20 shadow-none dark:shadow-none light:border-b light:border-transparent")}>
          <div className={cn(baseContainerClasses, "px-2 sm:px-4 md:px-6")}>
             <Link href="/" className="flex items-center gap-2 flex-shrink-0" prefetch={false}>
-              <Zap className="h-7 w-7 md:h-8 md:w-8 text-primary dark:text-accent" />
-              <span className="text-xl md:text-2xl font-bold text-foreground">Fitnity AI</span>
+              <Zap className="h-7 w-7 md:h-8 md:w-8 text-primary dark:text-accent logo-pulse" />
+              <span className="text-xl md:text-2xl font-bold text-card-foreground">Fitnity AI</span>
             </Link>
             <nav className="flex items-center gap-0.5 md:gap-1">
-              <div className="h-9 w-10 bg-muted/10 rounded-md md:w-20"></div>
-              <div className="h-9 w-10 bg-muted/10 rounded-md md:w-20"></div>
-              <div className="h-9 w-10 bg-muted/10 rounded-md md:w-28"></div>
+              {/* Placeholder for buttons to maintain structure */}
+              <div className="h-9 w-10 bg-transparent md:w-20"></div>
+              <div className="h-9 w-10 bg-transparent md:w-20"></div>
+              <div className="h-9 w-10 bg-transparent md:w-28"></div>
             </nav>
          </div>
        </header>
@@ -151,8 +160,8 @@ export default function MainHeader() {
       >
         <div className={cn(baseContainerClasses, "px-2 sm:px-4 md:px-3 lg:px-6")}>
           <Link href="/" className="flex items-center gap-2 flex-shrink-0" prefetch={false}>
-            <Zap className={cn("h-7 w-7 md:h-8 md:w-8", headerMounted && "logo-pulse", "text-primary dark:text-accent")} />
-            <span className="text-xl md:text-2xl font-bold text-foreground">Fitnity AI</span>
+            <Zap className={cn("h-7 w-7 md:h-8 md:w-8", "logo-pulse", "text-primary dark:text-accent")} />
+            <span className="text-xl md:text-2xl font-bold text-card-foreground">Fitnity AI</span>
           </Link>
           <nav className="flex items-center gap-0.5 md:gap-0.5 lg:gap-1">
             {itemsToDisplay.map(item => {
@@ -161,41 +170,42 @@ export default function MainHeader() {
               
               const navButtonContent = (
                 <div className="flex flex-col items-center md:flex-row">
-                    <item.icon className={cn(navIconClasses, "text-foreground group-hover:text-accent group-focus-visible:text-accent dark:group-hover:text-accent light:group-hover:text-primary" )} />
+                    <item.icon className={cn(navIconClasses, showLockIcon && !accessible && "opacity-50") } />
                     <span className={cn(
                       "hidden text-sm ml-0 md:ml-1.5",
                       item.showTextAtBreakpoint === 'md' && 'md:inline',
                       item.showTextAtBreakpoint === 'lg' && 'lg:inline',
-                       (!item.showTextAtBreakpoint && item.label !== 'Login' && item.label !== 'Sign Up') && 'md:inline',
-                       (item.label === 'Login' || item.label === 'Sign Up') && 'md:inline'
+                       (!item.showTextAtBreakpoint && item.label !== 'Login' && item.label !== 'Sign Up' && item.label !== 'Features' && item.label !== 'Pricing') && 'md:inline',
+                       (item.label === 'Login' || item.label === 'Sign Up' || item.label === 'Features' || item.label === 'Pricing') && 'md:inline',
+                       showLockIcon && !accessible && "opacity-50"
                     )}>
                       {item.label}
                     </span>
-                    {item.label === 'Coach' && isLoggedIn && headerMounted && <span className="glowing-orb ml-0.5 md:ml-1.5 hidden md:inline-block"></span>}
+                    {item.label === 'Coach' && isLoggedIn && <span className="glowing-orb ml-0.5 md:ml-1.5 hidden md:inline-block"></span>}
                     {item.label === 'Shop' && isLoggedIn && cartItemCount > 0 && (
                       <span className="absolute top-0 right-0 -mt-1 -mr-0.5 md:mt-0 md:mr-0 flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
                         {cartItemCount > 9 ? '9+' : cartItemCount}
                       </span>
                     )}
-                    {showLockIcon && <Lock className="h-3 w-3 text-amber-500 ml-1" />}
+                    {showLockIcon && <Lock className="h-3 w-3 text-amber-500 ml-1 hidden md:inline-block" />}
                   </div>
               );
 
+              const buttonProps = {
+                variant: "ghost" as const,
+                className: cn(
+                  navLinkBaseClasses, 
+                  "text-card-foreground px-1.5 sm:px-2 py-1 sm:py-1.5 h-auto",
+                   accessible ? navLinkHoverClasses : "cursor-not-allowed",
+                   showLockIcon && "opacity-70 hover:opacity-80"
+                ),
+                disabled: showLockIcon,
+                "aria-label": item.ariaLabel || item.label,
+              };
+
               const buttonWrapper = (
-                 <Button 
-                    asChild 
-                    variant="ghost" 
-                    className={cn(
-                      navLinkBaseClasses, 
-                      "text-foreground px-1.5 sm:px-2 py-1 sm:py-1.5 h-auto",
-                      "hover:translate-y-[-2px] hover:bg-transparent focus-visible:bg-accent/10",
-                      "dark:hover:text-accent dark:hover:drop-shadow-[0_0_8px_hsl(var(--accent))]",
-                      "light:hover:text-primary light:hover:drop-shadow-[0_0_8px_hsl(var(--primary)/0.5)]",
-                      showLockIcon && "cursor-not-allowed opacity-70 hover:opacity-80"
-                    )}
-                    disabled={showLockIcon}
-                  >
-                    {!showLockIcon ? <Link href={item.href}>{navButtonContent}</Link> : <div>{navButtonContent}</div>}
+                 <Button {...buttonProps} asChild={accessible}>
+                    {accessible ? <Link href={item.href}>{navButtonContent}</Link> : <div>{navButtonContent}</div>}
                   </Button>
               );
 
@@ -206,14 +216,15 @@ export default function MainHeader() {
                   size="sm"
                   className={cn(
                     "ml-1 md:ml-2 px-3 py-2 md:px-4 md:py-2.5 rounded-lg shadow-md transition-all duration-300 ease-in-out text-xs sm:text-sm active:scale-95 h-auto",
-                    "dark:bg-accent dark:hover:bg-accent/80 dark:text-accent-foreground dark:cta-glow-pulse",
-                    "light:bg-primary light:hover:bg-gradient-to-r light:hover:from-primary light:hover:to-accent light:text-primary-foreground"
+                    "light:bg-primary light:text-primary-foreground light:hover:bg-gradient-to-r light:hover:from-primary light:hover:to-accent",
+                    "dark:bg-accent dark:hover:bg-accent/80 dark:text-accent-foreground dark:cta-glow-pulse"
                   )}
+                  aria-label={item.ariaLabel || item.label}
                 >
                   <Link href={item.href} className="flex items-center">
                     <item.icon className={cn(navIconClasses, "mr-1 md:mr-1.5 h-4 w-4 sm:h-4.5 sm:w-4.5", "text-inherit group-hover:text-inherit group-focus-visible:text-inherit")} />
-                    <span className="hidden sm:inline">{item.label === 'Get Started' || item.label === 'Sign Up' ? 'Sign Up' : item.label}</span>
-                     <span className="sm:hidden text-xs">{item.label === 'Get Started' || item.label === 'Sign Up' ? 'Sign Up' : (item.label === 'Login' ? 'Login' : item.label)}</span>
+                    <span className="hidden sm:inline">{item.label}</span>
+                     <span className="sm:hidden text-xs">{item.label}</span>
                   </Link>
                 </Button>
               ) : (
@@ -227,15 +238,15 @@ export default function MainHeader() {
                          <AlertDialogContent className="glassmorphic-card">
                            <AlertDialogHeader>
                             <AlertDialogTitle className="flex items-center gap-2">
-                                <Sparkles className="h-6 w-6 text-yellow-400"/> Premium Feature Locked
+                                <Sparkles className="h-6 w-6 text-primary dark:text-yellow-400"/> Premium Feature Locked
                             </AlertDialogTitle>
-                             <AlertDialogDescription>
+                             <AlertDialogDescription className="text-card-foreground/70">
                                The "{item.label}" feature requires a Premium or Unlimited subscription. Upgrade your plan to unlock access and supercharge your fitness journey!
                              </AlertDialogDescription>
                            </AlertDialogHeader>
                            <AlertDialogFooter>
                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                             <AlertDialogAction asChild className="bg-accent hover:bg-accent/90 text-accent-foreground light:bg-primary light:hover:bg-primary/90 light:text-primary-foreground">
+                             <AlertDialogAction asChild className="bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90 text-primary-foreground dark:text-accent-foreground">
                                <Link href="/#pricing">View Plans</Link>
                              </AlertDialogAction>
                            </AlertDialogFooter>
@@ -246,24 +257,24 @@ export default function MainHeader() {
                     )}
                   </TooltipTrigger>
                   <TooltipContent className="bg-popover text-popover-foreground border-border shadow-md">
-                    <p>{item.tooltipText || item.label} {showLockIcon ? "(Premium)" : ""}</p>
+                    <p>{item.tooltipText || item.label} {showLockIcon ? "(Premium - Upgrade to Access)" : ""}</p>
                   </TooltipContent>
                 </Tooltip>
               );
             })}
-            {headerMounted && isLoggedIn && (
+            {mounted && isLoggedIn && (
               <AlertDialog>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <AlertDialogTrigger asChild>
                       <Button variant="ghost" className={cn(navLinkBaseClasses, 
-                        "text-foreground px-1.5 sm:px-2 py-1 sm:py-1.5 h-auto",
-                        "hover:translate-y-[-2px] hover:bg-transparent focus-visible:bg-accent/10",
-                        "dark:hover:text-accent dark:hover:drop-shadow-[0_0_8px_hsl(var(--accent))]",
-                        "light:hover:text-primary light:hover:drop-shadow-[0_0_8px_hsl(var(--primary)/0.5)]"
-                        )}>
+                        "text-card-foreground px-1.5 sm:px-2 py-1 sm:py-1.5 h-auto",
+                        navLinkHoverClasses
+                        )}
+                        aria-label="Logout"
+                        >
                         <div className="flex flex-col items-center md:flex-row">
-                          <LogOutIcon className={cn(navIconClasses, "text-foreground group-hover:text-accent group-focus-visible:text-accent dark:group-hover:text-accent light:group-hover:text-primary")} />
+                          <LogOutIcon className={cn(navIconClasses)} />
                           <span className="hidden md:inline text-sm ml-0 md:ml-1.5">Logout</span>
                         </div>
                       </Button>
@@ -275,8 +286,8 @@ export default function MainHeader() {
                 </Tooltip>
                 <AlertDialogContent className="glassmorphic-card">
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Confirm Logout</AlertDialogTitle>
-                    <AlertDialogDescription>
+                    <AlertDialogTitle className="flex items-center"><LogOutIcon className="mr-2 h-5 w-5 text-primary dark:text-accent"/>Confirm Logout</AlertDialogTitle>
+                    <AlertDialogDescription className="text-card-foreground/70">
                        Are you sure you want to logout from Fitnity AI?
                     </AlertDialogDescription>
                   </AlertDialogHeader>
@@ -295,3 +306,5 @@ export default function MainHeader() {
     </TooltipProvider>
   );
 }
+
+    

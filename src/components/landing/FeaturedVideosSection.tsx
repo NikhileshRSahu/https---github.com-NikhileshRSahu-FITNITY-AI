@@ -19,7 +19,7 @@ export default function FeaturedVideosSection() {
     <section id="featured-videos" className="py-16 md:py-24 bg-background/5">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center mb-10 md:mb-12 animate-fade-in-up">
-          <Youtube className="mx-auto h-12 w-12 sm:h-16 sm:w-16 text-accent mb-3 sm:mb-4" />
+          <Youtube className="mx-auto h-12 w-12 sm:h-16 sm:w-16 text-primary dark:text-accent mb-3 sm:mb-4" />
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground">
             Featured Workouts & Guides
           </h2>
@@ -44,7 +44,8 @@ export default function FeaturedVideosSection() {
           <Button 
             asChild 
             size="lg" 
-            className="bg-accent hover:bg-accent/90 text-accent-foreground transition-transform duration-300 hover:scale-105 active:scale-95 cta-glow-pulse text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-3.5"
+            className="bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90 text-primary-foreground dark:text-accent-foreground transition-transform duration-300 hover:scale-105 active:scale-95 cta-glow-pulse text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-3.5
+                       light:hover:bg-gradient-to-r light:hover:from-primary light:hover:to-accent"
           >
             <Link href="/videos">
               View All Videos <ListChecks className="ml-2 h-4 w-4 sm:h-5 sm:w-5"/>

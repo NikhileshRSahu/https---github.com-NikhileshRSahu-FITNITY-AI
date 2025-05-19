@@ -31,7 +31,7 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
-import { Moon, Sun, Bell, Globe, ShieldCheck, LogOut as LogOutIcon, Zap, Edit3, Save, XCircle, User as UserIcon, CalendarClock, Settings as SettingsIcon, Gem, Loader2, KeyRound, Trash2 } from 'lucide-react'
+import { Moon, Sun, Bell, Globe, ShieldCheck, LogOut as LogOutIcon, Zap, Edit3, Save, XCircle, User as UserIcon, CalendarClock, Settings as SettingsIcon, Gem, Loader2, KeyRound, Trash2, AlertTriangle } from 'lucide-react'
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -43,7 +43,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
-// Profile Data Structure
+// Profile Data Structure (for localStorage simulation)
 interface ProfileData {
   fullName: string;
   email: string;
@@ -105,13 +105,14 @@ export default function ProfilePage() {
     resolver: zodResolver(changePasswordSchema),
     defaultValues: { currentPassword: "", newPassword: "", confirmNewPassword: "" },
   });
+  const [isPasswordSubmitting, setIsPasswordSubmitting] = useState(false);
 
 
   const checkLoginStatus = useCallback(() => {
     if (typeof window !== 'undefined') {
       const loggedInStatus = localStorage.getItem('fitnityUserLoggedIn') === 'true';
       setIsLoggedIn(loggedInStatus);
-      if (!loggedInStatus && uiMounted) {
+      if (!loggedInStatus && uiMounted) { // only redirect if uiMounted to prevent SSR issues
         router.replace('/auth/sign-in');
       }
     }
@@ -119,8 +120,11 @@ export default function ProfilePage() {
 
   // Load data from localStorage on mount
   useEffect(() => {
-    setUiMounted(true);
-    if (typeof window !== 'undefined') {
+    setUiMounted(true); // Indicates component has mounted on client
+  }, []);
+
+  useEffect(() => {
+    if (uiMounted) { // Only run localStorage access logic after mount
       checkLoginStatus();
 
       const storedProfileData = localStorage.getItem('fitnityUserProfile');
@@ -128,7 +132,7 @@ export default function ProfilePage() {
         try {
           const parsedProfile = JSON.parse(storedProfileData);
           setProfileData(parsedProfile);
-          setInitialProfileData(parsedProfile); // Keep initial in sync for cancel
+          setInitialProfileData(parsedProfile);
         } catch (e) { console.error("Failed to parse profile data from localStorage", e); }
       }
 
@@ -139,17 +143,20 @@ export default function ProfilePage() {
         } catch (e) { console.error("Failed to parse user settings from localStorage", e); }
       }
     }
-  }, [checkLoginStatus]); // checkLoginStatus added as dependency
+  }, [uiMounted, checkLoginStatus]);
+
 
   // Add event listener for login state changes
   useEffect(() => {
+    if (!uiMounted) return; // Don't add listeners on server or before mount
+
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key === 'fitnityUserLoggedIn') checkLoginStatus();
       if (event.key === 'fitnityUserProfile') {
         const storedProfileData = localStorage.getItem('fitnityUserProfile');
         if (storedProfileData) setProfileData(JSON.parse(storedProfileData));
       }
-      if (event.key === 'fitnityUserSettings') {
+       if (event.key === 'fitnityUserSettings') {
         const storedSettings = localStorage.getItem('fitnityUserSettings');
         if (storedSettings) setUserSettings(JSON.parse(storedSettings));
       }
@@ -162,7 +169,7 @@ export default function ProfilePage() {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('loginStateChange', handleLoginStateChange);
     };
-  }, [checkLoginStatus]);
+  }, [uiMounted, checkLoginStatus]);
 
 
   const handleProfileInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -177,9 +184,10 @@ export default function ProfilePage() {
   const handleSettingsSwitchChange = (name: keyof UserSettings) => (checked: boolean) => {
     setUserSettings(prev => {
       const newSettings = { ...prev, [name]: checked };
-      if (typeof window !== 'undefined') {
+      if (typeof window !== 'undefined' && uiMounted) {
         localStorage.setItem('fitnityUserSettings', JSON.stringify(newSettings));
       }
+      toast({ title: "Preference Updated!", description: `${name.replace(/([A-Z])/g, ' $1').trim()} preference saved.`})
       return newSettings;
     });
   };
@@ -187,23 +195,23 @@ export default function ProfilePage() {
   const handleAppLanguageChange = (value: string) => {
      setUserSettings(prev => {
       const newSettings = { ...prev, appLanguage: value as 'English' | 'Hindi' };
-      if (typeof window !== 'undefined') {
+      if (typeof window !== 'undefined' && uiMounted) {
         localStorage.setItem('fitnityUserSettings', JSON.stringify(newSettings));
       }
+      toast({ title: "App Language Updated", description: `Interface language preference set to ${value}. (UI change not implemented)` });
       return newSettings;
     });
-     toast({ title: "App Language Updated (Simulated)", description: `Interface language preference set to ${value}. A real app would re-render UI strings.` });
   };
 
 
   const handleSaveChanges = () => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && uiMounted) {
       localStorage.setItem('fitnityUserProfile', JSON.stringify(profileData));
     }
     setInitialProfileData(profileData); 
     toast({
       title: 'Profile Updated!',
-      description: 'Your changes have been saved (simulated).',
+      description: 'Your changes have been saved.',
     });
     setIsEditing(false);
   };
@@ -214,32 +222,39 @@ export default function ProfilePage() {
   }
 
   const handleLogout = () => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && uiMounted) {
       localStorage.removeItem('fitnityUserLoggedIn');
-      localStorage.removeItem('fitnityUserProfile'); // Also clear profile on logout
-      localStorage.removeItem('fitnityUserSettings'); // Clear settings on logout
+      // Optionally clear other user-specific data from localStorage on logout
+      // localStorage.removeItem('fitnityUserProfile'); 
+      // localStorage.removeItem('fitnityUserSettings');
       window.dispatchEvent(new Event('loginStateChange')); 
     }
+    toast({title: "Logged Out", description: "You have been successfully logged out."});
     router.push('/'); 
   };
   
-  const onSubmitChangePassword = (data: ChangePasswordFormValues) => {
+  const onSubmitChangePassword = async (data: ChangePasswordFormValues) => {
+    setIsPasswordSubmitting(true);
     console.log("Change Password Submitted (simulated):", data);
+    await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
     toast({
-      title: "Password Change Request Simulated",
-      description: "In a real app, further steps would be taken.",
+      title: "Password Change Simulated",
+      description: "In a real app, your password would be updated.",
     });
     changePasswordForm.reset();
-    // Close dialog manually if needed, or use DialogClose inside the form
+    setIsPasswordSubmitting(false);
+    // Manually close dialog if it's controlled, or use DialogClose inside form
+    document.getElementById('closeChangePasswordDialog')?.click(); 
   };
 
   const handleDeleteAccount = () => {
     toast({
       title: "Account Deletion Simulated",
-      description: "You have been logged out.",
-      variant: "destructive"
+      description: "You have been logged out. Your account would be permanently deleted in a real app.",
+      variant: "destructive",
+      duration: 7000,
     });
-    handleLogout(); // Simulate logout after deletion
+    handleLogout(); 
   }
 
   if (!uiMounted || !isLoggedIn || !subscriptionMounted) { 
@@ -265,7 +280,7 @@ export default function ProfilePage() {
     <div className="container mx-auto px-4 md:px-6 py-12 md:py-20">
       <div className="max-w-2xl sm:max-w-3xl mx-auto space-y-8 sm:space-y-10">
         <div className="flex flex-col items-center text-center space-y-3 sm:space-y-4 mb-10 sm:mb-14 animate-fade-in-up">
-            <Avatar className="h-24 w-24 sm:h-28 sm:w-28 ring-4 ring-primary/50 dark:ring-accent/50 shadow-lg hover:opacity-80 transition-opacity duration-200 active:scale-95">
+            <Avatar className="h-24 w-24 sm:h-28 sm:w-28 ring-4 ring-primary dark:ring-accent/50 shadow-lg hover:opacity-80 transition-opacity duration-200 active:scale-95">
                 <AvatarImage src="https://placehold.co/100x100.png" alt={profileData.fullName} data-ai-hint="user portrait" />
                 <AvatarFallback>{profileData.fullName.substring(0,2).toUpperCase()}</AvatarFallback>
             </Avatar>
@@ -299,7 +314,7 @@ export default function ProfilePage() {
                   setInitialProfileData(profileData); 
                   setIsEditing(true);
                 }}
-                className="border-primary dark:border-accent text-primary dark:text-accent hover:bg-primary/10 dark:hover:bg-accent/10 hover:text-primary-foreground dark:hover:text-accent-foreground transition-transform duration-300 hover:scale-105 active:scale-95 mt-2 px-4 py-2"
+                className="border-primary dark:border-accent text-primary dark:text-accent hover:bg-primary/10 dark:hover:bg-accent/10 hover:text-primary-foreground dark:hover:text-accent-foreground transition-transform duration-300 hover:scale-105 active:scale-95 mt-2 px-4 py-2 text-sm sm:text-base"
               >
                   <Edit3 className="mr-2 h-4 w-4" /> Edit Profile
               </Button>
@@ -308,7 +323,7 @@ export default function ProfilePage() {
                 <Button 
                   size="default" 
                   onClick={handleSaveChanges}
-                  className="bg-green-500 hover:bg-green-600 text-white transition-transform duration-300 hover:scale-105 active:scale-95 px-5 py-2.5"
+                  className="bg-green-500 hover:bg-green-600 text-white transition-transform duration-300 hover:scale-105 active:scale-95 px-5 py-2.5 text-sm sm:text-base"
                 >
                     <Save className="mr-2 h-4 w-4" /> Save Changes
                 </Button>
@@ -316,7 +331,7 @@ export default function ProfilePage() {
                   variant="outline" 
                   size="default" 
                   onClick={handleCancelEdit}
-                  className="border-destructive text-destructive hover:bg-destructive/10 hover:text-destructive-foreground transition-transform duration-300 hover:scale-105 active:scale-95 px-5 py-2.5"
+                  className="border-destructive text-destructive hover:bg-destructive/10 hover:text-destructive-foreground transition-transform duration-300 hover:scale-105 active:scale-95 px-5 py-2.5 text-sm sm:text-base"
                 >
                     <XCircle className="mr-2 h-4 w-4" /> Cancel
                 </Button>
@@ -407,10 +422,10 @@ export default function ProfilePage() {
                 variant={subscriptionTier === tier ? "default" : "ghost"}
                 onClick={() => setSubscriptionTier(tier)}
                 className={cn(
-                  "w-full sm:flex-1 capitalize",
+                  "w-full sm:flex-1 capitalize text-sm sm:text-base",
                   subscriptionTier === tier 
                     ? "bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90 text-primary-foreground dark:text-accent-foreground" 
-                    : "border border-primary dark:border-accent text-primary dark:text-accent hover:bg-primary/10 dark:hover:bg-accent/10 hover:text-primary-foreground dark:hover:text-accent-foreground"
+                    : "border border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground dark:text-accent dark:border-accent light:text-primary light:border-primary light:hover:bg-primary/10 light:hover:text-primary-foreground"
                 )}
               >
                 Set to {tier}
@@ -446,7 +461,7 @@ export default function ProfilePage() {
             </div>
              <div className="flex items-center justify-between p-3 rounded-lg bg-background/10 mt-2">
                 <div className="flex items-center">
-                    <CalendarClock className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-primary/80 dark:text-accent/80" />
+                    <CalendarClock className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-primary dark:text-accent/80" />
                     <span className="font-medium text-card-foreground text-sm sm:text-base">Last Logged In:</span>
                 </div>
                 <span className="text-card-foreground/80 text-xs sm:text-sm">July 29, 2024, 10:30 AM (Simulated)</span>
@@ -460,28 +475,27 @@ export default function ProfilePage() {
               <DialogContent className="glassmorphic-card sm:max-w-md">
                 <DialogHeader>
                   <DialogTitle className="flex items-center"><KeyRound className="mr-2 h-5 w-5 text-primary dark:text-accent"/>Change Password</DialogTitle>
-                  <DialogDescription>
-                    Enter your current and new password below.
+                  <DialogDescription className="text-card-foreground/70">
+                    Enter your current password and new password below.
                   </DialogDescription>
                 </DialogHeader>
                 <Form {...changePasswordForm}>
                   <form onSubmit={changePasswordForm.handleSubmit(onSubmitChangePassword)} className="space-y-4 py-4">
                     <FormField control={changePasswordForm.control} name="currentPassword" render={({ field }) => (
-                      <FormItem><FormLabel>Current Password</FormLabel><FormControl><Input type="password" {...field} /></FormControl><FormMessage /></FormItem>
+                      <FormItem><FormLabel>Current Password</FormLabel><FormControl><Input type="password" {...field} className="bg-background/50" /></FormControl><FormMessage /></FormItem>
                     )}/>
                     <FormField control={changePasswordForm.control} name="newPassword" render={({ field }) => (
-                      <FormItem><FormLabel>New Password</FormLabel><FormControl><Input type="password" {...field} /></FormControl><FormMessage /></FormItem>
+                      <FormItem><FormLabel>New Password</FormLabel><FormControl><Input type="password" {...field} className="bg-background/50" /></FormControl><FormMessage /></FormItem>
                     )}/>
                     <FormField control={changePasswordForm.control} name="confirmNewPassword" render={({ field }) => (
-                      <FormItem><FormLabel>Confirm New Password</FormLabel><FormControl><Input type="password" {...field} /></FormControl><FormMessage /></FormItem>
+                      <FormItem><FormLabel>Confirm New Password</FormLabel><FormControl><Input type="password" {...field} className="bg-background/50" /></FormControl><FormMessage /></FormItem>
                     )}/>
                     <DialogFooter className="pt-4">
-                      <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
-                      <Button type="submit" disabled={changePasswordForm.formState.isSubmitting}
-                        className="light:bg-primary light:text-primary-foreground dark:bg-accent dark:text-accent-foreground"
+                      <DialogClose asChild><Button type="button" variant="outline" id="closeChangePasswordDialog">Cancel</Button></DialogClose>
+                      <Button type="submit" disabled={isPasswordSubmitting}
+                        className="light:bg-primary light:text-primary-foreground dark:bg-accent dark:text-accent-foreground active:scale-95"
                       >
-                        {changePasswordForm.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Update Password
+                        {isPasswordSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Update Password"}
                       </Button>
                     </DialogFooter>
                   </form>
@@ -543,7 +557,7 @@ export default function ProfilePage() {
         <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.5s'}}>
           <CardHeader>
             <CardTitle className="text-xl font-bold flex items-center">
-              <Globe className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-primary dark:text-accent" /> Language Preference
+              <Globe className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-primary dark:text-accent" /> App Language Preference
             </CardTitle>
             <CardDescription className="text-xs sm:text-sm text-card-foreground/70">Select your preferred language for the app interface.</CardDescription>
           </CardHeader>
@@ -577,7 +591,7 @@ export default function ProfilePage() {
             </Button>
              <br />
             <Button variant="outline" className="text-destructive hover:text-destructive-foreground hover:bg-destructive/90 border-destructive hover:border-destructive/90 w-full sm:w-auto mt-2 transition-transform duration-300 hover:scale-105 active:scale-95 text-sm sm:text-base px-4 py-2">
-              Download My Data
+              Download My Data (Simulated)
             </Button>
           </CardContent>
         </Card>
@@ -600,7 +614,7 @@ export default function ProfilePage() {
                   <AlertDialogHeader>
                     <AlertDialogTitle className="flex items-center text-destructive"><AlertTriangle className="mr-2 h-5 w-5"/>Confirm Account Deletion</AlertDialogTitle>
                     <AlertDialogDescription className="text-card-foreground/80">
-                       Are you absolutely sure you want to delete your account? This action is permanent and cannot be undone. All your data, including workout history, preferences, and any saved plans, will be irretrievably lost.
+                       Are you absolutely sure you want to delete your account? This action is permanent and cannot be undone. All your data, including workout history, preferences, and any saved plans, will be irretrievably lost. This is a simulated action.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -644,3 +658,4 @@ export default function ProfilePage() {
     </div>
   );
 }
+
