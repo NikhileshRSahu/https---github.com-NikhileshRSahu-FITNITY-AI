@@ -9,18 +9,18 @@ import { ArrowLeft, PlayCircle, Tag, Clock, UserCircle, BarChart, AlertTriangle,
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import Image from 'next/image'; // Import next/image
+import Image from 'next/image';
 
 export default function VideoDetailPage() {
   const params = useParams();
   const id = params?.id as string | undefined;
-  const [video, setVideo] = useState<Video | null | undefined>(undefined);
+  const [video, setVideo] = useState<Video | null | undefined>(undefined); // undefined for loading state
   const router = useRouter();
 
   useEffect(() => {
     if (id) {
       const foundVideo = videos.find(v => v.id === id);
-      setVideo(foundVideo || null);
+      setVideo(foundVideo || null); // Set to null if not found
     } else {
       setVideo(null); // If no id, explicitly set to null
     }
@@ -28,9 +28,9 @@ export default function VideoDetailPage() {
 
   if (video === undefined) { // Initial loading state
     return (
-      <div className="container mx-auto px-4 md:px-6 py-8 sm:py-12 md:py-16">
+      <div className="container mx-auto px-4 md:px-6 py-8 sm:py-12 md:py-16 animate-fade-in-up">
         <div className="mb-6 sm:mb-8">
-          <Skeleton className="h-8 w-40 bg-muted/50" />
+          <Skeleton className="h-8 w-36 sm:w-48 bg-muted/50" />
         </div>
         <div className="grid md:grid-cols-3 gap-6 md:gap-8 lg:gap-12 items-start">
           <div className="md:col-span-2">
@@ -39,14 +39,14 @@ export default function VideoDetailPage() {
             <Skeleton className="h-20 w-full sm:h-24 bg-muted/50" />
           </div>
           <div className="md:col-span-1">
-            <Skeleton className="h-48 w-full bg-muted/50" />
+            <Skeleton className="h-48 w-full bg-muted/50 rounded-lg" />
           </div>
         </div>
       </div>
     );
   }
 
-  if (!video) {
+  if (!video) { // Video not found after attempting to load
     return (
       <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 text-center min-h-[calc(100vh-10rem)] flex flex-col items-center justify-center animate-fade-in-up">
         <AlertTriangle className="h-16 w-16 text-destructive mb-6" />
@@ -75,18 +75,18 @@ export default function VideoDetailPage() {
       <div className="grid md:grid-cols-3 gap-6 md:gap-8 lg:gap-12 items-start">
         <div className="md:col-span-2">
           <Card className="glassmorphic-card overflow-hidden mb-6 sm:mb-8">
-            <div className="aspect-video bg-background/30 flex items-center justify-center text-muted-foreground rounded-t-lg border-b border-border/20">
-              {/* Placeholder for actual video player. For now, we can show the thumbnail. */}
+            <div className="aspect-video bg-background/30 flex items-center justify-center text-muted-foreground rounded-t-lg border-b border-border/20 relative group">
               <Image 
                 src={video.thumbnailUrl} 
                 alt={`Thumbnail for ${video.title}`}
-                width={1280} 
-                height={720} 
+                fill
                 className="object-cover w-full h-full"
                 data-ai-hint={video.aiHint} 
+                priority
               />
-              {/* <PlayCircle className="h-24 w-24 text-accent/50" />
-              <p className="mt-2 text-lg">Video Player Placeholder</p> */}
+               <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center">
+                <PlayCircle className="h-16 w-16 sm:h-20 sm:w-20 text-white/70 group-hover:text-white transition-colors duration-300" />
+              </div>
             </div>
           </Card>
           <Card className="glassmorphic-card">
@@ -121,12 +121,12 @@ export default function VideoDetailPage() {
               )}
               {video.level && (
                 <div className="flex items-center gap-2">
-                  <BarChart className="h-4 w-4 text-accent transform -rotate-90" />
+                  <BarChart className="h-4 w-4 text-accent transform -rotate-90" /> {/* Corrected icon usage */}
                   <strong>Level:</strong> {video.level}
                 </div>
               )}
             </div>
-            <Button className="w-full mt-6 bg-accent hover:bg-accent/90 text-accent-foreground cta-glow-pulse text-base sm:text-lg" onClick={() => alert(`Playing: ${video.title} (Placeholder)`)}>
+            <Button className="w-full mt-6 bg-accent hover:bg-accent/90 text-accent-foreground cta-glow-pulse text-base sm:text-lg active:scale-95" onClick={() => alert(`Playing: ${video.title} (Placeholder for actual video player)`)}>
               <PlayCircle className="mr-2 h-5 w-5" /> Play Video
             </Button>
           </Card>
@@ -135,3 +135,4 @@ export default function VideoDetailPage() {
     </div>
   );
 }
+

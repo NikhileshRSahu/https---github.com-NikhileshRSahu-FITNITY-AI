@@ -46,7 +46,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           <a className="block aspect-square overflow-hidden">
             <Image
               src={product.imagePlaceholder}
-              alt={product.name}
+              alt={product.name} // Ensure alt text
               width={300}
               height={300}
               className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
@@ -97,3 +97,4 @@ export default function ProductCard({ product }: ProductCardProps) {
     </Card>
   );
 }
+

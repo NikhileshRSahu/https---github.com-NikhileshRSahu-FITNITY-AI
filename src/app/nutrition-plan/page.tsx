@@ -60,7 +60,8 @@ export default function NutritionPlanPage() {
       toast({
         title: 'Premium Feature',
         description: 'Please upgrade to a Premium or Unlimited plan to generate nutrition plans.',
-        variant: 'destructive'
+        variant: 'destructive',
+        action: <Button asChild variant="outline" size="sm"><Link href="/#pricing">View Plans</Link></Button>
       });
       return;
     }
@@ -352,3 +353,4 @@ export default function NutritionPlanPage() {
     </div>
   );
 }
+

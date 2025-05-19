@@ -103,6 +103,16 @@ export default function FormAnalysisPage() {
   }, [toast, pageMounted, subscriptionMounted, isFeatureAccessible]);
 
   async function onSubmit(data: FormAnalysisValues) {
+    if (!isFeatureAccessible('formAnalysis')) {
+      toast({
+        title: 'Premium Feature',
+        description: 'Please upgrade your plan to use Form Analysis.',
+        variant: 'destructive',
+        action: <Button asChild variant="outline" size="sm"><Link href="/#pricing">View Plans</Link></Button>
+      });
+      return;
+    }
+    
     if (!hasCameraPermission || !videoRef.current || !videoRef.current.srcObject) {
       toast({
         variant: 'destructive',
@@ -131,7 +141,7 @@ export default function FormAnalysisPage() {
     setAnalysisStatus('capturing');
     setAnalysisResult(null);
     setError(null);
-    setCapturedFrameDataUri(null); // Clear previous frame
+    setCapturedFrameDataUri(null); 
 
     const canvas = document.createElement('canvas');
     canvas.width = videoRef.current.videoWidth;
@@ -410,3 +420,4 @@ export default function FormAnalysisPage() {
     </div>
   );
 }
+

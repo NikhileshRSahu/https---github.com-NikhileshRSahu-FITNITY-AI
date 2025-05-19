@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { products, type Product } from '@/lib/product-data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ShoppingCart, ArrowLeft, Tag, IndianRupee, Check, Star, Info } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Tag, IndianRupee, Check, Star, Info, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
@@ -28,12 +28,12 @@ export default function ProductDetailPage() {
   useEffect(() => {
     if (slug) {
       const foundProduct = products.find(p => p.slug === slug);
-      setProduct(foundProduct || null);
+      setProduct(foundProduct || null); // Set to null if not found, undefined while loading
 
       if (foundProduct) {
         let recommendations: Product[] = products
           .filter(p => p.id !== foundProduct.id && p.category === foundProduct.category)
-          .sort(() => 0.5 - Math.random()); // Shuffle same category products
+          .sort(() => 0.5 - Math.random());
         
         if (recommendations.length < 3) {
           const otherRandomProducts = products
@@ -42,10 +42,12 @@ export default function ProductDetailPage() {
             .slice(0, 3 - recommendations.length);
           recommendations = [...recommendations, ...otherRandomProducts];
         }
-        setRelatedProducts(recommendations.slice(0, 3)); // Ensure max 3
+        setRelatedProducts(recommendations.slice(0, 3));
       } else {
         setRelatedProducts([]);
       }
+    } else {
+      setProduct(null); // Handle case where slug might be missing initially
     }
   }, [slug]);
 
@@ -71,7 +73,7 @@ export default function ProductDetailPage() {
 
   if (product === undefined) { // Initial loading state
     return (
-      <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 animate-fade-in-up">
+      <div className="container mx-auto px-4 md:px-6 py-8 sm:py-12 md:py-16 animate-fade-in-up">
         <div className="mb-6 sm:mb-8">
           <Skeleton className="h-8 w-36 sm:w-48 bg-muted/50" />
         </div>
@@ -82,12 +84,13 @@ export default function ProductDetailPage() {
           <div className="space-y-4 sm:space-y-6">
             <Skeleton className="h-10 w-3/4 sm:h-12 bg-muted/50" /> 
             <Skeleton className="h-6 w-1/4 sm:h-7 bg-muted/50" /> 
-            <Skeleton className="h-20 w-full sm:h-24 bg-muted/50" /> 
-            <div className="flex items-center gap-3 sm:gap-4">
+            <Skeleton className="h-24 w-full sm:h-28 bg-muted/50" /> 
+            <div className="flex items-baseline gap-3 sm:gap-4">
               <Skeleton className="h-10 w-32 sm:h-12 bg-muted/50" /> 
-              <Skeleton className="h-10 w-24 sm:h-12 bg-muted/50" /> 
+              <Skeleton className="h-8 w-20 sm:h-10 bg-muted/50" /> 
             </div>
-            <Skeleton className="h-12 w-1/2 sm:h-14 bg-muted/50" /> 
+            <Skeleton className="h-12 w-full sm:h-14 sm:w-1/2 bg-muted/50" /> 
+            <Skeleton className="h-10 w-full sm:w-3/4 bg-muted/50" />
           </div>
         </div>
          <div className="mt-12 sm:mt-16">
@@ -106,13 +109,16 @@ export default function ProductDetailPage() {
     );
   }
 
-  if (!product) {
+  if (!product) { // Product not found after attempting to load
     return (
-        <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 text-center animate-fade-in-up">
+        <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 text-center min-h-[calc(100vh-10rem)] flex flex-col items-center justify-center animate-fade-in-up">
+            <Info className="h-16 w-16 text-destructive mb-6" />
             <h1 className="text-2xl sm:text-3xl font-bold text-destructive mb-4">Product Not Found</h1>
             <p className="text-foreground/70 mb-6">Sorry, we couldn't find the product you were looking for.</p>
-            <Button asChild>
-                <Link href="/shop/products">Back to All Products</Link>
+            <Button asChild variant="outline" className="border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground">
+                <Link href="/shop/products">
+                  <ArrowLeft className="mr-2 h-4 w-4" /> Back to All Products
+                </Link>
             </Button>
         </div>
     );
@@ -123,7 +129,7 @@ export default function ProductDetailPage() {
     : null;
 
   return (
-    <div className="container mx-auto px-4 md:px-6 py-8 sm:py-12 md:py-20 animate-fade-in-up">
+    <div className="container mx-auto px-4 md:px-6 py-8 sm:py-12 md:py-16 animate-fade-in-up">
       <div className="mb-6 sm:mb-8">
         <Button variant="outline" asChild className="border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground active:scale-95 transition-all duration-200 text-xs sm:text-sm px-3 py-1.5 sm:px-4 sm:py-2 h-auto">
           <Link href="/shop/products">
@@ -234,3 +240,4 @@ export default function ProductDetailPage() {
     </div>
   );
 }
+

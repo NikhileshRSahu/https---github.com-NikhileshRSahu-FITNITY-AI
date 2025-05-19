@@ -75,13 +75,13 @@ type TimeRange = 'weekly' | 'monthly' | 'allTime';
 interface LockedFeatureCardProps {
   title: string;
   description: string;
-  icon: React.ElementType;
+  icon: React.ElementType; // Changed to Sparkles for premium indication
 }
 
 function LockedFeatureCard({ title, description, icon: Icon }: LockedFeatureCardProps) {
   return (
     <Card className="glassmorphic-card hover:shadow-2xl transition-shadow duration-300 animate-fade-in-up flex flex-col items-center justify-center text-center p-6">
-      <Lock className="h-12 w-12 text-amber-400 mb-4" />
+      <Sparkles className="h-12 w-12 text-yellow-400 mb-4" />
       <CardTitle className="text-xl font-semibold text-foreground mb-2">{title}</CardTitle>
       <CardDescription className="text-foreground/70 mb-6 text-sm">{description}</CardDescription>
       <Button asChild size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground cta-glow-pulse active:scale-95">
@@ -132,13 +132,28 @@ export default function DashboardPage() {
   if (!pageMounted || !subscriptionMounted) {
     return (
       <div className="container mx-auto px-4 md:px-6 py-12 md:py-20">
-        <Skeleton className="h-10 w-1/2 mx-auto mb-10" />
+        <Skeleton className="h-10 w-3/4 sm:w-1/2 mx-auto mb-10" />
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <Skeleton className="h-80 lg:col-span-2" />
-          <Skeleton className="h-80" />
-          <Skeleton className="h-72" />
-          <Skeleton className="h-72" />
-          <Skeleton className="h-72 lg:col-span-2" />
+          <Card className="glassmorphic-card lg:col-span-2 animate-fade-in-up">
+            <CardHeader><Skeleton className="h-6 w-1/2 mb-2" /><Skeleton className="h-4 w-3/4" /></CardHeader>
+            <CardContent><Skeleton className="h-[200px] sm:h-[250px] w-full" /></CardContent>
+          </Card>
+          <Card className="glassmorphic-card animate-fade-in-up">
+            <CardHeader><Skeleton className="h-6 w-3/4 mb-2" /><Skeleton className="h-4 w-1/2" /></CardHeader>
+            <CardContent className="space-y-4"><Skeleton className="h-8 w-full" /><Skeleton className="h-8 w-full" /><Skeleton className="h-8 w-full" /></CardContent>
+          </Card>
+          <Card className="glassmorphic-card animate-fade-in-up">
+            <CardHeader><Skeleton className="h-6 w-3/4 mb-2" /><Skeleton className="h-4 w-1/2" /></CardHeader>
+            <CardContent className="space-y-3"><Skeleton className="h-6 w-5/6" /><Skeleton className="h-6 w-full" /><Skeleton className="h-6 w-4/5" /></CardContent>
+          </Card>
+          <Card className="glassmorphic-card animate-fade-in-up">
+            <CardHeader><Skeleton className="h-6 w-3/4 mb-2" /><Skeleton className="h-4 w-1/2" /></CardHeader>
+            <CardContent className="space-y-4"><Skeleton className="h-8 w-full" /><Skeleton className="h-10 w-full" /><Skeleton className="h-8 w-full" /></CardContent>
+          </Card>
+          <Card className="glassmorphic-card lg:col-span-2 animate-fade-in-up">
+            <CardHeader><Skeleton className="h-6 w-1/2 mb-2" /><Skeleton className="h-4 w-3/4" /></CardHeader>
+            <CardContent className="space-y-4"><Skeleton className="h-16 w-full" /><Skeleton className="h-10 w-full" /></CardContent>
+          </Card>
         </div>
       </div>
     );
@@ -235,7 +250,7 @@ export default function DashboardPage() {
             <LockedFeatureCard 
                 title="Unlock Workout Consistency"
                 description="Track your workout trends over time. This feature is available on Premium and Unlimited plans."
-                icon={TrendingUp}
+                icon={TrendingUp} // Assuming TrendingUp icon is appropriate
             />
         )}
 
@@ -263,9 +278,9 @@ export default function DashboardPage() {
             </CardContent>
             </Card>
         ) : (
-            <LockedFeatureCard 
+             <LockedFeatureCard 
                 title="Unlock Body Measurements"
-                description="Track your weight, body fat, and muscle mass. This feature is available on Premium and Unlimited plans."
+                description="Track your weight, body fat, and muscle mass. This feature is available with our Premium plans."
                 icon={Scaling}
             />
         )}
@@ -303,7 +318,7 @@ export default function DashboardPage() {
         ) : (
              <LockedFeatureCard 
                 title="Unlock Personal Records"
-                description="Celebrate your fitness milestones. This feature is available on Premium and Unlimited plans."
+                description="Celebrate your fitness milestones. This feature is available with our Premium plans."
                 icon={Trophy}
             />
         )}
@@ -359,7 +374,7 @@ export default function DashboardPage() {
         ) : (
             <LockedFeatureCard 
                 title="Unlock Streaks & Badges"
-                description="Stay motivated with streaks and unlock achievement badges. This feature is available on Premium and Unlimited plans."
+                description="Stay motivated with streaks and unlock achievement badges. This feature is available with our Premium plans."
                 icon={Award}
             />
         )}
@@ -398,7 +413,7 @@ export default function DashboardPage() {
          ) : (
             <LockedFeatureCard 
                 title="Unlock Daily Health Snapshot"
-                description="Keep an eye on your daily health metrics like sleep, hydration, and steps. This feature is available on Premium and Unlimited plans."
+                description="Keep an eye on your daily health metrics like sleep, hydration, and steps. This feature is available with our Premium plans."
                 icon={HeartPulse}
             />
         )}
@@ -406,3 +421,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+

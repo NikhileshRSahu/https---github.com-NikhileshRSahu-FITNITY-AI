@@ -99,10 +99,11 @@ export default function ProfilePage() {
     return (
         <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 animate-fade-in-up">
           <div className="max-w-2xl sm:max-w-3xl mx-auto space-y-6 sm:space-y-8">
-            <div className="flex flex-col items-center space-y-3 sm:space-y-4 mb-8 sm:mb-12">
+            <div className="flex flex-col items-center text-center space-y-3 sm:space-y-4 mb-8 sm:mb-12">
                 <Skeleton className="h-24 w-24 sm:h-28 sm:w-28 rounded-full bg-muted/50" />
                 <Skeleton className="h-8 w-1/2 bg-muted/50" />
                 <Skeleton className="h-5 w-3/4 bg-muted/50" />
+                 <Skeleton className="h-9 w-32 bg-muted/50 mt-2" />
             </div>
             {[...Array(3)].map((_, i) => ( 
               <Card key={i} className="glassmorphic-card">
@@ -132,7 +133,7 @@ export default function ProfilePage() {
   return (
     <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 animate-fade-in-up">
       <div className="max-w-2xl sm:max-w-3xl mx-auto space-y-8 sm:space-y-10">
-        <div className="flex flex-col items-center text-center space-y-3 sm:space-y-4 mb-10 sm:mb-14">
+        <div className="flex flex-col items-center text-center space-y-3 sm:space-y-4 mb-10 sm:mb-14 animate-fade-in-up">
             <Avatar className="h-24 w-24 sm:h-28 sm:w-28 ring-4 ring-accent/50 shadow-lg hover:opacity-80 transition-opacity duration-200 active:scale-95">
                 <AvatarImage src="https://placehold.co/100x100.png" alt={profileData.fullName} data-ai-hint="user portrait" />
                 <AvatarFallback>{profileData.fullName.substring(0,2).toUpperCase()}</AvatarFallback>
@@ -197,7 +198,7 @@ export default function ProfilePage() {
             <CardTitle className="text-lg sm:text-xl font-bold flex items-center">
               <Zap className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> My Fitness Snapshot
             </CardTitle>
-            <CardDescription className="text-xs sm:text-sm">Your current fitness goals and preferences.</CardDescription>
+            <CardDescription className="text-xs sm:text-sm text-card-foreground/70">Your current fitness goals and preferences.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 sm:space-y-5 text-sm sm:text-base">
              {isEditing ? (
@@ -259,13 +260,12 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
-        {/* Subscription Simulator Card - NEW */}
         <Card className="glassmorphic-card animate-fade-in-up" style={{animationDelay: '0.15s'}}>
           <CardHeader>
             <CardTitle className="text-lg sm:text-xl font-bold flex items-center">
               <Gem className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Subscription Simulator
             </CardTitle>
-            <CardDescription className="text-xs sm:text-sm">
+            <CardDescription className="text-xs sm:text-sm text-card-foreground/70">
               Current Tier: <span className="font-semibold text-accent capitalize">{subscriptionTier}</span>. (For demo purposes only)
             </CardDescription>
           </CardHeader>
@@ -292,7 +292,7 @@ export default function ProfilePage() {
             <CardTitle className="text-lg sm:text-xl font-bold flex items-center">
               <SettingsIcon className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Account Settings
             </CardTitle>
-            <CardDescription className="text-xs sm:text-sm">Manage your personal details.</CardDescription>
+            <CardDescription className="text-xs sm:text-sm text-card-foreground/70">Manage your personal details.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 sm:space-y-5 text-sm sm:text-base">
              <div>
@@ -331,7 +331,7 @@ export default function ProfilePage() {
               }
               Appearance
             </CardTitle>
-            <CardDescription className="text-xs sm:text-sm">Customize the look and feel of the application.</CardDescription>
+            <CardDescription className="text-xs sm:text-sm text-card-foreground/70">Customize the look and feel of the application.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-background/10 shadow-inner">
@@ -353,7 +353,7 @@ export default function ProfilePage() {
             <CardTitle className="text-lg sm:text-xl font-bold flex items-center">
               <Bell className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Notification Preferences
             </CardTitle>
-            <CardDescription className="text-xs sm:text-sm">Choose what updates you want to receive.</CardDescription>
+            <CardDescription className="text-xs sm:text-sm text-card-foreground/70">Choose what updates you want to receive.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 sm:space-y-4 text-sm sm:text-base">
             <div className="flex items-center justify-between p-3 rounded-lg bg-background/10">
@@ -376,7 +376,7 @@ export default function ProfilePage() {
             <CardTitle className="text-lg sm:text-xl font-bold flex items-center">
               <Globe className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Language Preference
             </CardTitle>
-            <CardDescription className="text-xs sm:text-sm">Select your preferred language for the app interface.</CardDescription>
+            <CardDescription className="text-xs sm:text-sm text-card-foreground/70">Select your preferred language for the app interface.</CardDescription>
           </CardHeader>
           <CardContent>
              <Select defaultValue="English">
@@ -396,7 +396,7 @@ export default function ProfilePage() {
             <CardTitle className="text-lg sm:text-xl font-bold flex items-center">
               <ShieldCheck className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-accent" /> Data & Privacy
             </CardTitle>
-            <CardDescription className="text-xs sm:text-sm">Manage your data and review our policies.</CardDescription>
+            <CardDescription className="text-xs sm:text-sm text-card-foreground/70">Manage your data and review our policies.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2 sm:space-y-3 text-sm sm:text-base">
             <Button asChild variant="link" className="p-0 text-accent hover:underline h-auto transition-opacity hover:opacity-80 text-sm sm:text-base">
@@ -443,3 +443,4 @@ export default function ProfilePage() {
     </div>
   );
 }
+

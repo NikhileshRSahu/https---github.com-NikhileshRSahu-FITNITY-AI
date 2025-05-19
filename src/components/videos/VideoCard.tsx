@@ -21,7 +21,7 @@ export default function VideoCard({ video }: VideoCardProps) {
           <a className="block aspect-video overflow-hidden rounded-t-lg">
             <Image
               src={video.thumbnailUrl}
-              alt={video.title}
+              alt={video.title} // Ensure alt text
               width={400}
               height={225}
               className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
@@ -81,3 +81,4 @@ export default function VideoCard({ video }: VideoCardProps) {
     </Card>
   );
 }
+
